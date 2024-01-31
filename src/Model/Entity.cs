@@ -15,4 +15,10 @@ public abstract class Entity : PhysicsObj
     }
 
     public abstract void Move(int x, int y);
+
+    public int getMoveSpeed()
+    {
+        return _moveSpeed;
+    }
+    
 }

@@ -1,4 +1,5 @@
 ﻿using gamespace.View;
+using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
@@ -12,7 +13,7 @@ public class Prop : PhysicsObj
         _sprite = sprite;
     }
 
-    public override void Update()
+    public override void Update(GameTime gameTime)
     {
         throw new System.NotImplementedException();
     }
