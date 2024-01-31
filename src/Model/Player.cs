@@ -47,22 +47,22 @@ public class Player : Character
     {
         var kstate = Keyboard.GetState();
 
-        if (kstate.IsKeyDown(Keys.W))
+        if (kstate.IsKeyDown(Keys.W) || kstate.IsKeyDown(Keys.Up))
         {
             this.Move(0, -(this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds))); 
         }
 
-        if (kstate.IsKeyDown(Keys.S))
+        if (kstate.IsKeyDown(Keys.S) || kstate.IsKeyDown(Keys.Down))
         {
             this.Move(0, (this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
         }
 
-        if (kstate.IsKeyDown(Keys.A))
+        if (kstate.IsKeyDown(Keys.A) || kstate.IsKeyDown(Keys.Left))
         {
             this.Move(-(this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
         }
 
-        if (kstate.IsKeyDown(Keys.D))
+        if (kstate.IsKeyDown(Keys.D) || kstate.IsKeyDown(Keys.Right))
         {
             this.Move((this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
         }
