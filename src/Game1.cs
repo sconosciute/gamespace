@@ -63,28 +63,7 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
-        //Moved this logic into playerUpdate
-            /*var kstate = Keyboard.GetState();
-
-            if (kstate.IsKeyDown(Keys.W))
-            {
-                _player.Move(0, -(_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds))); 
-            }
-
-            if (kstate.IsKeyDown(Keys.S))
-            {
-                _player.Move(0, (_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
-            }
-
-            if (kstate.IsKeyDown(Keys.A))
-            {
-                _player.Move(-(_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
-            }
-
-            if (kstate.IsKeyDown(Keys.D))
-            {
-                _player.Move((_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
-            }*/
+        PlayerInput(gameTime);
             
         //Once Player is created and our movement is inputted, call this for the camera to center.
         //_camera.SetPosition(_player.GetX(), _player.GetY());  //, should center the camera, at the very least will follow the player
@@ -108,5 +87,30 @@ public class Game1 : Game
         //Should render object replace _spriteBatch?
         _spriteBatch.End();
         base.Draw(gameTime);
+    }
+
+    private void PlayerInput(GameTime gameTime)
+    {
+        var kstate = Keyboard.GetState();
+
+            if (kstate.IsKeyDown(Keys.W))
+            {
+                _player.Move(0, -(_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
+            }
+
+            if (kstate.IsKeyDown(Keys.S))
+            {
+                _player.Move(0, (_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
+            }
+
+            if (kstate.IsKeyDown(Keys.A))
+            {
+                _player.Move(-(_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
+            }
+
+            if (kstate.IsKeyDown(Keys.D))
+            {
+                _player.Move((_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
+            }
     }
 }

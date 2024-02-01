@@ -8,8 +8,7 @@ namespace gamespace.Model;
 
 //Side note, we should probably follow a singleton principle with player either here or in main right?
 // like this? public static Player Instance = new Player(); ~ Logan
-public class Player : Character
-{
+public class Player : Character {
     
     private string _name;   //stores the players name
     private string _playerClass;  //stores the players class;
@@ -41,11 +40,13 @@ public class Player : Character
     {
         return new Vector2(GetX(), GetY());
     }
-    //Not sure what to do here?
-    //Needed to add gameTime param in order to track how long user held key down.
+    //No longer used here, to avoid breaking MVC conventions. At least not for movement, may remove gameTime
     public override void Update(GameTime gameTime)
     {
-        var kstate = Keyboard.GetState();
+        throw new System.NotImplementedException();
+    }
+
+    /*var kstate = Keyboard.GetState();
 
         if (kstate.IsKeyDown(Keys.W) || kstate.IsKeyDown(Keys.Up))
         {
@@ -67,5 +68,5 @@ public class Player : Character
             this.Move((this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
         }
         //throw new System.NotImplementedException();
-    }
+    }*/
 }
