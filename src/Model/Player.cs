@@ -43,7 +43,7 @@ public class Player : Character {
     //No longer used here, to avoid breaking MVC conventions. At least not for movement, may remove gameTime
     public override void Update(GameTime gameTime)
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
     }
 
     /*var kstate = Keyboard.GetState();
