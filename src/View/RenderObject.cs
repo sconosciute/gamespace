@@ -13,7 +13,6 @@ public class RenderObject
         _spriteSheet = spriteSheet;
         _animations = animations;
     }
-
     public void Draw(int x, int y)
     {
         //TODO: Implementation for drawing

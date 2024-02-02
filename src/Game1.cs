@@ -9,17 +9,24 @@ namespace gamespace;
 
 public class Game1 : Game
 {
+    //Use these constants and set _dynamicResolution to false in order to have a static width and height
+    //  Looking at implementing a JSON file to contain these system settings
+    private const int DefaultResolutionWidth = 1280;
+    private const int DefaultResolutionHeight = 1024;
+    
     public static int ScreenHeight;
     public static int ScreenWidth;
     
-    private GraphicsDeviceManager _graphics;
+    private readonly GraphicsDeviceManager _graphics;
+    private Boolean _isFullScreen = false;
+    private Boolean _dynamicResolution = false;
+    
     private SpriteBatch _spriteBatch;
-    private Camera _camera; //Variable to store our camera
-    private Player _player; //Variable to store player
-    //private RenderObject _playerRender; //variable to hold temp player render
+    private Camera _camera; 
+    private Player _player; 
     private Texture2D _playerModel;
     private Texture2D _testingBackGround;
-    
+
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -30,9 +37,20 @@ public class Game1 : Game
         }
         //Creates a new GraphicsAdapter, allowing Game1 to get the resolution of the users monitor, allowing for dynamic resolutions.
         GraphicsAdapter adapter = new GraphicsAdapter();
-        _graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width; //GraphicsDevice.Adapter.CurrentDisplayMode.Width;
-        _graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height; //GraphicsDevice.Adapter.CurrentDisplayMode.Height;
-        _graphics.IsFullScreen = true; //STARTS FULL SCREEN YAY
+        if (_dynamicResolution) {
+            _graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width; 
+            _graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height; 
+        }
+        else
+        {
+            _graphics.PreferredBackBufferWidth = DefaultResolutionWidth;
+            _graphics.PreferredBackBufferHeight = DefaultResolutionHeight;
+        }
+        if (_isFullScreen)
+        {
+            _graphics.IsFullScreen = _isFullScreen;
+        }
+
         _graphics.ApplyChanges(); //Applies correct resolution and full screens
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
@@ -64,11 +82,8 @@ public class Game1 : Game
 
         // TODO: Add your update logic here
         PlayerInput(gameTime);
-            
-        //Once Player is created and our movement is inputted, call this for the camera to center.
-        //_camera.SetPosition(_player.GetX(), _player.GetY());  //, should center the camera, at the very least will follow the player
         
-        _player.Update(gameTime); //Allow player to do player update, instead of doing it in here
+        _player.Update(gameTime); 
         _camera.centerOn(_player); //Calls this after every update to keep player centered
         base.Update(gameTime);
     }
@@ -95,22 +110,22 @@ public class Game1 : Game
 
             if (kstate.IsKeyDown(Keys.W))
             {
-                _player.Move(0, -(_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
+                _player.Move(0, -(_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
             }
 
             if (kstate.IsKeyDown(Keys.S))
             {
-                _player.Move(0, (_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
+                _player.Move(0, (_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
             }
 
             if (kstate.IsKeyDown(Keys.A))
             {
-                _player.Move(-(_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
+                _player.Move(-(_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
             }
 
             if (kstate.IsKeyDown(Keys.D))
             {
-                _player.Move((_player.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
+                _player.Move((_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
             }
     }
 }

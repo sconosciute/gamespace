@@ -3,9 +3,6 @@ using gamespace.View;
 
 namespace gamespace.Model;
 
-// Adding a constructor here, so that Player and Mob can inherit it. It will not be able to be called, since it is abstract, but should clean up the
-//  inheritance ~ Logan
-// Also made Character extends Entity, since UML says it should
 public abstract class Character : Entity
 {
     private int _hp; 
@@ -40,6 +37,4 @@ public abstract class Character : Entity
         // Implementation for using an ability
         return false;
     }
-
-    
 }

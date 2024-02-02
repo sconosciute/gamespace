@@ -10,8 +10,8 @@ namespace gamespace.Model;
 // like this? public static Player Instance = new Player(); ~ Logan
 public class Player : Character {
     
-    private string _name;   //stores the players name
-    private string _playerClass;  //stores the players class;
+    private string _name;   
+    private string _playerClass;  
     
     public Player(string name, string playerClass, int moveSpeed, RenderObject sprite, int x, int y, int width, int height, bool canCollide,
         bool canMove, int hp, int maxHp, int energy, int maxEnergy, int baseDmg) : base(moveSpeed, sprite,  x, y,  width,  height,  canCollide,
@@ -28,45 +28,19 @@ public class Player : Character {
     
     //special ability function;
     
-    //Not sure how to handle this, without a set method or having x/y be protected. 
-    // unless we want to make this not abstract earlier and define it in entity? Temporally added setters in physics obj
-    public override void Move(int x, int y)
+    public override void Move(int newX, int newY)
     {
-        SetX(GetX() + x);
-        SetY(GetY() + y);
+        X += newX;
+        Y += newY;
     }
 
     public Vector2 ReturnPos()
     {
-        return new Vector2(GetX(), GetY());
+        return new Vector2(X, Y);
     }
     //No longer used here, to avoid breaking MVC conventions. At least not for movement, may remove gameTime
     public override void Update(GameTime gameTime)
     {
-        //throw new System.NotImplementedException();
+        //throw new System.NotImplementedException()
     }
-
-    /*var kstate = Keyboard.GetState();
-
-        if (kstate.IsKeyDown(Keys.W) || kstate.IsKeyDown(Keys.Up))
-        {
-            this.Move(0, -(this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds))); 
-        }
-
-        if (kstate.IsKeyDown(Keys.S) || kstate.IsKeyDown(Keys.Down))
-        {
-            this.Move(0, (this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
-        }
-
-        if (kstate.IsKeyDown(Keys.A) || kstate.IsKeyDown(Keys.Left))
-        {
-            this.Move(-(this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
-        }
-
-        if (kstate.IsKeyDown(Keys.D) || kstate.IsKeyDown(Keys.Right))
-        {
-            this.Move((this.getMoveSpeed() * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
-        }
-        //throw new System.NotImplementedException();
-    }*/
 }

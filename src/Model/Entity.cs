@@ -15,10 +15,10 @@ public abstract class Entity : PhysicsObj
     }
 
     public abstract void Move(int x, int y);
-
-    public int getMoveSpeed()
-    {
-        return _moveSpeed;
-    }
     
+    //No idea why this property does not work with just get; will look into this
+    public int MoveSpeed
+    {
+        get => _moveSpeed;
+    }
 }

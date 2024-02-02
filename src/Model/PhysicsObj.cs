@@ -15,43 +15,18 @@ public abstract class PhysicsObj
     {
         _x = x;
         _y = y;
-        _width = width;
-        this._height = height;
-        this._canCollide = canCollide;
-        this._canMove = canMove;
+        _width = width; 
+        _height = height;
+        _canCollide = canCollide;
+        _canMove = canMove;
     }
 
     public abstract void Update(GameTime gameTime);
     
-    //USING THIS TEMP FOR TESTING, can happily change this once I get a chance to discuss how to approach this problem in full
-    // Could also get rid of setX and setY by implementing move() in here
-    public void SetX(int newX)
+    //Variable parameters for public access
+    public int X { get; set; }
+    public int Y { get; set; }
+    public int Width { get; }
+    public int Height { get; }
     
-    {
-        _x = newX;
-    }
-    public void SetY(int newY)
-    {
-        _y = newY;
-    }
-
-    public int GetX()
-    {
-        return _x;
-    }
-
-    public int GetY()
-    {
-        return _y;
-    }
-
-    public int GetWidth()
-    {
-        return _width;
-    }
-
-    public int GetHeight()
-    {
-        return _height;
-    }
 }
