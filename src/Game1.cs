@@ -13,6 +13,12 @@ public class Game1 : Game
     //  Looking at implementing a JSON file to contain these system settings
     private const int DefaultResolutionWidth = 1280;
     private const int DefaultResolutionHeight = 1024;
+    //Player control Keys
+    private const Keys ForwardButton = Keys.W;
+    private const Keys LeftButton = Keys.A;
+    private const Keys RightButton = Keys.D;
+    private const Keys DownButton = Keys.S;
+    private const Keys SprintButton = Keys.Space;
     
     public static int ScreenHeight;
     public static int ScreenWidth;
@@ -107,25 +113,30 @@ public class Game1 : Game
     private void PlayerInput(GameTime gameTime)
     {
         var kstate = Keyboard.GetState();
-
-            if (kstate.IsKeyDown(Keys.W))
+        int activeMoveSpeed = _player.MoveSpeed;
+       
+        if (kstate.IsKeyDown(SprintButton))
+        {
+            activeMoveSpeed *= 2;
+        }
+            if (kstate.IsKeyDown(ForwardButton))
             {
-                _player.Move(0, -(_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
+                _player.Move(0, -(activeMoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
             }
 
-            if (kstate.IsKeyDown(Keys.S))
+            if (kstate.IsKeyDown(DownButton))
             {
-                _player.Move(0, (_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
+                _player.Move(0, (activeMoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)));
             }
 
-            if (kstate.IsKeyDown(Keys.A))
+            if (kstate.IsKeyDown(LeftButton))
             {
-                _player.Move(-(_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
+                _player.Move(-(activeMoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
             }
 
-            if (kstate.IsKeyDown(Keys.D))
+            if (kstate.IsKeyDown(RightButton))
             {
-                _player.Move((_player.MoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
+                _player.Move((activeMoveSpeed * (int)Math.Ceiling(gameTime.ElapsedGameTime.TotalSeconds)), 0);
             }
     }
 }
