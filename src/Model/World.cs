@@ -44,7 +44,7 @@ public class World
         get
         {
             CheckBounds(x, y);
-            return _tiles[x + _xOffset / 2][y + _yOffset];
+            return _tiles[x + _xOffset][y + _yOffset];
         }
         private set
         {
