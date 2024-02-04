@@ -1,4 +1,0 @@
-Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Users/Logan/RiderProjects/gamespace/Content/checkeredBoardBackGround.png","C:/Users/Logan/RiderProjects/gamespace/Content/bin/DesktopGL/Content/checkeredBoardBackGround.xnb","TextureProcessor","Texture2DContent",513,202585,0.1539755
-"C:/Users/Logan/RiderProjects/gamespace/Content/playerCircle.png","C:/Users/Logan/RiderProjects/gamespace/Content/bin/DesktopGL/Content/playerCircle.xnb","TextureProcessor","Texture2DContent",26126,5760085,0.2923268
-"C:/Users/Logan/RiderProjects/gamespace/Content/playerCircle32.png","C:/Users/Logan/RiderProjects/gamespace/Content/bin/DesktopGL/Content/playerCircle32.xnb","TextureProcessor","Texture2DContent",660,4181,0.1280038
