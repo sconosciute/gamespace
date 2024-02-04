@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using Loyc.Collections;
 
 namespace gamespace.Model;
@@ -9,6 +8,7 @@ public class World
     /**Sparse list of all map tiles by x, y order  **/
     private AList<AList<Tile>> _tiles = new();
 
+    //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
     private readonly int _mapWidth;
     private readonly int _mapHeight;
     private readonly int _minX;
@@ -27,12 +27,11 @@ public class World
     {
         _mapWidth = width;
         _mapHeight = height;
-        
+
         _minX = -_mapWidth / 2;
         _maxX = _xOffset = _mapWidth / 2;
         _minY = -_mapHeight / 2;
         _maxY = _yOffset = _mapHeight / 2;
-        
     }
 
     /// <summary>
