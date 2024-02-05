@@ -1,6 +1,5 @@
 ﻿using System;
 using gamespace.View;
-using Microsoft.Xna.Framework;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace gamespace.Model;
@@ -15,7 +14,7 @@ public abstract class Entity : PhysicsObj
     private World _world;
 
     protected Entity(int moveSpeed, RenderObject sprite, int x, int y, int width, int height, bool hasCollision,
-        World world) : base(x, y, width, height,hasCollision, true, true, BaseMoveSpeed)
+        World world) : base(x, y, width, height, hasCollision, true, true, BaseMoveSpeed)
     {
         _sprite = sprite;
         _world = world;
@@ -30,13 +29,13 @@ public abstract class Entity : PhysicsObj
         var bby1 = (int)Math.Min(newPos.Y, Y);
         var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, Y));
 
-        //var aabb = new Rectangle(bbx1, bby2, bbx2 - bbx1, bby2 - bby1);
-
         Tile checkTile;
         for (int worldX = bbx1; worldX <= bbx2; worldX++)
         {
+            if (!_world.IsInBounds(worldX, 0)) continue;
             for (int worldY = bby1; worldY <= bby2; worldY++)
             {
+                if (!_world.IsInBounds(0, worldY)) continue;
                 checkTile = _world[worldX, worldY];
                 if (checkTile.CanCollide)
                 {
@@ -44,7 +43,6 @@ public abstract class Entity : PhysicsObj
                 }
             }
         }
-        
     }
 
     private void CheckCollision(PhysicsObj other)
@@ -52,7 +50,7 @@ public abstract class Entity : PhysicsObj
         //Speculative collision using Minkowski difference
         //Reduce other to a point, expand this aabb by dims of other aabb, check for intersection!
         var othCenter = new Vector2(other.X, other.Y);
-        
+
         var bbWidth = Width + other.Width;
         var bbHeight = Height + other.Height;
         var colVector = new Vector2(othCenter.X - X, othCenter.Y - Y);
@@ -65,7 +63,5 @@ public abstract class Entity : PhysicsObj
         {
             _ySpeed = _ySpeed > (colVector.Y - bbHeight / 2f) ? colVector.Y : _ySpeed;
         }
-        
     }
-    
 }
