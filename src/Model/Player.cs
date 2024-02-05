@@ -34,7 +34,7 @@ public class Player : Character
     {
         //TODO: Rework this to take in events and adjust movement speed based on input.
     }
-
+    
     public Vector2 ReturnPos()
     {
         return new Vector2(X, Y);

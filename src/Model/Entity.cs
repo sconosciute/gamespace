@@ -64,4 +64,5 @@ public abstract class Entity : PhysicsObj
             _ySpeed = _ySpeed > (colVector.Y - bbHeight / 2f) ? colVector.Y : _ySpeed;
         }
     }
+    public RenderObject Sprite { get; set; }
 }
