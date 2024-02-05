@@ -42,6 +42,7 @@ public class RenderObject
         _framesPerCol = framesPerCol;
         _position = position;
         _source = new Rectangle((int)position.X, (int)position.Y, Width(), Height()); //Sets initial to top right for now, will change on sprite sheets. 
+        //TODO: Implement centering for background.
     }
     public int Column(int currentFrame)
     {
@@ -66,7 +67,6 @@ public class RenderObject
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_spriteSheet, _position, _source, DEFAULT_COLOR, 0f, Vector2.Zero, DEFAULT_SCALE, SpriteEffects.None, 1f);
-        //TODO: Implementation for drawing
+        spriteBatch.Draw(_spriteSheet, _position, _source, DEFAULT_COLOR, 0f, Vector2.Zero, DEFAULT_SCALE, SpriteEffects.None, 0);
     }
 }

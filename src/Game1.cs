@@ -34,9 +34,11 @@ public class Game1 : Game
     private Player _player; 
     private Texture2D _playerModel;
     private Texture2D _testingBackGround;
+    private Texture2D _spaceBackground;
     
-    private RenderObject renderPlayer;
-    private RenderObject renderTempBackground;
+    private RenderObject _renderPlayer;
+    private RenderObject _renderTempBackground;
+    private RenderObject _renderSpaceBackground;
 
     public Game1()
     {
@@ -69,11 +71,10 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
         ScreenHeight = _graphics.PreferredBackBufferHeight; //Gets the height of the screen
         ScreenWidth = _graphics.PreferredBackBufferWidth;   //Gets the width of the screen
         AnimationTimer = new Animation();
-        _player = new Player("Player32", "Rogue", 1, renderPlayer, 0, 0, 32, 32, true,
+        _player = new Player("Player32", "Rogue", 1, _renderPlayer, 0, 0, 32, 32, true,
             true, 100, 100, 100, 100, 10);
         
         base.Initialize();
@@ -84,12 +85,13 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _testingBackGround = Content.Load<Texture2D>("checkeredBoardBackGround");
         _playerModel = Content.Load<Texture2D>("playerCircle32");
+        _spaceBackground = Content.Load<Texture2D>("spaceBackgroundResized");
         
-        renderPlayer = new RenderObject(_playerModel, _player.ReturnPos(), 1, 1); //Have to load here to avoid _playerModel being NULL
-        renderTempBackground = new RenderObject(_testingBackGround, Vector2.Zero, 1, 1); //Same problem
+        _renderPlayer = new RenderObject(_playerModel, _player.ReturnPos(), 1, 1); //Have to load here to avoid _playerModel being NULL
+        _renderTempBackground = new RenderObject(_testingBackGround, Vector2.Zero, 1, 1); //Same problem
+        _renderSpaceBackground = new RenderObject(_spaceBackground, Vector2.Zero, 1, 1);
         
         _camera = new Camera();
-        // TODO: use this.Content to load your game content here
     }
 
     protected override void Update(GameTime gameTime)
@@ -97,11 +99,10 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // TODO: Add your update logic here
         PlayerInput(gameTime);
         
         _player.Update(gameTime); 
-        renderPlayer.Position = _player.ReturnPos();
+        _renderPlayer.Position = _player.ReturnPos();
         AnimationTimer.Update(gameTime);
         _camera.centerOn(_player); //Calls this after every update to keep player centered
         base.Update(gameTime);
@@ -109,11 +110,13 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue); 
-        // TODO: Add your drawing code here
+        GraphicsDevice.Clear(Color.CornflowerBlue);
+        
         _spriteBatch.Begin(transformMatrix: _camera.Transform);
-        renderTempBackground.Draw(_spriteBatch);
-        renderPlayer.Draw(_spriteBatch);
+        _renderTempBackground.Draw(_spriteBatch);
+        _renderSpaceBackground.Draw(_spriteBatch);
+        _renderPlayer.Draw(_spriteBatch);
+        
         //Should render object replace _spriteBatch?
         _spriteBatch.End();
         base.Draw(gameTime);
