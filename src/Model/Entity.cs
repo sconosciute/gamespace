@@ -21,4 +21,5 @@ public abstract class Entity : PhysicsObj
     {
         get => _moveSpeed;
     }
+    public RenderObject Sprite { get; set; }
 }

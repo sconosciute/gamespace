@@ -19,6 +19,8 @@ public class Game1 : Game
     private const Keys RightButton = Keys.D;
     private const Keys DownButton = Keys.S;
     private const Keys SprintButton = Keys.Space;
+
+    public Animation AnimationTimer; 
     
     public static int ScreenHeight;
     public static int ScreenWidth;
@@ -32,6 +34,7 @@ public class Game1 : Game
     private Player _player; 
     private Texture2D _playerModel;
     private Texture2D _testingBackGround;
+    private RenderObject renderPlayer;
 
     public Game1()
     {
@@ -67,7 +70,9 @@ public class Game1 : Game
         // TODO: Add your initialization logic here
         ScreenHeight = _graphics.PreferredBackBufferHeight; //Gets the height of the screen
         ScreenWidth = _graphics.PreferredBackBufferWidth;   //Gets the width of the screen
-        _player = new Player("Player32", "Rogue", 1, new RenderObject(_playerModel, null), 0, 0, 32, 32, true,
+        AnimationTimer = new Animation();
+        renderPlayer = new RenderObject(_playerModel, 1, 1);
+        _player = new Player("Player32", "Rogue", 1, renderPlayer, 0, 0, 32, 32, true,
             true, 100, 100, 100, 100, 10);
         base.Initialize();
     }
@@ -90,21 +95,24 @@ public class Game1 : Game
         PlayerInput(gameTime);
         
         _player.Update(gameTime); 
+        AnimationTimer.Update(gameTime);
         _camera.centerOn(_player); //Calls this after every update to keep player centered
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-
+        
+        GraphicsDevice.Clear(Color.CornflowerBlue); 
         // TODO: Add your drawing code here
         _spriteBatch.Begin(transformMatrix: _camera.Transform);
         //Vector2 halfSize = new Vector2(0.5f, 0.5f); //Can use this cut the player size in half
         Vector2 playerSize = Vector2.One;
-        _spriteBatch.Draw(_testingBackGround, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Vector2.One,
+        Vector2 massiveSize = new Vector2(10, 10);
+        AnimationTimer.Update(gameTime);
+        _spriteBatch.Draw(_testingBackGround, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, massiveSize,
             SpriteEffects.None, 1f);
-        _spriteBatch.Draw(_playerModel, _player.ReturnPos(), null, Color.White, 0f, Vector2.Zero, playerSize,  SpriteEffects.None, 0f); //Layer 0f background, 1f foreground
+        _spriteBatch.Draw(_playerModel, _player.ReturnPos(), renderPlayer.Source, Color.White, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 1f);
         //Should render object replace _spriteBatch?
         _spriteBatch.End();
         base.Draw(gameTime);

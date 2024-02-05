@@ -33,7 +33,7 @@ public class Player : Character {
         X += newX;
         Y += newY;
     }
-
+    
     public Vector2 ReturnPos()
     {
         return new Vector2(X, Y);
