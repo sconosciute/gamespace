@@ -34,7 +34,9 @@ public class Game1 : Game
     private Player _player; 
     private Texture2D _playerModel;
     private Texture2D _testingBackGround;
+    
     private RenderObject renderPlayer;
+    private RenderObject renderTempBackground;
 
     public Game1()
     {
@@ -71,9 +73,9 @@ public class Game1 : Game
         ScreenHeight = _graphics.PreferredBackBufferHeight; //Gets the height of the screen
         ScreenWidth = _graphics.PreferredBackBufferWidth;   //Gets the width of the screen
         AnimationTimer = new Animation();
-        renderPlayer = new RenderObject(_playerModel, 1, 1);
         _player = new Player("Player32", "Rogue", 1, renderPlayer, 0, 0, 32, 32, true,
             true, 100, 100, 100, 100, 10);
+        
         base.Initialize();
     }
 
@@ -82,6 +84,10 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _testingBackGround = Content.Load<Texture2D>("checkeredBoardBackGround");
         _playerModel = Content.Load<Texture2D>("playerCircle32");
+        
+        renderPlayer = new RenderObject(_playerModel, _player.ReturnPos(), 1, 1); //Have to load here to avoid _playerModel being NULL
+        renderTempBackground = new RenderObject(_testingBackGround, Vector2.Zero, 1, 1); //Same problem
+        
         _camera = new Camera();
         // TODO: use this.Content to load your game content here
     }
@@ -95,6 +101,7 @@ public class Game1 : Game
         PlayerInput(gameTime);
         
         _player.Update(gameTime); 
+        renderPlayer.Position = _player.ReturnPos();
         AnimationTimer.Update(gameTime);
         _camera.centerOn(_player); //Calls this after every update to keep player centered
         base.Update(gameTime);
@@ -102,17 +109,11 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        
         GraphicsDevice.Clear(Color.CornflowerBlue); 
         // TODO: Add your drawing code here
         _spriteBatch.Begin(transformMatrix: _camera.Transform);
-        //Vector2 halfSize = new Vector2(0.5f, 0.5f); //Can use this cut the player size in half
-        Vector2 playerSize = Vector2.One;
-        Vector2 massiveSize = new Vector2(10, 10);
-        AnimationTimer.Update(gameTime);
-        _spriteBatch.Draw(_testingBackGround, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, massiveSize,
-            SpriteEffects.None, 1f);
-        _spriteBatch.Draw(_playerModel, _player.ReturnPos(), renderPlayer.Source, Color.White, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 1f);
+        renderTempBackground.Draw(_spriteBatch);
+        renderPlayer.Draw(_spriteBatch);
         //Should render object replace _spriteBatch?
         _spriteBatch.End();
         base.Draw(gameTime);

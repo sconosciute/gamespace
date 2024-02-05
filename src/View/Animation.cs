@@ -7,6 +7,7 @@ public class Animation
 {
         private int _firstFrameOfAnimation;
         private int _lastFrameOfAnimation;
+        
         private float _max;
     
         public int currentFrame { private set; get; }
