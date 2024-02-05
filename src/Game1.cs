@@ -78,11 +78,12 @@ public class Game1 : Game
     {
         //TODO: Add entity, bgProp, fgProp lists to initialize into.
         //TODO: initialize the player into it's own super special variable.
+        World world = new World(200, 200);
         ScreenHeight = _graphics.PreferredBackBufferHeight; //Gets the height of the screen
         ScreenWidth = _graphics.PreferredBackBufferWidth;   //Gets the width of the screen
         AnimationTimer = new Animation();
         _player = new Player("Player32", "Rogue", 1, _renderPlayer, 0, 0, 32, 32, true,
-            true, 100, 100, 100, 100, 10);
+            true, 100, 100, 100, 100, 10, world);
         
         ScreenWidth = _graphics.PreferredBackBufferWidth; //Gets the width of the screen
         base.Initialize();
