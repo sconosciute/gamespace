@@ -61,12 +61,20 @@ public class World
     /// <exception cref="ArgumentOutOfRangeException">Raise exception if out of bounds.</exception>
     private void CheckBounds(int x, int y)
     {
-        if (x < _minX || x > _maxX || y < _minY || y > _maxY)
+        if (!IsInBounds(x, y))
         {
             throw new ArgumentOutOfRangeException(
                 $"({x}, {y}) is out of range ({_minX}..{_maxX}, {_minY}..{_maxY})");
         }
     }
+
+    /// <summary>
+    /// Checks if a given World coordinate is within the world bounds.
+    /// </summary>
+    /// <param name="x">World X coordinate</param>
+    /// <param name="y">World Y Coordinate</param>
+    /// <returns>True if the tile exists within the world boundary else false.</returns>
+    public bool IsInBounds(int x, int y) => (x > _minX && x < _maxX && y > _minY && y < _maxY);
 
     /// <summary>
     /// Places a tile at the given coordinate if and only if there is no tile present already.
