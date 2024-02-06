@@ -20,8 +20,10 @@ public class Camera
     
     public void centerOn(Player target)
     {
-        Matrix baseTransform = Matrix.CreateTranslation(-target.X - (target.Width / 2),
-            -target.Y - (target.Height / 2), 0);
+        var x = target.WorldCoordinate.X;
+        var y = target.WorldCoordinate.Y;
+        Matrix baseTransform = Matrix.CreateTranslation(-x - (target.Width / 2),
+            -y - (target.Height / 2), 0);
         Matrix adjustScreenOffSet = Matrix.CreateTranslation(Game1.ScreenWidth / 2, Game1.ScreenHeight / 2, 0);
         Transform = baseTransform * adjustScreenOffSet;
     }
