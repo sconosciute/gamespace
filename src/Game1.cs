@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Schema;
+using gamespace.Managers;
 using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -86,14 +87,8 @@ public class Game1 : Game
     protected override void Update(GameTime gameTime)
     {
         //TODO: Make work with fixed update step
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
-        
-        PlayerInput(gameTime);
-        
-        AnimationTimer.Update(gameTime);
-        _camera.centerOn(_player); //Calls this after every update to keep player centered
+        InputManager.Update();
+        _camera.centerOn(_player);
         base.Update(gameTime);
     }
 
@@ -103,10 +98,5 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
         
         base.Draw(gameTime);
-    }
-
-    private void PlayerInput(GameTime gameTime)
-    {
-        //TODO: Rework system to fire events that Player listens for to move.
     }
 }
