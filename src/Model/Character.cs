@@ -1,27 +1,24 @@
 ﻿using System.Collections.Generic;
 using gamespace.View;
+using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
 public abstract class Character : Entity
 {
-    private int _hp; 
+    private int _hp;
     private int _maxHp;
     private int _energy;
     private int _maxEnergy;
     private int _baseDmg;
     private List<Ability> _abilities;
-    
-    public Character(int moveSpeed, RenderObject sprite, int x, int y, int width, int height, bool hasCollision,
-        bool hasMovement, int hp, int maxHp, int energy, int maxEnergy, int baseDmg, World world) : 
-        base(moveSpeed, sprite, x, y, width, height,hasCollision, world)
+
+    public Character(Vector2 worldCoordinate, int width, int height, int hp, int energy, int baseDmg, World world) :
+        base(width, height, world, worldCoordinate)
     {
-        _hp = hp;
-        _maxHp = maxHp;
-        _energy = energy;
-        _maxEnergy = maxEnergy;
+        _hp = _maxHp = hp;
+        _energy = _maxEnergy = energy;
         _baseDmg = baseDmg;
-        //TODO: Simplify constructor and initialize with defaults.
     }
 
     public void Harm(int dmg)

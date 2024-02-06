@@ -5,16 +5,12 @@ namespace gamespace.Model;
 
 public class Prop : PhysicsObj
 {
-    private RenderObject _sprite;
-
-    Prop(int moveSpeed, RenderObject sprite, int x, int y, int width, int height, bool hasCollision,
-        bool hasMovement) : base(x, y, width, height, hasCollision, false, false, 0f)
+    Prop(Vector2 worldCoordinate, int width, int height) : base(width, height, false, false, worldCoordinate)
     {
-        _sprite = sprite;
     }
 
-    public override void Update(GameTime gameTime)
+    public override void FixedUpdate()
     {
-        throw new System.NotImplementedException();
+        //TODO: Does Prop ever need to actually update?
     }
 }
