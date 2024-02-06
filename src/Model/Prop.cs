@@ -5,7 +5,7 @@ namespace gamespace.Model;
 
 public class Prop : PhysicsObj
 {
-    Prop(Vector2 worldCoordinate, int width, int height) : base(width, height, false, false, worldCoordinate)
+    Prop(Vector2 worldCoordinate, int width, int height) : base(worldCoordinate, width, height, false, false)
     {
     }
 
