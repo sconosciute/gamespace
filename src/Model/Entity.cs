@@ -1,5 +1,4 @@
 ﻿using System;
-using gamespace.View;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace gamespace.Model;
@@ -8,9 +7,18 @@ public abstract class Entity : PhysicsObj
 {
     private const float DefaultEntSpeed = 0.1f;
 
-    private World _world;
+    private readonly World _world;
     private float _baseMoveSpeed = DefaultEntSpeed;
     private Vector2 _moveSpeed;
+
+    public delegate void EntityEventHandler(Entity sender, EntityEventArgs args);
+
+    public event EntityEventHandler EntityEvent;
+
+    protected virtual void RaiseEntityEvent(EntityEventArgs args)
+    {
+        EntityEvent?.Invoke(this, args);
+    }
 
     /// <summary>
     /// The 0-2 fraction of a tile this entity can move in one update.
@@ -36,14 +44,13 @@ public abstract class Entity : PhysicsObj
 
     public override void FixedUpdate()
     {
-        var x = WorldCoordinate.X;
-        var y = WorldCoordinate.Y;
-        var newPos = new Vector2(x + MoveSpeed.X, y + MoveSpeed.Y);
+        var oldPos = WorldCoordinate;
+        var newPos = new Vector2(oldPos.X + MoveSpeed.X, oldPos.Y + MoveSpeed.Y);
 
-        var bbx1 = (int)Math.Min(newPos.X, x);
-        var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, x));
-        var bby1 = (int)Math.Min(newPos.Y, y);
-        var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, y));
+        var bbx1 = (int)Math.Min(newPos.X, oldPos.X);
+        var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, oldPos.X));
+        var bby1 = (int)Math.Min(newPos.Y, oldPos.Y);
+        var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, oldPos.Y));
 
         Tile checkTile;
         for (int worldX = bbx1; worldX <= bbx2; worldX++)
@@ -60,7 +67,16 @@ public abstract class Entity : PhysicsObj
             }
         }
 
-        WorldCoordinate = new Vector2(x + _moveSpeed.X, y + _moveSpeed.Y);
+        WorldCoordinate = new Vector2(oldPos.X + _moveSpeed.X, oldPos.Y + _moveSpeed.Y);
+        
+        if (oldPos == newPos) return;
+        var args = new EntityEventArgs()
+        {
+            Type = EntityEventType.Moved,
+            NewPosition = WorldCoordinate,
+            OldPosition = oldPos
+        };
+        RaiseEntityEvent(args);
 
     }
 
@@ -84,4 +100,27 @@ public abstract class Entity : PhysicsObj
             _moveSpeed.Y = _moveSpeed.Y > (colVector.Y - bbHeight / 2f) ? colVector.Y : _moveSpeed.Y;
         }
     }
+}
+
+public class EntityEventArgs
+{
+    /// <summary>
+    /// The type/topic of this event.
+    /// </summary>
+    public EntityEventType Type { get; init; }
+    
+    /// <summary>
+    /// The previous position of this Entity.
+    /// </summary>
+    public Vector2 OldPosition { get; init; }
+    
+    /// <summary>
+    /// The new position of this Entity.
+    /// </summary>
+    public Vector2 NewPosition { get; init; }
+}
+
+public enum EntityEventType
+{
+    Moved
 }
