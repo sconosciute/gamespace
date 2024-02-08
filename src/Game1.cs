@@ -77,7 +77,8 @@ public class Game1 : Game
         //TODO: Load content inside render object.
         
         
-        _camera = new Camera();
+        _camera = new Camera(_player.EntityId);
+        _player.EntityEvent += _camera.HandleEntityEvent;
     }
 
     protected override void Update(GameTime gameTime)
@@ -92,6 +93,7 @@ public class Game1 : Game
     {
         //TODO: Move render code into renderObject, just call draw method on entity and prop lists.
         GraphicsDevice.Clear(Color.CornflowerBlue);
+        Globals.SpriteBatch.Begin(transformMatrix: _camera.Translation);
         
         base.Draw(gameTime);
     }

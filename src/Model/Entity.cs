@@ -11,13 +11,13 @@ public abstract class Entity : PhysicsObj
     private float _baseMoveSpeed = DefaultEntSpeed;
     private Vector2 _moveSpeed;
 
-    public delegate void EntityEventHandler(Entity sender, EntityEventArgs args);
+    public delegate void EntityEventHandler(Guid sender, EntityEventArgs args);
 
     public event EntityEventHandler EntityEvent;
 
-    protected virtual void RaiseEntityEvent(EntityEventArgs args)
+    protected virtual void OnEntityEvent(EntityEventArgs args)
     {
-        EntityEvent?.Invoke(this, args);
+        EntityEvent?.Invoke(EntityId, args);
     }
 
     /// <summary>
@@ -30,6 +30,8 @@ public abstract class Entity : PhysicsObj
         protected set => _baseMoveSpeed = Math.Clamp(value, 0f, 2f);
     }
 
+    public Guid EntityId { get; init; }
+
     protected Vector2 MoveSpeed
     {
         get => _moveSpeed;
@@ -40,6 +42,7 @@ public abstract class Entity : PhysicsObj
     {
         _world = world;
         MoveSpeed = Vector2.Zero;
+        EntityId = new Guid();
     }
 
     public override void FixedUpdate()
@@ -76,7 +79,7 @@ public abstract class Entity : PhysicsObj
             NewPosition = WorldCoordinate,
             OldPosition = oldPos
         };
-        RaiseEntityEvent(args);
+        OnEntityEvent(args);
 
     }
 
