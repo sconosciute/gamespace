@@ -16,6 +16,7 @@ public class Game1 : Game
 
     private Camera _camera;
     private Player _player;
+    private World _world;
 
     public Game1()
     {

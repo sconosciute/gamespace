@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using gamespace.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,7 +20,8 @@ public class RenderObject
     private Rectangle _source;
 
     private Vector2 _position;
-    
+
+    private Entity _entitytest;
 
     public Rectangle Source
     {
