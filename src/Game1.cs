@@ -52,6 +52,9 @@ public class Game1 : Game
         _graphics.ApplyChanges(); //Applies correct resolution and full screens
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+
+        var screenSize = new Vector2(adapter.CurrentDisplayMode.Width, adapter.CurrentDisplayMode.Height);
+        Globals.WindowSize = screenSize;
     }
 
     protected override void Initialize()

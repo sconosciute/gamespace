@@ -27,4 +27,12 @@ public class Camera
         Matrix adjustScreenOffSet = Matrix.CreateTranslation(Game1.ScreenWidth / 2, Game1.ScreenHeight / 2, 0);
         Transform = baseTransform * adjustScreenOffSet;
     }
+    
+    
+    
+    // var dx = (Globals.WindowSize.X / 2) - _hero.Position.X;
+    // dx = MathHelper.Clamp(dx, -_map.MapSize.X + Globals.WindowSize.X + (_map.TileSize.X / 2), _map.TileSize.X / 2);
+    // var dy = (Globals.WindowSize.Y / 2) - _hero.Position.Y;
+    // dy = MathHelper.Clamp(dy, -_map.MapSize.Y + Globals.WindowSize.Y + (_map.TileSize.Y / 2), _map.TileSize.Y / 2);
+    // _translation = Matrix.CreateTranslation(dx, dy, 0f);
 }
