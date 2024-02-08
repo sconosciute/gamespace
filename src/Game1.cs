@@ -1,4 +1,5 @@
-﻿using gamespace.Managers;
+﻿using System.Collections.Generic;
+using gamespace.Managers;
 using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -17,6 +18,8 @@ public class Game1 : Game
     private Camera _camera;
     private Player _player;
     private World _world;
+
+    private List<RenderObject> _renderObjects;
 
     public Game1()
     {

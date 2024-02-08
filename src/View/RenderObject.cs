@@ -21,6 +21,7 @@ public class RenderObject
 
     private Vector2 _position;
 
+    //TODO: subscribe to event handler - might need to be moved to Game1
     private Guid _renderID;
 
     public Rectangle Source
@@ -70,6 +71,8 @@ public class RenderObject
     }
     public void Draw(SpriteBatch spriteBatch)
     {
+        spriteBatch.Begin();
         spriteBatch.Draw(_spriteSheet, _position, _source, DEFAULT_COLOR, 0f, Vector2.Zero, DEFAULT_SCALE, SpriteEffects.None, 0);
+        spriteBatch.End();
     }
 }
