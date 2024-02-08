@@ -21,7 +21,7 @@ public class RenderObject
 
     private Vector2 _position;
 
-    private Entity _entitytest;
+    private Guid _renderID;
 
     public Rectangle Source
     {
