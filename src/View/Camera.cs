@@ -24,7 +24,7 @@ public class Camera
     public void HandleEntityEvent(Guid sender, EntityEventArgs args)
     {
         if (sender != _playerId) return;
-        if (args.Type != EntityEventType.Moved) return;
+        if (args.EventTopic != EntityEventType.Moved) return;
         UpdateTranslationMatrix(args.NewPosition);
     }
 

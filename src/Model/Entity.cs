@@ -75,7 +75,7 @@ public abstract class Entity : PhysicsObj
         if (oldPos == newPos) return;
         var args = new EntityEventArgs()
         {
-            Type = EntityEventType.Moved,
+            EventTopic = EntityEventType.Moved,
             NewPosition = WorldCoordinate,
             OldPosition = oldPos
         };
@@ -110,7 +110,7 @@ public class EntityEventArgs
     /// <summary>
     /// The type/topic of this event.
     /// </summary>
-    public EntityEventType Type { get; init; }
+    public EntityEventType EventTopic { get; init; }
     
     /// <summary>
     /// The previous position of this Entity.
