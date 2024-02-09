@@ -7,16 +7,16 @@ namespace gamespace.View;
 
 public class RenderObject
 {
-    private Texture2D _texture;
+    private readonly Texture2D _texture;
 
-    private Guid _entityID;
+    private readonly Guid _entityId;
 
     private Vector2 _position;
 
     public RenderObject(Texture2D texture, Vector2 position, Guid entityId)
     {
         _texture = texture;
-        _entityID = entityId;
+        _entityId = entityId;
         _position = position;
     }
     
@@ -27,7 +27,7 @@ public class RenderObject
     
     public void HandleEntityEvent(Guid sender, EntityEventArgs args)
     {
-        if (sender != _entityID) return;
+        if (sender != _entityId) return;
         if (args.EventTopic.Equals(EntityEventType.Moved))
         {
             _position = args.NewPosition;
