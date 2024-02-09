@@ -1,5 +1,6 @@
 ﻿using System;
 using Loyc.Collections;
+using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
@@ -79,19 +80,18 @@ public class World
     /// <summary>
     /// Places a tile at the given coordinate if and only if there is no tile present already.
     /// </summary>
-    /// <param name="x">x coordinate</param>
-    /// <param name="y">y coordinate</param>
+    /// <param name="position">x and y world coordinate.</param>
     /// <param name="tile">tile object to place at coordinate.</param>
     /// <returns>True if placed, else False.</returns>
-    public bool TryPlaceTile(int x, int y, Tile tile)
+    public bool TryPlaceTile(Point position, Tile tile)
     {
-        CheckBounds(x, y);
-        if (this[x, y] != null)
+        CheckBounds(position.X, position.Y);
+        if (this[position.X, position.Y] != null)
         {
             return false;
         }
 
-        this[x, y] = tile;
+        this[position.X, position.Y] = tile;
         return true;
     }
 }
