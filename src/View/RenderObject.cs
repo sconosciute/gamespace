@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using gamespace.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,71 +7,30 @@ namespace gamespace.View;
 
 public class RenderObject
 {
-    private static readonly Color DEFAULT_COLOR = Color.White;
-    private static readonly Vector2 DEFAULT_SCALE = Vector2.One;
-    
-    private Texture2D _spriteSheet;
+    private Texture2D _texture;
 
-    private int _framesPerRow;
-    
-    private int _framesPerCol;
-
-    private Rectangle _source;
+    private Guid _entityID;
 
     private Vector2 _position;
 
-    //TODO: subscribe to event handler - might need to be moved to Game1
-    private Guid _renderID;
-
-    public Rectangle Source
+    public RenderObject(Texture2D texture, Vector2 position, Guid entityId)
     {
-        get => _source;
-    }
-    public Vector2 Position
-    {
-        get => _position;
-        set
-        {
-            _position = value;
-        }
-        
+        _texture = texture;
+        _entityID = entityId;
+        _position = position;
     }
     
-    //https://community.monogame.net/t/spritebatch-draw-animation/16297/4
-    public RenderObject(Texture2D spriteSheet, Vector2 position, int framesPerRow, int framesPerCol)
+    public void Draw()
     {
-        _spriteSheet = spriteSheet;
-        _framesPerRow = framesPerRow;
-        _framesPerCol = framesPerCol;
-        _position = position;
-        _source = new Rectangle((int)position.X, (int)position.Y, Width(), Height()); //Sets initial to top right for now, will change on sprite sheets. 
-        //TODO: Implement centering for background.
+        Globals.SpriteBatch.Draw(_texture, _position, Color.White);
     }
-    public int Column(int currentFrame)
+    
+    public void HandleEntityEvent(Guid sender, EntityEventArgs args)
     {
-        return currentFrame % _framesPerRow;
-    }
-    public int Row(int currentFrame)
-    {
-        return currentFrame / _framesPerRow;
-    }
-    public int Width()
-    { return _spriteSheet.Width / _framesPerCol; }
-    public int Height()
-    { return _spriteSheet.Height / _framesPerRow; }
-    public Rectangle SourceRectangle(int currentFrame)
-    {
-        int frameWidth = Width();
-        int frameHeight = Height();
-        int column = Column(currentFrame) * frameWidth;
-        int row = Row(currentFrame) * frameHeight;
-        _source = new Rectangle(column, row, frameWidth, frameHeight);
-        return _source;
-    }
-    public void Draw(SpriteBatch spriteBatch)
-    {
-        spriteBatch.Begin();
-        spriteBatch.Draw(_spriteSheet, _position, _source, DEFAULT_COLOR, 0f, Vector2.Zero, DEFAULT_SCALE, SpriteEffects.None, 0);
-        spriteBatch.End();
+        if (sender != _entityID) return;
+        if (args.EventTopic.Equals(EntityEventType.Moved))
+        {
+            _position = args.NewPosition;
+        }
     }
 }

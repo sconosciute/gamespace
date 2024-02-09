@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using gamespace.Managers;
 using gamespace.Model;
 using gamespace.View;
@@ -18,6 +19,8 @@ public class Game1 : Game
     private Camera _camera;
     private Player _player;
     private World _world;
+
+    private RenderObject _playerRender;
 
     private List<RenderObject> _renderObjects;
 
@@ -54,8 +57,26 @@ public class Game1 : Game
     protected override void Initialize()
     {
         //TODO: Add entity, bgProp, fgProp lists to initialize into or determine to add to world lists.
-        World world = new World(50, 50);
+        Globals.SpriteBatch = new SpriteBatch(GraphicsDevice);
+        World world = new World(51, 51);
         _player = new Player("Player", world);
+        var tileTexture = Content.Load<Texture2D>("tile");
+        var playerTexture = Content.Load<Texture2D>("playerCircle32");
+        var dummy = new Guid();
+        _playerRender = new RenderObject(playerTexture, _player.WorldCoordinate, _player.EntityId);
+        _renderObjects = new List<RenderObject>();
+        
+        for (int x = -25; x <= 25; x++)
+        {
+            for (int y = -25; y <= 25; y++)
+            {
+                var position = new Vector2(x, y);
+                var prop = new Prop(position, 1, 1);
+                Tile tile = new Tile(prop);
+                _renderObjects.Add(new RenderObject(tileTexture, position, dummy));
+            }
+        }
+        
         base.Initialize();
     }
 
@@ -77,8 +98,13 @@ public class Game1 : Game
     {
         //TODO: Move render code into renderObject, just call draw method on entity and prop lists.
         GraphicsDevice.Clear(Color.CornflowerBlue);
-        Globals.SpriteBatch.Begin(transformMatrix: _camera.Translation);
-
+        Globals.SpriteBatch.Begin();
+        foreach (RenderObject renderObject in _renderObjects)
+        {
+            renderObject.Draw();
+        }
+        _playerRender.Draw();
+        Globals.SpriteBatch.End();
         base.Draw(gameTime);
     }
 }
