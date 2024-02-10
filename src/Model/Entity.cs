@@ -42,7 +42,7 @@ public abstract class Entity : PhysicsObj
     {
         _world = world;
         MoveSpeed = Vector2.Zero;
-        EntityId = new Guid();
+        EntityId = Guid.NewGuid();
     }
 
     public override void FixedUpdate()
@@ -63,7 +63,7 @@ public abstract class Entity : PhysicsObj
             {
                 if (!_world.IsInBounds(0, worldY)) continue;
                 checkTile = _world[worldX, worldY];
-                if (checkTile.CanCollide)
+                if (checkTile is { CanCollide: true })
                 {
                     CheckCollision(checkTile.Prop);
                 }
