@@ -2,6 +2,7 @@
 using gamespace.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 
 namespace gamespace.View;
 
@@ -13,11 +14,11 @@ public class RenderObject
 
     private Vector2 _position;
 
-    public RenderObject(Texture2D texture, Vector2 position, Guid entityId)
+    public RenderObject(Texture2D texture, Vector2 worldPosition, Guid entityId)
     {
         _texture = texture;
         _entityId = entityId;
-        _position = position;
+        _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
     }
     
     public void Draw()
@@ -31,6 +32,9 @@ public class RenderObject
         if (args.EventTopic.Equals(EntityEventType.Moved))
         {
             _position = args.NewPosition;
+            _position.X *= Globals.TileSize;
+            _position.Y *= Globals.TileSize;
+            Console.Out.WriteLine($"Updated player position to {args.NewPosition}");
         }
     }
 }

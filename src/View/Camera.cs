@@ -19,6 +19,7 @@ public class Camera
     public Camera(Guid playerId)
     {
         _playerId = playerId;
+        UpdateTranslationMatrix(Vector2.Zero);
     }
 
     public void HandleEntityEvent(Guid sender, EntityEventArgs args)
@@ -30,9 +31,11 @@ public class Camera
 
     private void UpdateTranslationMatrix(Vector2 position)
     {
-        var dx = (Globals.WindowSize.X / 2) + (position.X * Globals.TileSize);
-        var dy = (Globals.WindowSize.Y / 2) + (position.Y * 16);
+        var dx = (Globals.WindowSize.X / 2) - (position.X * Globals.TileSize);
+        var dy = (Globals.WindowSize.Y / 2) - (position.Y * Globals.TileSize);
 
-        Translation = Matrix.CreateTranslation(dx, dy, 0);
+        var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
+        Translation = newTranslation;
+        Console.Out.WriteLine($"Updated Translation to \n{Translation}");
     }
 }
