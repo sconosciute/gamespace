@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text.Json;
 using gamespace.Managers;
 using gamespace.Model;
@@ -13,32 +11,23 @@ namespace gamespace;
 
 public class Game1 : Game
 {
-    private int DefaultResolutionWidth;
-    private int DefaultResolutionHeight;
-
-    private bool IsFullScreen;
-    private bool DynamicResolution;
-
     private Camera _camera;
     private Player _player;
     private World _world;
-    private int _updateTimeDelta = (1000 / 30);
+    private const int UpdateTimeDelta = (1000 / 30);
     private double _lastUpTime;
-    private double _frameTimeAccumulator;
 
     private RenderObject _playerRender;
-
-    private List<RenderObject> _renderObjects;
 
     public Game1()
     {
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = new GraphicsDeviceManager(this);
-        GraphicsAdapter adapter = new GraphicsAdapter();
+        var adapter = new GraphicsAdapter();
         
-        String fileName = "launchConfig.json";
-        string path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
-        launchSettings? settings = loadSettings(path);
+        const string fileName = "launchConfig.json";
+        var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
+        var settings = LoadSettings(path);
         if (settings.IsDynamic)
         {
             graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
@@ -71,7 +60,6 @@ public class Game1 : Game
         var playerTexture = Content.Load<Texture2D>("playerCircle32");
         _playerRender = new RenderObject(playerTexture, _player.WorldCoordinate, _player.EntityId);
         _player.EntityEvent += _playerRender.HandleEntityEvent;
-        _renderObjects = new List<RenderObject>();
         
         base.Initialize();
     }
@@ -95,9 +83,10 @@ public class Game1 : Game
         var now = gameTime.TotalGameTime.TotalMilliseconds;
         InputManager.Update();
 
-        if (_lastUpTime == 0 || now - _lastUpTime >= _updateTimeDelta)
+        if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
             _player.FixedUpdate();
+            _lastUpTime = now;
         }
         
         base.Update(gameTime);
@@ -109,18 +98,14 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
         Globals.SpriteBatch.Begin(transformMatrix: _camera.Translation);
         _world.DebugDrawMap();
-        foreach (RenderObject renderObject in _renderObjects)
-        {
-            renderObject.Draw();
-        }
         _playerRender.Draw();
         Globals.SpriteBatch.End();
         base.Draw(gameTime);
     }
-    private launchSettings loadSettings(string path)
+    private static launchSettings LoadSettings(string path)
     {
-        string jsonString = File.ReadAllText(path);
-        launchSettings settings = JsonSerializer.Deserialize<launchSettings>(jsonString)!;
+        var jsonString = File.ReadAllText(path);
+        var settings = JsonSerializer.Deserialize<launchSettings>(jsonString)!;
         return settings;
     }
 }
