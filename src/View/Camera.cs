@@ -1,6 +1,7 @@
 ﻿using System;
 using gamespace.Model;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.View;
 
@@ -9,6 +10,12 @@ namespace gamespace.View;
 /// </summary>
 public class Camera
 {
+    //16:9 Widescreen resolution suitable for 16px tile sizes.
+    private const int VResWidth = 640;
+    private const int VResHeight = 360;
+
+    private readonly RenderTarget2D _target;
+    private readonly GraphicsDevice _gfx;
     private readonly Guid _playerId;
 
     /// <summary>
