@@ -1,12 +1,9 @@
-﻿using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace gamespace.Managers;
 
-public class launchSettings
+public class LaunchSettings
 {
-    //[JsonProperty("DefaultResWidth")]
     [JsonPropertyName("DefaultResWidth")]
     public int DefaultResWidth { get; set; }
     [JsonPropertyName("DefaultResHeight")]

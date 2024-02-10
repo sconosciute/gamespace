@@ -99,12 +99,12 @@ public class Game1 : Game
         Globals.SpriteBatch.End();
         base.Draw(gameTime);
     }
-    private static launchSettings LoadSettings(string path)
+    private static LaunchSettings LoadSettings(string path)
     {
         try
         {
             var jsonString = File.ReadAllText(path);
-            var settings = JsonSerializer.Deserialize<launchSettings>(jsonString)!;
+            var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString)!;
             return settings;
         }
         catch (DirectoryNotFoundException)

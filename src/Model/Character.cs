@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using gamespace.View;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
