@@ -28,24 +28,21 @@ public class Game1 : Game
         const string fileName = "launchConfig.json";
         var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
         var settings = LoadSettings(path);
-        if (settings.IsDynamic)
+        if (settings != null)
         {
-            graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
-            graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
-        }
-        else
-        {
-            graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
-            graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
-        }
+            if (settings.IsDynamic)
+            {
+                graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
+                graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
+                graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
+            }
 
-        graphics.IsFullScreen = settings.IsFullScreened;
-        //Console.Write(settings.IsDynamic);
-        //Console.Write(settings.IsFullScreened);
-        //Console.Write(settings.DefaultResWidth);
-        //Console.WriteLine($"Date: {settings?.DefaultResWidth}");
-        //Console.Write(settings.DefaultResHeight);
-        Console.Write(Path.Combine(AppDomain.CurrentDomain.BaseDirectory + path));
+            graphics.IsFullScreen = settings.IsFullScreened;
+        }
         graphics.ApplyChanges();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
@@ -104,8 +101,15 @@ public class Game1 : Game
     }
     private static launchSettings LoadSettings(string path)
     {
-        var jsonString = File.ReadAllText(path);
-        var settings = JsonSerializer.Deserialize<launchSettings>(jsonString)!;
-        return settings;
+        try
+        {
+            var jsonString = File.ReadAllText(path);
+            var settings = JsonSerializer.Deserialize<launchSettings>(jsonString)!;
+            return settings;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return null;
+        }
     }
 }
