@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text.Json;
 using gamespace.Managers;
 using gamespace.Model;
 using gamespace.View;
@@ -10,11 +13,11 @@ namespace gamespace;
 
 public class Game1 : Game
 {
-    private const int DefaultResolutionWidth = 1280;
-    private const int DefaultResolutionHeight = 1024;
+    private int DefaultResolutionWidth;
+    private int DefaultResolutionHeight;
 
-    private const bool IsFullScreen = false;
-    private const bool DynamicResolution = false;
+    private bool IsFullScreen;
+    private bool DynamicResolution;
 
     private Camera _camera;
     private Player _player;
@@ -29,23 +32,28 @@ public class Game1 : Game
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = new GraphicsDeviceManager(this);
         GraphicsAdapter adapter = new GraphicsAdapter();
-
-        if (DynamicResolution)
+        
+        String fileName = "launchConfig.json";
+        string path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
+        launchSettings? settings = loadSettings(path);
+        if (settings.IsDynamic)
         {
             graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
             graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
         }
         else
         {
-            graphics.PreferredBackBufferWidth = DefaultResolutionWidth;
-            graphics.PreferredBackBufferHeight = DefaultResolutionHeight;
+            graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
+            graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
         }
 
-        if (IsFullScreen)
-        {
-            graphics.IsFullScreen = IsFullScreen;
-        }
-
+        graphics.IsFullScreen = settings.IsFullScreened;
+        //Console.Write(settings.IsDynamic);
+        //Console.Write(settings.IsFullScreened);
+        //Console.Write(settings.DefaultResWidth);
+        //Console.WriteLine($"Date: {settings?.DefaultResWidth}");
+        //Console.Write(settings.DefaultResHeight);
+        Console.Write(Path.Combine(AppDomain.CurrentDomain.BaseDirectory + path));
         graphics.ApplyChanges();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
@@ -106,5 +114,11 @@ public class Game1 : Game
         _playerRender.Draw();
         Globals.SpriteBatch.End();
         base.Draw(gameTime);
+    }
+    private launchSettings loadSettings(string path)
+    {
+        string jsonString = File.ReadAllText(path);
+        launchSettings settings = JsonSerializer.Deserialize<launchSettings>(jsonString)!;
+        return settings;
     }
 }
