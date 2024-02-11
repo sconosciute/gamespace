@@ -23,8 +23,16 @@ public class Camera
     /// </summary>
     public Matrix Translation { get; private set; }
 
-    public Camera(Guid playerId)
+    /// <summary>
+    /// Initiates a new fixed resolution camera that tracks the Player.
+    /// </summary>
+    /// <param name="playerId">Entity ID of player to follow.</param>
+    /// <param name="graphicsDevice">The backend graphics device.</param>
+    /// <param name="resolution">Point representing target resolution (width, height).</param>
+    public Camera(Guid playerId, GraphicsDevice graphicsDevice, Point resolution)
     {
+        _gfx = graphicsDevice;
+        _target = new RenderTarget2D(_gfx, resolution.X, resolution.Y);
         _playerId = playerId;
         UpdateTranslationMatrix(Vector2.Zero);
     }
@@ -35,6 +43,8 @@ public class Camera
         if (args.EventTopic != EntityEventType.Moved) return;
         UpdateTranslationMatrix(args.NewPosition);
     }
+    
+    
 
     private void UpdateTranslationMatrix(Vector2 position)
     {
@@ -44,5 +54,14 @@ public class Camera
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
         Console.Out.WriteLine($"Updated Translation to \n{Translation}");
+    }
+
+    public void RenderFrame()
+    {
+        _gfx.SetRenderTarget(null);
+        _gfx.Clear(Color.Black);
+        
+        
+        Globals.SpriteBatch.Begin();
     }
 }

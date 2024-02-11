@@ -71,7 +71,7 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         //TODO: Load content inside render object.
-        _camera = new Camera(_player.EntityId);
+        _camera = new Camera(_player.EntityId, GraphicsDevice, new Point(640, 360));
         _player.EntityEvent += _camera.HandleEntityEvent;
     }
 
