@@ -2,8 +2,6 @@
 using System.IO;
 using System.Text.Json;
 using gamespace.Managers;
-using gamespace.Model;
-using gamespace.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,13 +9,10 @@ namespace gamespace;
 
 public class Game1 : Game
 {
-    private Camera _camera;
-    private Player _player;
-    private World _world;
     private const int UpdateTimeDelta = (1000 / 30);
     private double _lastUpTime;
+    private readonly GameManager _gm;
 
-    private RenderObject _playerRender;
 
     public Game1()
     {
@@ -44,35 +39,35 @@ public class Game1 : Game
             graphics.IsFullScreen = settings.IsFullScreened;
         }
         graphics.ApplyChanges();
+        
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+
+        _gm = new GameManager(this, graphics);
     }
 
     protected override void Initialize()
     {
         //TODO: Add entity, bgProp, fgProp lists to initialize into or determine to add to world lists.
         InitGlobals();
-        _world = new World(51, 51);
-        _player = new Player("Player", _world);
-        var playerTexture = Content.Load<Texture2D>("playerCircle32");
-        _playerRender = new RenderObject(playerTexture, _player.WorldCoordinate, _player.EntityId);
-        _player.EntityEvent += _playerRender.HandleEntityEvent;
         
         base.Initialize();
     }
 
     private void InitGlobals()
     {
+        
+        
         Globals.SpriteBatch = new SpriteBatch(GraphicsDevice);
         Globals.Content = Content;
-        Globals.WindowSize = new Vector2(1280, 1024);
+        Globals.WindowSize = new Vector2(640, 360);
     }
 
     protected override void LoadContent()
     {
-        //TODO: Load content inside render object.
-        _camera = new Camera(_player.EntityId, GraphicsDevice, new Point(640, 360));
-        _player.EntityEvent += _camera.HandleEntityEvent;
+        _gm.AddTexture(Content.Load<Texture2D>("playerCircle32"));
+        _gm.AddTexture(Content.Load<Texture2D>("tile"));
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -82,7 +77,7 @@ public class Game1 : Game
 
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
-            _player.FixedUpdate();
+            _gm.FixedUpdate();
             _lastUpTime = now;
         }
         
@@ -92,11 +87,6 @@ public class Game1 : Game
     protected override void Draw(GameTime gameTime)
     {
         //TODO: Move render code into renderObject, just call draw method on entity and prop lists.
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-        Globals.SpriteBatch.Begin(transformMatrix: _camera.Translation);
-        _world.DebugDrawMap();
-        _playerRender.Draw();
-        Globals.SpriteBatch.End();
         base.Draw(gameTime);
     }
     private static LaunchSettings LoadSettings(string path)
