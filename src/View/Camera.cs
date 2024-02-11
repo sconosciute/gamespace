@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace gamespace.View;
 
 /// <summary>
-/// The Camera handles translating world space to screen space for rendering.
+/// A resolution independent rendering system which builds a scaled viewport within the window frame and follows the specified player
 /// </summary>
 public class Camera
 {
@@ -16,6 +16,8 @@ public class Camera
 
     private readonly RenderTarget2D _target;
     private readonly GraphicsDevice _gfx;
+    private Rectangle _drawDestination;
+    
     private readonly Guid _playerId;
 
     /// <summary>
@@ -25,6 +27,8 @@ public class Camera
 
     /// <summary>
     /// Initiates a new fixed resolution camera that tracks the Player.
+    ///
+    /// The camera will control all rendering and drawing, use BeginFrame in place of SpriteBatch.Begin().
     /// </summary>
     /// <param name="playerId">Entity ID of player to follow.</param>
     /// <param name="graphicsDevice">The backend graphics device.</param>
@@ -34,34 +38,70 @@ public class Camera
         _gfx = graphicsDevice;
         _target = new RenderTarget2D(_gfx, resolution.X, resolution.Y);
         _playerId = playerId;
+
+        ScaleViewport();
         UpdateTranslationMatrix(Vector2.Zero);
     }
 
-    public void HandleEntityEvent(Guid sender, EntityEventArgs args)
+    /// <summary>
+    /// Begins drawing a new frame. This method will take control of Graphics RenderTarget.
+    /// </summary>
+    public void BeginFrame()
     {
-        if (sender != _playerId) return;
-        if (args.EventTopic != EntityEventType.Moved) return;
-        UpdateTranslationMatrix(args.NewPosition);
+        _gfx.SetRenderTarget(_target);
+        Globals.SpriteBatch.Begin(transformMatrix: Translation);
     }
-    
-    
+
+    private void ScaleViewport()
+    {
+        var screenSize = _gfx.PresentationParameters.Bounds;
+
+        var scaleX = (float)screenSize.Width / _target.Width;
+        var scaleY = (float)screenSize.Height / _target.Height;
+        var scale = Math.Min(scaleX, scaleY);
+
+        var newWidth = (int)Math.Truncate(_target.Width * scale);
+        var newHeight = (int)Math.Truncate(_target.Height * scale);
+        var left = (screenSize.Width - _target.Width) / 2;
+        var top = (screenSize.Height - _target.Height) / 2;
+
+        _drawDestination = new Rectangle(left, top, newWidth, newHeight);
+
+        _gfx.Viewport = new Viewport(_drawDestination);
+    }
 
     private void UpdateTranslationMatrix(Vector2 position)
     {
-        var dx = (Globals.WindowSize.X / 2) - (position.X * Globals.TileSize);
-        var dy = (Globals.WindowSize.Y / 2) - (position.Y * Globals.TileSize);
+        var dx = (_gfx.Viewport.X / 2f) - (position.X * Globals.TileSize);
+        var dy = (_gfx.Viewport.Y / 2f) - (position.Y * Globals.TileSize);
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
         Console.Out.WriteLine($"Updated Translation to \n{Translation}");
     }
 
+    /// <summary>
+    /// Renders the most recently drawn frame to the graphics device and releases the Graphics RenderTarget.
+    /// </summary>
     public void RenderFrame()
     {
         _gfx.SetRenderTarget(null);
         _gfx.Clear(Color.Black);
         
-        
         Globals.SpriteBatch.Begin();
+        Globals.SpriteBatch.Draw(_target, _drawDestination, Color.White);
+        Globals.SpriteBatch.End();
+    }
+
+    /// <summary>
+    /// Listens for Player position updates to update the Camera position.
+    /// </summary>
+    /// <param name="sender">The sending entity that you wish to track.</param>
+    /// <param name="args">Necessary information for this event.</param>
+    public void HandleEntityEvent(Guid sender, EntityEventArgs args)
+    {
+        if (sender != _playerId) return;
+        if (args.EventTopic != EntityEventType.Moved) return;
+        UpdateTranslationMatrix(args.NewPosition);
     }
 }
