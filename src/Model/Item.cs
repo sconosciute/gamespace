@@ -18,12 +18,6 @@ public class Item
     public delegate void ItemUsedCallback(); 
     
     //Properties
-    public String ItemName
-    {
-        get => _itemName;
-    }
-    public String ItemDescription
-    {
-        get => _itemDescription;
-    }
+    public String ItemName { get; }
+    public String ItemDescription { get; }
 }
