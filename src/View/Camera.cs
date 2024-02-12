@@ -97,13 +97,14 @@ public class Camera
         _drawDestination = new Rectangle(left, top, newWidth, newHeight);
         Console.Out.WriteLine($"Updated Viewport to {_drawDestination}");
 
-        // _gfx.Viewport = new Viewport(_drawDestination);
+        _gfx.Viewport = new Viewport(_drawDestination);
     }
 
     private void UpdateTranslationMatrix(Vector2 position)
     {
-        var dx = (_target.Bounds.X / 2f) - (position.X * Globals.TileSize);
-        var dy = (_target.Bounds.Y / 2f) - (position.Y * Globals.TileSize);
+        var halfPlayerSize = 16;
+        var dx = (_target.Width / 2f) - (position.X * Globals.TileSize + halfPlayerSize);
+        var dy = (_target.Height / 2f) - (position.Y * Globals.TileSize  + halfPlayerSize);
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
