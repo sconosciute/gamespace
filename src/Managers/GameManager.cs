@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -16,15 +15,13 @@ public class GameManager
     private const int VResHeight = 360;
 
     private readonly GraphicsDeviceManager _gfx;
-    private readonly Game _game;
     private readonly Camera _camera;
     private readonly Player _player;
     private readonly World _world;
     private readonly Dictionary<string, Texture2D> _textures = new();
 
-    public GameManager(Game game, GraphicsDeviceManager graphics)
+    public GameManager(GraphicsDeviceManager graphics)
     {
-        _game = game;
         _gfx = graphics;
         TempSetRes();
         _world = new World(WorldSize, WorldSize);

@@ -43,7 +43,7 @@ public class Game1 : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
-        _gm = new GameManager(this, graphics);
+        _gm = new GameManager(graphics);
     }
 
     protected override void Initialize()

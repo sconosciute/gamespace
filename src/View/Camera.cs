@@ -10,12 +10,7 @@ namespace gamespace.View;
 /// A resolution independent rendering system which builds a scaled viewport within the window frame and follows the specified player
 /// </summary>
 public class Camera
-{
-    //16:9 Widescreen resolution suitable for 16px tile sizes.
-    private const int VResWidth = 640;
-    private const int VResHeight = 360;
-
-    private readonly RenderTarget2D _target;
+{private readonly RenderTarget2D _target;
     private readonly GraphicsDevice _gfx;
     private Rectangle _drawDestination;
     
