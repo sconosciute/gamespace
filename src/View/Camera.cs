@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using gamespace.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +21,8 @@ public class Camera
     
     private readonly Guid _playerId;
 
+    private readonly List<RenderObject> _renderables = new();
+    
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
     /// </summary>
@@ -44,12 +47,41 @@ public class Camera
     }
 
     /// <summary>
+    /// Draw the current state of all render objects to a frame. May either render immediately upon completion or defer rendering and make a separate call to RenderFrame.
+    /// </summary>
+    /// <param name="renderNow">Render immediately upon completion if true, defaults to true.</param>
+    public void DrawFrame(bool renderNow = true)
+    {
+        BeginFrame();
+        foreach (var robj in _renderables)
+        {
+            robj.Draw();
+        }
+
+        if (renderNow)
+        {
+            RenderFrame();
+        }
+    }
+    
+    /// <summary>
     /// Begins drawing a new frame. This method will take control of Graphics RenderTarget.
     /// </summary>
     public void BeginFrame()
     {
         _gfx.SetRenderTarget(_target);
         Globals.SpriteBatch.Begin(transformMatrix: Translation);
+    }
+    
+    /// <summary>
+    /// Renders the most recently drawn frame to the graphics device and releases the Graphics RenderTarget.
+    /// </summary>
+    public void RenderFrame()
+    {
+        _gfx.SetRenderTarget(null);
+        _gfx.Clear(Color.Black);
+        Globals.SpriteBatch.Draw(_target, _drawDestination, Color.White);
+        Globals.SpriteBatch.End();
     }
 
     private void ScaleViewport()
@@ -81,16 +113,12 @@ public class Camera
     }
 
     /// <summary>
-    /// Renders the most recently drawn frame to the graphics device and releases the Graphics RenderTarget.
+    /// Register a RenderObject to be drawn by this camera.
     /// </summary>
-    public void RenderFrame()
+    /// <param name="renderObject">Object to draw on screen.</param>
+    public void RegisterRenderable(RenderObject renderObject)
     {
-        _gfx.SetRenderTarget(null);
-        _gfx.Clear(Color.Black);
-        
-        Globals.SpriteBatch.Begin();
-        Globals.SpriteBatch.Draw(_target, _drawDestination, Color.White);
-        Globals.SpriteBatch.End();
+        _renderables.Add(renderObject);
     }
 
     /// <summary>

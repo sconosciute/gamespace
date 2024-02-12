@@ -22,9 +22,4 @@ public static class Globals
     /// The global default SpriteBatch.
     /// </summary>
     public static SpriteBatch SpriteBatch { get; set; }
-    
-    /// <summary>
-    /// The current size of the display window.
-    /// </summary>
-    public static Vector2 WindowSize { get; set; }
 }

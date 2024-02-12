@@ -14,11 +14,21 @@ public class RenderObject
 
     private Vector2 _position;
 
-    public RenderObject(Texture2D texture, Vector2 worldPosition, Guid entityId)
+    private float _layerDepth;
+
+    /// <summary>
+    /// Generates a new RenderObject which will track an Entity for position updates.
+    /// </summary>
+    /// <param name="texture">The texture or complete Atlas to display.</param>
+    /// <param name="worldPosition">The world coordinate position of this renderable</param>
+    /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
+    /// <param name="layerDepth">The depth at which this texture should be drawn in scene <see cref="LayerDepth"/></param>
+    public RenderObject(Texture2D texture, Vector2 worldPosition, Guid entityId, float layerDepth)
     {
         _texture = texture;
         _entityId = entityId;
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
+        _layerDepth = layerDepth;
     }
     
     public void Draw()
@@ -37,4 +47,26 @@ public class RenderObject
             Console.Out.WriteLine($"Updated player position to {args.NewPosition}");
         }
     }
+}
+
+/// <summary>
+/// A helper to provide specific depths for SpriteBatch layers.
+/// </summary>
+public struct LayerDepth
+{
+    /// <summary>
+    /// Objects in the foreground will be drawn over everything else. Place Entities here.
+    /// </summary>
+    public const float Foreground = 0f;
+    
+    /// <summary>
+    /// Objects in the midground will be drawn between the other two layers. Props that render over the floor but under entities are best placed here.
+    /// </summary>
+    public const float Midground = 0.5f;
+    
+    /// <summary>
+    /// Objects in the background will be drawn underneath all other objects.
+    /// </summary>
+    public const float Background = 1f;
+
 }

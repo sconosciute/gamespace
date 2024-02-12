@@ -48,7 +48,6 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        //TODO: Add entity, bgProp, fgProp lists to initialize into or determine to add to world lists.
         InitGlobals();
         
         base.Initialize();
@@ -56,18 +55,17 @@ public class Game1 : Game
 
     private void InitGlobals()
     {
-        
-        
         Globals.SpriteBatch = new SpriteBatch(GraphicsDevice);
         Globals.Content = Content;
-        Globals.WindowSize = new Vector2(640, 360);
     }
 
     protected override void LoadContent()
     {
-        _gm.AddTexture(Content.Load<Texture2D>("playerCircle32"));
-        _gm.AddTexture(Content.Load<Texture2D>("tile"));
-
+        _gm.AddTexture(Content.Load<Texture2D>(Textures.Player));
+        
+        _gm.AddTexture(Content.Load<Texture2D>(Textures.TestTile));
+        
+        _gm.InitPlayerRender();
     }
 
     protected override void Update(GameTime gameTime)
@@ -86,7 +84,7 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        //TODO: Move render code into renderObject, just call draw method on entity and prop lists.
+        _gm.Draw();
         base.Draw(gameTime);
     }
     private static LaunchSettings LoadSettings(string path)
