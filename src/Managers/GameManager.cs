@@ -57,7 +57,6 @@ public class GameManager
         _camera.BeginFrame();
         _world.DebugDrawMap();
         _camera.DrawFrame();
-        _camera.RenderFrame();
     }
 
     public Texture2D GetTexture(string assetName)
