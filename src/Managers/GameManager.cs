@@ -30,12 +30,14 @@ public class GameManager
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfx.GraphicsDevice, new Point(VResWidth, VResHeight));
+
+        _player.EntityEvent += _camera.HandleEntityEvent;
     }
 
     private void TempSetRes()
     {
         _gfx.PreferredBackBufferWidth = 1920;
-        _gfx.PreferredBackBufferHeight = 1080;
+        _gfx.PreferredBackBufferHeight = 800;
         _gfx.ApplyChanges();
     }
 
@@ -44,6 +46,7 @@ public class GameManager
         var robj = new RenderObject(texture: GetTexture(Textures.Player), entityId: _player.EntityId,
             layerDepth: LayerDepth.Foreground, worldPosition: _player.WorldCoordinate);
         _camera.RegisterRenderable(robj);
+        _player.EntityEvent += robj.HandleEntityEvent;
     }
 
     /// <summary>
@@ -51,8 +54,9 @@ public class GameManager
     /// </summary>
     public void Draw()
     {
-        _camera.DrawFrame(false);
+        _camera.BeginFrame();
         _world.DebugDrawMap();
+        _camera.DrawFrame();
         _camera.RenderFrame();
     }
 

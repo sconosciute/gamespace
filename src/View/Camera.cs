@@ -52,7 +52,6 @@ public class Camera
     /// <param name="renderNow">Render immediately upon completion if true, defaults to true.</param>
     public void DrawFrame(bool renderNow = true)
     {
-        BeginFrame();
         foreach (var robj in _renderables)
         {
             robj.Draw();
@@ -78,13 +77,15 @@ public class Camera
     /// </summary>
     public void RenderFrame()
     {
+        Globals.SpriteBatch.End();
         _gfx.SetRenderTarget(null);
         _gfx.Clear(Color.Black);
+        Globals.SpriteBatch.Begin();
         Globals.SpriteBatch.Draw(_target, _drawDestination, Color.White);
         Globals.SpriteBatch.End();
     }
 
-    private void ScaleViewport()
+    public void ScaleViewport()
     {
         var screenSize = _gfx.PresentationParameters.Bounds;
 
@@ -94,18 +95,19 @@ public class Camera
 
         var newWidth = (int)Math.Truncate(_target.Width * scale);
         var newHeight = (int)Math.Truncate(_target.Height * scale);
-        var left = (screenSize.Width - _target.Width) / 2;
-        var top = (screenSize.Height - _target.Height) / 2;
+        var left = (screenSize.Width - newWidth) / 2;
+        var top = (screenSize.Height - newHeight) / 2;
 
         _drawDestination = new Rectangle(left, top, newWidth, newHeight);
+        Console.Out.WriteLine($"Updated Viewport to {_drawDestination}");
 
-        _gfx.Viewport = new Viewport(_drawDestination);
+        // _gfx.Viewport = new Viewport(_drawDestination);
     }
 
     private void UpdateTranslationMatrix(Vector2 position)
     {
-        var dx = (_gfx.Viewport.X / 2f) - (position.X * Globals.TileSize);
-        var dy = (_gfx.Viewport.Y / 2f) - (position.Y * Globals.TileSize);
+        var dx = (_target.Bounds.X / 2f) - (position.X * Globals.TileSize);
+        var dy = (_target.Bounds.Y / 2f) - (position.Y * Globals.TileSize);
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
