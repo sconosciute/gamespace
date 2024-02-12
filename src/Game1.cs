@@ -17,8 +17,6 @@ public class Game1 : Game
     private double _lastUpTime;
     private readonly GameManager _gm;
 
-    private RenderObject _playerRender;
-
     public Game1()
     {
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
