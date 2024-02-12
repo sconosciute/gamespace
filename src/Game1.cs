@@ -62,8 +62,8 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _gm.AddTexture(Content.Load<Texture2D>(Textures.Player));
-        
         _gm.AddTexture(Content.Load<Texture2D>(Textures.TestTile));
+        _gm.AddTexture(Content.Load<Texture2D>(Textures.TestBars));
         
         _gm.InitPlayerRender();
     }
