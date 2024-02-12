@@ -1,48 +1,40 @@
-﻿using System;
-using System.Diagnostics;
+﻿using gamespace.Managers;
 using gamespace.View;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace gamespace.Model;
 
-//Side note, we should probably follow a singleton principle with player either here or in main right?
-// like this? public static Player Instance = new Player(); ~ Logan
 public class Player : Character
 {
+    private const int InventorySize = 5;
+    
     private string _name;
-    private string _playerClass;
-
-    public Player(string name, string playerClass, int moveSpeed, RenderObject sprite, int x, int y, int width,
-        int height, bool hasCollision, bool hasMovement, int hp, int maxHp, int energy, int maxEnergy, int baseDmg,
-        World world)
-        : base(moveSpeed, sprite, x, y, width, height, hasCollision, hasMovement, hp, maxHp, energy, maxEnergy, baseDmg,
-            world)
+    private Item[] _inventory;
+    public Player(string name, World world)
+        : base(Vector2.Zero, 16, 16, 100, 100, 10, world)
     {
         _name = name;
-        _playerClass = playerClass;
+        _inventory = new Item[InventorySize];
+    }
+    public new void FixedUpdate()
+    {
+        var direction = InputManager.Direction;
+        MoveSpeed = new Vector2(BaseMoveSpeed * direction.X, BaseMoveSpeed * direction.Y);
+        
+        base.FixedUpdate();
     }
 
-    //inventory
-    //special ability
-
-    //inventory functions
-
-    //special ability function;
-
-    public void Move()
+    private bool IsInventoryFull()
     {
-        //TODO: Rework this to take in events and adjust movement speed based on input.
-    }
-    
-    public Vector2 ReturnPos()
-    {
-        return new Vector2(X, Y);
+        return _inventory.Length == InventorySize;
     }
 
-    //No longer used here, to avoid breaking MVC conventions. At least not for movement, may remove gameTime
-    public override void Update(GameTime gameTime)
+    public void AddToInventory(Item newItem)
     {
-        //throw new System.NotImplementedException()
+        if (!IsInventoryFull())
+        {
+            int firstEmptyIndex = System.Array.IndexOf(_inventory, null);
+            _inventory[firstEmptyIndex] = newItem;
+        }
     }
 }
