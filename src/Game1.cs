@@ -11,6 +11,11 @@ namespace gamespace;
 
 public class Game1 : Game
 {
+    private const int DefaultResHeight = 800;
+    private const int DefaultResWidth = 800;
+    private const bool FullScreen = false;
+    private const bool DynamicRes = false;
+    
     private Camera _camera;
     private Player _player;
     private World _world;
@@ -26,8 +31,8 @@ public class Game1 : Game
         var adapter = new GraphicsAdapter();
         
         const string fileName = "launchConfig.json";
-        var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
-        var settings = LoadSettings(path);
+        //var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
+        var settings = LoadSettings(fileName);
         if (settings != null)
         {
             if (settings.IsDynamic)
@@ -99,17 +104,30 @@ public class Game1 : Game
         Globals.SpriteBatch.End();
         base.Draw(gameTime);
     }
-    private static LaunchSettings LoadSettings(string path)
+    private static LaunchSettings LoadSettings(string fileName)
     {
         try
         {
-            var jsonString = File.ReadAllText(path);
-            var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString)!;
+            //var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
+            var jsonString = File.ReadAllText(fileName);
+            var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
             return settings;
         }
         catch (DirectoryNotFoundException)
         {
-            return null;
+            LaunchSettings defaultSettings = new LaunchSettings();
+            defaultSettings.DefaultResHeight = DefaultResHeight;
+            defaultSettings.DefaultResWidth = DefaultResWidth;
+            defaultSettings.IsFullScreened = FullScreen;
+            defaultSettings.IsDynamic = DynamicRes;
+            UpdateSettings(fileName, defaultSettings);
+            return defaultSettings;
         }
+    }
+
+    private static void UpdateSettings(string path, Object defaultSettings)
+    {
+        string json = JsonSerializer.Serialize(defaultSettings);
+        File.WriteAllText(path, json);
     }
 }
