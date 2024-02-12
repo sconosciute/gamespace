@@ -10,7 +10,8 @@ namespace gamespace.View;
 /// A resolution independent rendering system which builds a scaled viewport within the window frame and follows the specified player
 /// </summary>
 public class Camera
-{private readonly RenderTarget2D _target;
+{
+    private readonly RenderTarget2D _target;
     private readonly GraphicsDevice _gfx;
     private Rectangle _drawDestination;
     
