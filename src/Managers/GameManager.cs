@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -38,12 +39,21 @@ public class GameManager
         _gfx.ApplyChanges();
     }
 
-    public void InitPlayerRender()
+    public void InitPlayerWorld()
     {
+        Guid dummy = Guid.NewGuid();
+        
         var robj = new RenderObject(texture: GetTexture(Textures.Player), entityId: _player.EntityId,
             layerDepth: LayerDepth.Foreground, worldPosition: _player.WorldCoordinate);
         _camera.RegisterRenderable(robj);
         _player.EntityEvent += robj.HandleEntityEvent;
+
+        var collider = new Prop(new Vector2(5f, 5f), 1, 1);
+        var tile = new Tile(collider);
+        _world.TryPlaceTile(new Point(5, 5), tile);
+        var collideyboi = new RenderObject(texture: GetTexture(Textures.Collider), entityId: dummy,
+            layerDepth: LayerDepth.Midground, worldPosition: collider.WorldCoordinate);
+        _camera.RegisterRenderable(collideyboi);
     }
 
     /// <summary>
@@ -66,9 +76,10 @@ public class GameManager
         throw new KeyNotFoundException($"Could not find {assetName} in textures");
     }
 
-    public void AddTexture(Texture2D texture)
+    public void AddTexture(string textureName)
     {
-        _textures.Add(texture.Name, texture);
+        var text = Globals.Content.Load<Texture2D>(textureName);
+        _textures.Add(text.Name, text);
     }
 
     public void FixedUpdate()
