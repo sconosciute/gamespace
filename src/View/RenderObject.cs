@@ -1,72 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using gamespace.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 
 namespace gamespace.View;
 
 public class RenderObject
 {
-    private static readonly Color DEFAULT_COLOR = Color.White;
-    private static readonly Vector2 DEFAULT_SCALE = Vector2.One;
-    
-    private Texture2D _spriteSheet;
+    private readonly Texture2D _texture;
 
-    private int _framesPerRow;
-    
-    private int _framesPerCol;
-
-    private Rectangle _source;
+    private readonly Guid _entityId;
 
     private Vector2 _position;
-    
 
-    public Rectangle Source
+    private float _layerDepth;
+
+    /// <summary>
+    /// Generates a new RenderObject which will track an Entity for position updates.
+    /// </summary>
+    /// <param name="texture">The texture or complete Atlas to display.</param>
+    /// <param name="worldPosition">The world coordinate position of this renderable</param>
+    /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
+    /// <param name="layerDepth">The depth at which this texture should be drawn in scene <see cref="LayerDepth"/></param>
+    public RenderObject(Texture2D texture, Vector2 worldPosition, Guid entityId, float layerDepth)
     {
-        get => _source;
-    }
-    public Vector2 Position
-    {
-        get => _position;
-        set
-        {
-            _position = value;
-        }
-        
+        _texture = texture;
+        _entityId = entityId;
+        _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
+        _layerDepth = layerDepth;
     }
     
-    //https://community.monogame.net/t/spritebatch-draw-animation/16297/4
-    public RenderObject(Texture2D spriteSheet, Vector2 position, int framesPerRow, int framesPerCol)
+    public void Draw()
     {
-        _spriteSheet = spriteSheet;
-        _framesPerRow = framesPerRow;
-        _framesPerCol = framesPerCol;
-        _position = position;
-        _source = new Rectangle((int)position.X, (int)position.Y, Width(), Height()); //Sets initial to top right for now, will change on sprite sheets. 
-        //TODO: Implement centering for background.
+        Globals.SpriteBatch.Draw(_texture, _position, Color.White);
     }
-    public int Column(int currentFrame)
+    
+    public void HandleEntityEvent(Guid sender, EntityEventArgs args)
     {
-        return currentFrame % _framesPerRow;
+        if (sender != _entityId) return;
+        if (args.EventTopic.Equals(EntityEventType.Moved))
+        {
+            _position = args.NewPosition;
+            _position.X *= Globals.TileSize;
+            _position.Y *= Globals.TileSize;
+            Console.Out.WriteLine($"Updated player position to {args.NewPosition}");
+        }
     }
-    public int Row(int currentFrame)
-    {
-        return currentFrame / _framesPerRow;
-    }
-    public int Width()
-    { return _spriteSheet.Width / _framesPerCol; }
-    public int Height()
-    { return _spriteSheet.Height / _framesPerRow; }
-    public Rectangle SourceRectangle(int currentFrame)
-    {
-        int frameWidth = Width();
-        int frameHeight = Height();
-        int column = Column(currentFrame) * frameWidth;
-        int row = Row(currentFrame) * frameHeight;
-        _source = new Rectangle(column, row, frameWidth, frameHeight);
-        return _source;
-    }
-    public void Draw(SpriteBatch spriteBatch)
-    {
-        spriteBatch.Draw(_spriteSheet, _position, _source, DEFAULT_COLOR, 0f, Vector2.Zero, DEFAULT_SCALE, SpriteEffects.None, 0);
-    }
+}
+
+/// <summary>
+/// A helper to provide specific depths for SpriteBatch layers.
+/// </summary>
+public struct LayerDepth
+{
+    /// <summary>
+    /// Objects in the foreground will be drawn over everything else. Place Entities here.
+    /// </summary>
+    public const float Foreground = 0f;
+    
+    /// <summary>
+    /// Objects in the midground will be drawn between the other two layers. Props that render over the floor but under entities are best placed here.
+    /// </summary>
+    public const float Midground = 0.5f;
+    
+    /// <summary>
+    /// Objects in the background will be drawn underneath all other objects.
+    /// </summary>
+    public const float Background = 1f;
+
 }

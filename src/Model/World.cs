@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using Loyc.Collections;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Model;
 
 public class World
 {
     /**Sparse list of all map tiles by x, y order  **/
-    private AList<AList<Tile>> _tiles = new();
+    private Dictionary<Vector2, Tile> _tiles = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
     private readonly int _mapWidth;
@@ -25,6 +28,7 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
+        
         _mapWidth = width;
         _mapHeight = height;
 
@@ -39,17 +43,20 @@ public class World
     /// </summary>
     /// <param name="x">x coordinate</param>
     /// <param name="y">y coordinate</param>
+    /// <returns>Tile at the given coordinate or null if no such tile exists.</returns>
     public Tile this[int x, int y]
     {
         get
         {
             CheckBounds(x, y);
-            return _tiles[x + _xOffset][y + _yOffset];
+            var key = new Vector2(x + _xOffset, y + _yOffset);
+            _tiles.TryGetValue(key, out var tile);
+            return tile;
         }
         private set
         {
             CheckBounds(x, y);
-            _tiles[x + _xOffset][y + _yOffset] = value;
+            _tiles[new Vector2(x + _xOffset, y + _yOffset)] = value;
         }
     }
 
@@ -79,19 +86,33 @@ public class World
     /// <summary>
     /// Places a tile at the given coordinate if and only if there is no tile present already.
     /// </summary>
-    /// <param name="x">x coordinate</param>
-    /// <param name="y">y coordinate</param>
+    /// <param name="position">x and y world coordinate.</param>
     /// <param name="tile">tile object to place at coordinate.</param>
     /// <returns>True if placed, else False.</returns>
-    public bool TryPlaceTile(int x, int y, Tile tile)
+    public bool TryPlaceTile(Point position, Tile tile)
     {
-        CheckBounds(x, y);
-        if (this[x, y] != null)
+        CheckBounds(position.X, position.Y);
+        if (this[position.X, position.Y] != null)
         {
             return false;
         }
 
-        this[x, y] = tile;
+        this[position.X, position.Y] = tile;
         return true;
+    }
+
+    public void DebugDrawMap()
+    {
+        var testTile = Globals.Content.Load<Texture2D>("tile");
+        var position = new Vector2();
+        for (int worldX = _minX; worldX <= _maxX; worldX++)
+        {
+            for (int worldY = _minY; worldY <= _maxY; worldY++)
+            {
+                position.X = worldX * 16;
+                position.Y = worldY * 16;
+                Globals.SpriteBatch.Draw(testTile, position, Color.White);
+            }
+        }
     }
 }
