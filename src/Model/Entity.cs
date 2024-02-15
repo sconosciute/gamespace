@@ -38,7 +38,8 @@ public abstract class Entity : PhysicsObj
         set => _moveSpeed = value;
     }
 
-    protected Entity(int width, int height, World world, Vector2 worldCoordinate) : base(worldCoordinate, width, height, true, true)
+    protected Entity(int width, int height, World world, Vector2 worldCoordinate) 
+        : base(worldCoordinate, width, height, true, true, true)
     {
         _world = world;
         MoveSpeed = Vector2.Zero;
