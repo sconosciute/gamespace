@@ -10,25 +10,25 @@ public class RenderObject
 {
     private readonly Texture2D _texture;
 
-    private readonly Guid _entityId;
+    private readonly Guid? _entityId;
 
     private Vector2 _position;
 
     private float _layerDepth;
-
+        
     /// <summary>
     /// Generates a new RenderObject which will track an Entity for position updates.
     /// </summary>
     /// <param name="texture">The texture or complete Atlas to display.</param>
     /// <param name="worldPosition">The world coordinate position of this renderable</param>
-    /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
     /// <param name="layerDepth">The depth at which this texture should be drawn in scene <see cref="LayerDepth"/></param>
-    public RenderObject(Texture2D texture, Vector2 worldPosition, Guid entityId, float layerDepth)
+    /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
+    public RenderObject(Texture2D texture, Vector2 worldPosition, float layerDepth, Guid? entityId = null)
     {
         _texture = texture;
-        _entityId = entityId;
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
         _layerDepth = layerDepth;
+        _entityId = entityId;
     }
     
     public void Draw()
@@ -39,7 +39,7 @@ public class RenderObject
     public void HandleEntityEvent(Guid sender, EntityEventArgs args)
     {
         if (sender != _entityId) return;
-        if (args.EventTopic.Equals(EntityEventType.Moved))
+        if (args.EventTopic == EntityEventType.Moved)
         {
             _position = args.NewPosition;
             _position.X *= Globals.TileSize;
