@@ -43,17 +43,12 @@ public class GameManager
     {
         Guid dummy = Guid.NewGuid();
         
-        var robj = new RenderObject(texture: GetTexture(Textures.Player), entityId: _player.EntityId,
-            layerDepth: LayerDepth.Foreground, worldPosition: _player.WorldCoordinate);
+        var robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate, layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(robj);
         _player.EntityEvent += robj.HandleEntityEvent;
 
-        var collider = new Prop(new Vector2(5f, 5f), 1, 1);
-        var tile = new Tile(collider);
-        _world.TryPlaceTile(new Point(5, 5), tile);
-        var collideyboi = new RenderObject(texture: GetTexture(Textures.Collider), entityId: dummy,
-            layerDepth: LayerDepth.Midground, worldPosition: collider.WorldCoordinate);
-        _camera.RegisterRenderable(collideyboi);
+
+        _world.TryPlaceTile(new Point(5, 5),BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
     }
 
     /// <summary>
@@ -86,4 +81,14 @@ public class GameManager
     {
         _player.FixedUpdate();
     }
+
+    private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
+    {
+        var prop = buildCallback.Invoke(this, worldPosition, out var renderable);
+        _camera.RegisterRenderable(renderable);
+        return new Tile(prop);
+    }
+
+    private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+    
 }
