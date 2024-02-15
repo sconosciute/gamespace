@@ -99,7 +99,7 @@ public class Game1 : Game
             var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
             return settings;
         }
-        catch (DirectoryNotFoundException)
+        catch (FileNotFoundException)
         {
             LaunchSettings defaultSettings = new LaunchSettings();
             defaultSettings.DefaultResHeight = DefaultResHeight;
