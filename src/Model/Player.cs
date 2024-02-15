@@ -11,7 +11,7 @@ public class Player : Character
     private string _name;
     private Item[] _inventory;
     public Player(string name, World world)
-        : base(Vector2.Zero, 16, 16, 100, 100, 10, world)
+        : base(Vector2.Zero, 1, 1, 100, 100, 10, world)
     {
         _name = name;
         _inventory = new Item[InventorySize];
