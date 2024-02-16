@@ -1,5 +1,6 @@
 ﻿using System;
 using gamespace.Model;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
@@ -15,6 +16,8 @@ public class RenderObject
     private Vector2 _position;
 
     private float _layerDepth;
+
+    private ILogger _log;
         
     /// <summary>
     /// Generates a new RenderObject which will track an Entity for position updates.
@@ -25,6 +28,7 @@ public class RenderObject
     /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
     public RenderObject(Texture2D texture, Vector2 worldPosition, float layerDepth, Guid? entityId = null)
     {
+        _log = Globals.LogFactory.CreateLogger <RenderObject> ();
         _texture = texture;
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
         _layerDepth = layerDepth;
@@ -44,7 +48,6 @@ public class RenderObject
             _position = args.NewPosition;
             _position.X *= Globals.TileSize;
             _position.Y *= Globals.TileSize;
-            Console.Out.WriteLine($"Updated player position to {args.NewPosition}");
         }
     }
 }

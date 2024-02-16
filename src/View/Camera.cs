@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,6 +19,8 @@ public class Camera
     private readonly Guid _playerId;
 
     private readonly List<RenderObject> _renderables = new();
+
+    private readonly ILogger _log;
     
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
@@ -34,6 +37,7 @@ public class Camera
     /// <param name="resolution">Point representing target resolution (width, height).</param>
     public Camera(Guid playerId, GraphicsDevice graphicsDevice, Point resolution)
     {
+        _log = Globals.LogFactory.CreateLogger<Camera>();
         _gfx = graphicsDevice;
         _target = new RenderTarget2D(_gfx, resolution.X, resolution.Y);
         _playerId = playerId;
@@ -48,6 +52,7 @@ public class Camera
     /// <param name="renderMode">Render immediately or defer to a RenderFrame call. Default to immediate.</param>
     public void DrawFrame(RenderMode renderMode = RenderMode.Immediate)
     {
+        _log.LogDebug("Drawing frame with render mode {mode}", renderMode);
         foreach (var robj in _renderables)
         {
             robj.Draw();
@@ -108,7 +113,7 @@ public class Camera
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
-        Console.Out.WriteLine($"Updated Translation to \n{Translation}");
+        _log.LogDebug("Updated camera translation matrix to \n{translation}", Translation);
     }
 
     /// <summary>

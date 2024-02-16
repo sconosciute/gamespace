@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using gamespace.Managers;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -16,9 +17,13 @@ public class Game1 : Game
     private const int UpdateTimeDelta = (1000 / 30);
     private double _lastUpTime;
     private readonly GameManager _gm;
+    private readonly ILogger _log;
 
     public Game1()
     {
+        
+        _log = Globals.LogFactory.CreateLogger<Game1>();
+        
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = new GraphicsDeviceManager(this);
         var adapter = new GraphicsAdapter();
@@ -50,19 +55,15 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        InitGlobals();
+        _log.LogInformation("Initializing Game");
+        Globals.Init(content: Content, spriteBatch: new SpriteBatch(GraphicsDevice));
         
         base.Initialize();
     }
 
-    private void InitGlobals()
-    {
-        Globals.SpriteBatch = new SpriteBatch(GraphicsDevice);
-        Globals.Content = Content;
-    }
-
     protected override void LoadContent()
     {
+        _log.LogInformation("Loading textures");
         _gm.AddTexture(Textures.Player);
         _gm.AddTexture(Textures.TestTile);
         _gm.AddTexture(Textures.TestBars);
@@ -80,6 +81,7 @@ public class Game1 : Game
         {
             _gm.FixedUpdate();
             _lastUpTime = now;
+            _log.LogDebug("Physics update @{time}", now);
         }
         
         base.Update(gameTime);
