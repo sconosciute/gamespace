@@ -49,6 +49,7 @@ public class GameManager
 
 
         _world.TryPlaceTile(new Point(5, 5),BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(5, 6),BuildTile(new Vector2(5f, 6f), Build.Props.Wall));
     }
 
     /// <summary>
