@@ -98,13 +98,11 @@ public abstract class Entity : PhysicsObj
 
         if (Math.Abs(colVector.X) > Math.Abs(colVector.Y))
         {
-            var bbHalf = bbWidth / 2f;
-            _moveSpeed.X = _moveSpeed.X > (colVector.X - bbHalf) ? colVector.X - bbHalf : _moveSpeed.X;
+            _moveSpeed.X = AdjustCollision(colVector.X, _moveSpeed.X, other.Width);
         }
         else
         {
-            var bbHalf = bbHeight / 2f;
-            _moveSpeed.Y = _moveSpeed.Y > (colVector.Y - bbHalf) ? colVector.Y - bbHalf  : _moveSpeed.Y;
+            _moveSpeed.Y = AdjustCollision(colVector.Y, _moveSpeed.Y, other.Height);
         }
 
         if (_moveSpeed != oldMove)
@@ -116,6 +114,19 @@ public abstract class Entity : PhysicsObj
                 oldMove,
                 _moveSpeed);
         }
+    }
+
+    private float AdjustCollision(float collisionMagnitude, float moveMagnitude, float boundAdjust)
+    {
+        //If the collision is happening behind us then we aren't colliding
+        if (!(collisionMagnitude > 0) == (moveMagnitude > 0)) return moveMagnitude;
+        if (collisionMagnitude < 0) boundAdjust *= -1;
+        
+        var absCol = Math.Abs(collisionMagnitude);
+        var absMove = Math.Abs(moveMagnitude);
+        
+        return absMove > (absCol - Math.Abs(boundAdjust)) ? collisionMagnitude - (boundAdjust) : moveMagnitude;
+
     }
 }
 
