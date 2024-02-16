@@ -94,21 +94,27 @@ public class Game1 : Game
     }
     private static LaunchSettings LoadSettings(string fileName)
     {
+        var appData = AppDomain.CurrentDomain.BaseDirectory;
+        appData = Path.Combine(appData, "Configs");
+        var path = Path.Combine(appData, fileName);
+        
+        Console.Write(path);
         try
         {
-            //var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
-            var jsonString = File.ReadAllText(fileName);
+            var jsonString = File.ReadAllText(path);
             var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
             return settings;
         }
         catch (FileNotFoundException)
         {
-            LaunchSettings defaultSettings = new LaunchSettings();
-            defaultSettings.DefaultResHeight = DefaultResHeight;
-            defaultSettings.DefaultResWidth = DefaultResWidth;
-            defaultSettings.IsFullScreened = FullScreen;
-            defaultSettings.IsDynamic = DynamicRes;
-            UpdateSettings(fileName, defaultSettings);
+            var defaultSettings = new LaunchSettings
+            {
+                DefaultResHeight = DefaultResHeight,
+                DefaultResWidth = DefaultResWidth,
+                IsFullScreened = FullScreen,
+                IsDynamic = DynamicRes
+            };
+            UpdateSettings(path, defaultSettings);
             return defaultSettings;
         }
     }
