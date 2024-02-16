@@ -81,7 +81,6 @@ public class Game1 : Game
         {
             _gm.FixedUpdate();
             _lastUpTime = now;
-            _log.LogDebug("Physics update @{time}", now);
         }
         
         base.Update(gameTime);

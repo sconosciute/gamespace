@@ -52,7 +52,6 @@ public class Camera
     /// <param name="renderMode">Render immediately or defer to a RenderFrame call. Default to immediate.</param>
     public void DrawFrame(RenderMode renderMode = RenderMode.Immediate)
     {
-        _log.LogDebug("Drawing frame with render mode {mode}", renderMode);
         foreach (var robj in _renderables)
         {
             robj.Draw();
@@ -113,7 +112,6 @@ public class Camera
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
-        _log.LogDebug("Updated camera translation matrix to \n{translation}", Translation);
     }
 
     /// <summary>

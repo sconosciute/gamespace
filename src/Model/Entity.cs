@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace gamespace.Model;
@@ -10,6 +11,7 @@ public abstract class Entity : PhysicsObj
     private readonly World _world;
     private float _baseMoveSpeed = DefaultEntSpeed;
     private Vector2 _moveSpeed;
+    private ILogger _log;
 
     public delegate void EntityEventHandler(Guid sender, EntityEventArgs args);
 
@@ -38,9 +40,10 @@ public abstract class Entity : PhysicsObj
         set => _moveSpeed = value;
     }
 
-    protected Entity(int width, int height, World world, Vector2 worldCoordinate) 
+    protected Entity(int width, int height, World world, Vector2 worldCoordinate)
         : base(worldCoordinate, width, height, true, true, true)
     {
+        _log = Globals.LogFactory.CreateLogger<Entity>();
         _world = world;
         MoveSpeed = Vector2.Zero;
         EntityId = Guid.NewGuid();
@@ -56,14 +59,13 @@ public abstract class Entity : PhysicsObj
         var bby1 = (int)Math.Min(newPos.Y, oldPos.Y);
         var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, oldPos.Y));
 
-        Tile checkTile;
-        for (int worldX = bbx1; worldX <= bbx2; worldX++)
+        for (var worldX = bbx1; worldX <= bbx2; worldX++)
         {
             if (!_world.IsInBounds(worldX, 0)) continue;
-            for (int worldY = bby1; worldY <= bby2; worldY++)
+            for (var worldY = bby1; worldY <= bby2; worldY++)
             {
                 if (!_world.IsInBounds(0, worldY)) continue;
-                checkTile = _world[worldX, worldY];
+                var checkTile = _world[worldX, worldY];
                 if (checkTile is { CanCollide: true })
                 {
                     CheckCollision(checkTile.Prop);
@@ -72,7 +74,7 @@ public abstract class Entity : PhysicsObj
         }
 
         WorldCoordinate = new Vector2(oldPos.X + _moveSpeed.X, oldPos.Y + _moveSpeed.Y);
-        
+
         if (oldPos == newPos) return;
         var args = new EntityEventArgs()
         {
@@ -81,7 +83,6 @@ public abstract class Entity : PhysicsObj
             OldPosition = oldPos
         };
         OnEntityEvent(args);
-
     }
 
     private void CheckCollision(PhysicsObj other)
@@ -93,15 +94,27 @@ public abstract class Entity : PhysicsObj
         var bbWidth = Width + other.Width;
         var bbHeight = Height + other.Height;
         var colVector = new Vector2(othCenter.X - WorldCoordinate.X, othCenter.Y - WorldCoordinate.Y);
+        var oldMove = _moveSpeed;
 
-        _moveSpeed = MoveSpeed;
         if (Math.Abs(colVector.X) > Math.Abs(colVector.Y))
         {
-            _moveSpeed.X = _moveSpeed.X > (colVector.X - bbWidth / 2f) ? colVector.X : _moveSpeed.X;
+            var bbHalf = bbWidth / 2f;
+            _moveSpeed.X = _moveSpeed.X > (colVector.X - bbHalf) ? colVector.X - bbHalf : _moveSpeed.X;
         }
         else
         {
-            _moveSpeed.Y = _moveSpeed.Y > (colVector.Y - bbHeight / 2f) ? colVector.Y : _moveSpeed.Y;
+            var bbHalf = bbHeight / 2f;
+            _moveSpeed.Y = _moveSpeed.Y > (colVector.Y - bbHalf) ? colVector.Y - bbHalf  : _moveSpeed.Y;
+        }
+
+        if (_moveSpeed != oldMove)
+        {
+            _log.LogDebug("{id} at {myPos} Collision detected at {pos} : Old move vector was {old}, move vector is now {new}.",
+                EntityId,
+                WorldCoordinate,
+                other.WorldCoordinate,
+                oldMove,
+                _moveSpeed);
         }
     }
 }
@@ -112,12 +125,12 @@ public class EntityEventArgs
     /// The type/topic of this event.
     /// </summary>
     public EntityEventType EventTopic { get; init; }
-    
+
     /// <summary>
     /// The previous position of this Entity.
     /// </summary>
     public Vector2 OldPosition { get; init; }
-    
+
     /// <summary>
     /// The new position of this Entity.
     /// </summary>
