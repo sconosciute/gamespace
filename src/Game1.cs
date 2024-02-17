@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text.Json;
-using gamespace.Managers;
+﻿using gamespace.Managers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,10 +7,6 @@ namespace gamespace;
 
 public class Game1 : Game
 {
-    private const int DefaultResHeight = 800;
-    private const int DefaultResWidth = 800;
-    private const bool FullScreen = false;
-    private const bool DynamicRes = false;
     private const int UpdateTimeDelta = (1000 / 30);
     private double _lastUpTime;
     private readonly GameManager _gm;
@@ -29,7 +22,7 @@ public class Game1 : Game
         var adapter = new GraphicsAdapter();
         
         const string fileName = "launchConfig.json";
-        var settings = LoadSettings(fileName);
+        var settings = SettingsManager.LoadSettings(fileName);
         if (settings != null)
         {
             if (settings.IsDynamic)
@@ -91,7 +84,7 @@ public class Game1 : Game
         _gm.Draw();
         base.Draw(gameTime);
     }
-    private static LaunchSettings LoadSettings(string fileName)
+    /*private static LaunchSettings LoadSettings(string fileName)
     {
         var appData = AppDomain.CurrentDomain.BaseDirectory;
         appData = Path.Combine(appData, "Configs");
@@ -123,5 +116,5 @@ public class Game1 : Game
     {
         string json = JsonSerializer.Serialize(defaultSettings);
         File.WriteAllText(path, json);
-    }
+    }*/
 }
