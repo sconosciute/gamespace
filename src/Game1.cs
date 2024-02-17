@@ -81,7 +81,6 @@ public class Game1 : Game
         {
             _gm.FixedUpdate();
             _lastUpTime = now;
-            _log.LogDebug("Physics update @{time}", now);
         }
         
         base.Update(gameTime);
@@ -105,7 +104,7 @@ public class Game1 : Game
             var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
             return settings;
         }
-        catch (FileNotFoundException)
+        catch (Exception ex) when(ex is FileNotFoundException or DirectoryNotFoundException)
         {
             var defaultSettings = new LaunchSettings
             {
@@ -114,7 +113,8 @@ public class Game1 : Game
                 IsFullScreened = FullScreen,
                 IsDynamic = DynamicRes
             };
-            UpdateSettings(path, defaultSettings);
+            //UpdateSettings(path, defaultSettings);
+            //TODO:don't try to get to the same directory you just couldn't find
             return defaultSettings;
         }
     }
