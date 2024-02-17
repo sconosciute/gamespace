@@ -21,5 +21,10 @@ public static class InputManager
             if (keyboardState.IsKeyDown(Keys.W)) _direction.Y--;
             if (keyboardState.IsKeyDown(Keys.S)) _direction.Y++;
         }
+
+        if (_direction != Vector2.Zero)
+        {
+            _direction.Normalize();
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
@@ -33,12 +32,12 @@ public abstract class PhysicsObj
     public bool CanCollide { get; }
 
 
-    protected PhysicsObj(Vector2 worldCoordinate, int width, int height, bool hasMovement, bool hasFriction)
+    protected PhysicsObj(Vector2 worldCoordinate, int width, int height, bool hasMovement, bool hasFriction, bool hasCollision)
     {
         WorldCoordinate = worldCoordinate;
         Width = width;
         Height = height;
-        CanCollide = true;
+        CanCollide = hasCollision;
         _hasMovement = hasMovement;
         _hasFriction = hasFriction;
     }
