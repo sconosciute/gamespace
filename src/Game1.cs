@@ -18,8 +18,7 @@ public class Game1 : Game
         _log = Globals.LogFactory.CreateLogger<Game1>();
         
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
-        var graphics = new GraphicsDeviceManager(this);
-        var adapter = new GraphicsAdapter();
+        var graphics = SettingsManager.GenerateGraphics(this);
         
         Content.RootDirectory = "Content";
         IsMouseVisible = true;

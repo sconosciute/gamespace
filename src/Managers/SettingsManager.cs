@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Managers;
 
@@ -10,13 +12,37 @@ public static class SettingsManager
     private const int DefaultResWidth = 800;
     private const bool FullScreen = false;
     private const bool DynamicRes = false;
-    public static LaunchSettings LoadSettings(string fileName)
+
+    public static GraphicsDeviceManager GenerateGraphics(Game1 game)
     {
-        var appData = AppDomain.CurrentDomain.BaseDirectory;
-        appData = Path.Combine(appData, "Configs");
-        var path = Path.Combine(appData, fileName);
+        var graphics = new GraphicsDeviceManager(game);
+        var adapter = new GraphicsAdapter();
         
-        Console.Write(path);
+        const string fileName = "launchConfig.json";
+        var settings = LoadSettings(fileName);
+        if (settings != null)
+        {
+            if (settings.IsDynamic)
+            {
+                graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
+                graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
+                graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
+            }
+
+            graphics.IsFullScreen = settings.IsFullScreened;
+        }
+        graphics.ApplyChanges();
+        return graphics;
+    }
+    private static LaunchSettings LoadSettings(string fileName)
+    {
+        var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+         baseDir = Path.Combine(baseDir, "Configs");
+        var path = Path.Combine(baseDir, fileName);
         try
         {
             var jsonString = File.ReadAllText(path);
@@ -32,14 +58,14 @@ public static class SettingsManager
                 IsFullScreened = FullScreen,
                 IsDynamic = DynamicRes
             };
-            Directory.CreateDirectory(path); 
+            Directory.CreateDirectory(baseDir); 
             UpdateSettings(path, defaultSettings);
             return defaultSettings;
         }
     }
-    private static void UpdateSettings(string path, Object defaultSettings)
+    private static void UpdateSettings(string path, object defaultSettings)
     {
-        string json = JsonSerializer.Serialize(defaultSettings);
+        var json = JsonSerializer.Serialize(defaultSettings);
         File.WriteAllText(path, json);
     }
 }
