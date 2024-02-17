@@ -52,28 +52,14 @@ public abstract class Entity : PhysicsObj
     public override void FixedUpdate()
     {
         var oldPos = WorldCoordinate;
-        var newPos = new Vector2(oldPos.X + MoveSpeed.X, oldPos.Y + MoveSpeed.Y);
+        var newPos = WorldCoordinate;
 
-        var bbx1 = (int)Math.Min(newPos.X, oldPos.X);
-        var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, oldPos.X));
-        var bby1 = (int)Math.Min(newPos.Y, oldPos.Y);
-        var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, oldPos.Y));
+        var xTranslation = new Vector2(_moveSpeed.X, 0f);
+        var yTranslation = new Vector2(0f, _moveSpeed.Y);
+        Translate(xTranslation, ref newPos);
+        Translate(yTranslation, ref newPos);
 
-        for (var worldX = bbx1; worldX <= bbx2; worldX++)
-        {
-            if (!_world.IsInBounds(worldX, 0)) continue;
-            for (var worldY = bby1; worldY <= bby2; worldY++)
-            {
-                if (!_world.IsInBounds(0, worldY)) continue;
-                var checkTile = _world[worldX, worldY];
-                if (checkTile is { CanCollide: true })
-                {
-                    CheckCollision(checkTile.Prop);
-                }
-            }
-        }
-
-        WorldCoordinate = new Vector2(oldPos.X + _moveSpeed.X, oldPos.Y + _moveSpeed.Y);
+        WorldCoordinate = newPos;
 
         if (oldPos == newPos) return;
         var args = new EntityEventArgs()
@@ -85,34 +71,55 @@ public abstract class Entity : PhysicsObj
         OnEntityEvent(args);
     }
 
-    private void CheckCollision(PhysicsObj other)
+    private void Translate(Vector2 translation, ref Vector2 curPos)
     {
-        //Speculative collision using Minkowski difference
-        //Reduce other to a point, expand this aabb by dims of other aabb, check for intersection!
-        var othCenter = other.WorldCoordinate;
+        var newPos = new Vector2(curPos.X + translation.X, curPos.Y + translation.Y);
+        var bbx1 = (int)Math.Min(newPos.X, curPos.X);
+        var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, curPos.X));
+        var bby1 = (int)Math.Min(newPos.Y, curPos.Y);
+        var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, curPos.Y));
+        
+        for (var worldX = bbx1; worldX <= bbx2; worldX++)
+        {
+            if (!_world.IsInBounds(worldX, 0)) continue;
+            for (var worldY = bby1; worldY <= bby2; worldY++)
+            {
+                if (!_world.IsInBounds(0, worldY)) continue;
+                var checkTile = _world[worldX, worldY];
+                if (checkTile is { CanCollide: true })
+                {
+                    CheckCollision(checkTile.Prop, ref translation, curPos);
+                }
+            }
+        }
 
-        var bbWidth = Width + other.Width;
-        var bbHeight = Height + other.Height;
-        var colVector = new Vector2(othCenter.X - WorldCoordinate.X, othCenter.Y - WorldCoordinate.Y);
-        var oldMove = _moveSpeed;
+        curPos.X += translation.X;
+        curPos.Y += translation.Y;
+    }
+
+    private void CheckCollision(in PhysicsObj other, ref Vector2 translation, in Vector2 curPos)
+    {
+        var othCenter = other.WorldCoordinate;
+        var colVector = new Vector2(othCenter.X - curPos.X, othCenter.Y - curPos.Y);
+        var oldMove = translation;
 
         if (Math.Abs(colVector.X) > Math.Abs(colVector.Y))
         {
-            _moveSpeed.X = AdjustCollision(colVector.X, _moveSpeed.X, other.Width);
+            translation.X = AdjustCollision(colVector.X, translation.X, other.Width);
         }
         else
         {
-            _moveSpeed.Y = AdjustCollision(colVector.Y, _moveSpeed.Y, other.Height);
+            translation.Y = AdjustCollision(colVector.Y, translation.Y, other.Height);
         }
 
-        if (_moveSpeed != oldMove)
+        if (translation != oldMove)
         {
             _log.LogDebug("{id} at {myPos} Collision detected at {pos} : Old move vector was {old}, move vector is now {new}.",
                 EntityId,
                 WorldCoordinate,
                 other.WorldCoordinate,
                 oldMove,
-                _moveSpeed);
+                translation);
         }
     }
 
