@@ -21,25 +21,6 @@ public class Game1 : Game
         var graphics = new GraphicsDeviceManager(this);
         var adapter = new GraphicsAdapter();
         
-        const string fileName = "launchConfig.json";
-        var settings = SettingsManager.LoadSettings(fileName);
-        if (settings != null)
-        {
-            if (settings.IsDynamic)
-            {
-                graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
-                graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
-            }
-            else
-            {
-                graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
-                graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
-            }
-
-            graphics.IsFullScreen = settings.IsFullScreened;
-        }
-        graphics.ApplyChanges();
-        
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
@@ -84,37 +65,4 @@ public class Game1 : Game
         _gm.Draw();
         base.Draw(gameTime);
     }
-    /*private static LaunchSettings LoadSettings(string fileName)
-    {
-        var appData = AppDomain.CurrentDomain.BaseDirectory;
-        appData = Path.Combine(appData, "Configs");
-        var path = Path.Combine(appData, fileName);
-        
-        Console.Write(path);
-        try
-        {
-            var jsonString = File.ReadAllText(path);
-            var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
-            return settings;
-        }
-        catch (Exception ex) when(ex is FileNotFoundException or DirectoryNotFoundException)
-        {
-            var defaultSettings = new LaunchSettings
-            {
-                DefaultResHeight = DefaultResHeight,
-                DefaultResWidth = DefaultResWidth,
-                IsFullScreened = FullScreen,
-                IsDynamic = DynamicRes
-            };
-            //UpdateSettings(path, defaultSettings);
-            //TODO:don't try to get to the same directory you just couldn't find
-            return defaultSettings;
-        }
-    }
-
-    private static void UpdateSettings(string path, Object defaultSettings)
-    {
-        string json = JsonSerializer.Serialize(defaultSettings);
-        File.WriteAllText(path, json);
-    }*/
 }
