@@ -74,9 +74,9 @@ public abstract class Entity : PhysicsObj
     private void Translate(Vector2 translation, ref Vector2 curPos)
     {
         var newPos = new Vector2(curPos.X + translation.X, curPos.Y + translation.Y);
-        var bbx1 = (int)Math.Min(newPos.X, curPos.X);
+        var bbx1 = (int)Math.Floor(Math.Min(newPos.X, curPos.X));
         var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, curPos.X));
-        var bby1 = (int)Math.Min(newPos.Y, curPos.Y);
+        var bby1 = (int)Math.Floor(Math.Min(newPos.Y, curPos.Y));
         var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, curPos.Y));
         
         for (var worldX = bbx1; worldX <= bbx2; worldX++)
