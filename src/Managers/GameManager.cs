@@ -50,6 +50,17 @@ public class GameManager
 
         _world.TryPlaceTile(new Point(5, 5),BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(5, 6),BuildTile(new Vector2(5f, 6f), Build.Props.Wall));
+        
+        _world.TryPlaceTile(new Point(10, 5),BuildTile(new Vector2(10f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(11, 5),BuildTile(new Vector2(11f, 5f), Build.Props.Wall));
+        
+        _world.TryPlaceTile(new Point(-5, 5),BuildTile(new Vector2(-5f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(-5, 6),BuildTile(new Vector2(-5f, 6f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(-4, 5),BuildTile(new Vector2(-4f, 5f), Build.Props.Wall));
+        
+        _world.TryPlaceTile(new Point(20, 5),BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(20, 6),BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(21, 5),BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
     }
 
     /// <summary>
