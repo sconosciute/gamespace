@@ -19,7 +19,7 @@ public static class SettingsManager
         var adapter = new GraphicsAdapter();
         
         const string fileName = "launchConfig.json";
-        var settings = LoadSettings(fileName);
+        var settings = LoadLaunchSettings(fileName);
         if (settings != null)
         {
             if (settings.IsDynamic)
@@ -38,11 +38,12 @@ public static class SettingsManager
         graphics.ApplyChanges();
         return graphics;
     }
-    private static LaunchSettings LoadSettings(string fileName)
+    private static LaunchSettings LoadLaunchSettings(string fileName)
     {
         var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-         baseDir = Path.Combine(baseDir, "Configs");
-        var path = Path.Combine(baseDir, fileName);
+         baseDir = Path.Combine(baseDir, "GameSpace");
+        var launchConfigDir = Path.Combine(baseDir, "LaunchSettings");
+        var path = Path.Combine(launchConfigDir, fileName);
         try
         {
             var jsonString = File.ReadAllText(path);
@@ -58,7 +59,7 @@ public static class SettingsManager
                 IsFullScreened = FullScreen,
                 IsDynamic = DynamicRes
             };
-            Directory.CreateDirectory(baseDir); 
+            Directory.CreateDirectory(launchConfigDir); 
             UpdateSettings(path, defaultSettings);
             return defaultSettings;
         }
