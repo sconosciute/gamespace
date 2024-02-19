@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace gamespace.Model;
@@ -10,6 +11,7 @@ public abstract class Entity : PhysicsObj
     private readonly World _world;
     private float _baseMoveSpeed = DefaultEntSpeed;
     private Vector2 _moveSpeed;
+    private ILogger _log;
 
     public delegate void EntityEventHandler(Guid sender, EntityEventArgs args);
 
@@ -38,8 +40,10 @@ public abstract class Entity : PhysicsObj
         set => _moveSpeed = value;
     }
 
-    protected Entity(int width, int height, World world, Vector2 worldCoordinate) : base(worldCoordinate, width, height, true, true)
+    protected Entity(int width, int height, World world, Vector2 worldCoordinate)
+        : base(worldCoordinate, width, height, true, true, true)
     {
+        _log = Globals.LogFactory.CreateLogger<Entity>();
         _world = world;
         MoveSpeed = Vector2.Zero;
         EntityId = Guid.NewGuid();
@@ -48,30 +52,15 @@ public abstract class Entity : PhysicsObj
     public override void FixedUpdate()
     {
         var oldPos = WorldCoordinate;
-        var newPos = new Vector2(oldPos.X + MoveSpeed.X, oldPos.Y + MoveSpeed.Y);
+        var newPos = WorldCoordinate;
 
-        var bbx1 = (int)Math.Min(newPos.X, oldPos.X);
-        var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, oldPos.X));
-        var bby1 = (int)Math.Min(newPos.Y, oldPos.Y);
-        var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, oldPos.Y));
+        var xTranslation = new Vector2(_moveSpeed.X, 0f);
+        var yTranslation = new Vector2(0f, _moveSpeed.Y);
+        Translate(xTranslation, ref newPos);
+        Translate(yTranslation, ref newPos);
 
-        Tile checkTile;
-        for (int worldX = bbx1; worldX <= bbx2; worldX++)
-        {
-            if (!_world.IsInBounds(worldX, 0)) continue;
-            for (int worldY = bby1; worldY <= bby2; worldY++)
-            {
-                if (!_world.IsInBounds(0, worldY)) continue;
-                checkTile = _world[worldX, worldY];
-                if (checkTile is { CanCollide: true })
-                {
-                    CheckCollision(checkTile.Prop);
-                }
-            }
-        }
+        WorldCoordinate = newPos;
 
-        WorldCoordinate = new Vector2(oldPos.X + _moveSpeed.X, oldPos.Y + _moveSpeed.Y);
-        
         if (oldPos == newPos) return;
         var args = new EntityEventArgs()
         {
@@ -80,28 +69,71 @@ public abstract class Entity : PhysicsObj
             OldPosition = oldPos
         };
         OnEntityEvent(args);
-
     }
 
-    private void CheckCollision(PhysicsObj other)
+    private void Translate(Vector2 translation, ref Vector2 curPos)
     {
-        //Speculative collision using Minkowski difference
-        //Reduce other to a point, expand this aabb by dims of other aabb, check for intersection!
+        var newPos = new Vector2(curPos.X + translation.X, curPos.Y + translation.Y);
+        var bbx1 = (int)Math.Floor(Math.Min(newPos.X, curPos.X));
+        var bbx2 = (int)Math.Ceiling(Math.Max(newPos.X, curPos.X));
+        var bby1 = (int)Math.Floor(Math.Min(newPos.Y, curPos.Y));
+        var bby2 = (int)Math.Ceiling(Math.Max(newPos.Y, curPos.Y));
+        
+        for (var worldX = bbx1; worldX <= bbx2; worldX++)
+        {
+            if (!_world.IsInBounds(worldX, 0)) continue;
+            for (var worldY = bby1; worldY <= bby2; worldY++)
+            {
+                if (!_world.IsInBounds(0, worldY)) continue;
+                var checkTile = _world[worldX, worldY];
+                if (checkTile is { CanCollide: true })
+                {
+                    CheckCollision(checkTile.Prop, ref translation, curPos);
+                }
+            }
+        }
+
+        curPos.X += translation.X;
+        curPos.Y += translation.Y;
+    }
+
+    private void CheckCollision(in PhysicsObj other, ref Vector2 translation, in Vector2 curPos)
+    {
         var othCenter = other.WorldCoordinate;
+        var colVector = new Vector2(othCenter.X - curPos.X, othCenter.Y - curPos.Y);
+        var oldMove = translation;
 
-        var bbWidth = Width + other.Width;
-        var bbHeight = Height + other.Height;
-        var colVector = new Vector2(othCenter.X - WorldCoordinate.X, othCenter.Y - WorldCoordinate.Y);
-
-        _moveSpeed = MoveSpeed;
         if (Math.Abs(colVector.X) > Math.Abs(colVector.Y))
         {
-            _moveSpeed.X = _moveSpeed.X > (colVector.X - bbWidth / 2f) ? colVector.X : _moveSpeed.X;
+            translation.X = AdjustCollision(colVector.X, translation.X, other.Width);
         }
         else
         {
-            _moveSpeed.Y = _moveSpeed.Y > (colVector.Y - bbHeight / 2f) ? colVector.Y : _moveSpeed.Y;
+            translation.Y = AdjustCollision(colVector.Y, translation.Y, other.Height);
         }
+
+        if (translation != oldMove)
+        {
+            _log.LogDebug("{id} at {myPos} Collision detected at {pos} : Old move vector was {old}, move vector is now {new}.",
+                EntityId,
+                WorldCoordinate,
+                other.WorldCoordinate,
+                oldMove,
+                translation);
+        }
+    }
+
+    private float AdjustCollision(float collisionMagnitude, float moveMagnitude, float boundAdjust)
+    {
+        //If the collision is happening behind us then we aren't colliding
+        if (!(collisionMagnitude > 0) == (moveMagnitude > 0)) return moveMagnitude;
+        if (collisionMagnitude < 0) boundAdjust *= -1;
+        
+        var absCol = Math.Abs(collisionMagnitude);
+        var absMove = Math.Abs(moveMagnitude);
+        
+        return absMove > (absCol - Math.Abs(boundAdjust)) ? collisionMagnitude - (boundAdjust) : moveMagnitude;
+
     }
 }
 
@@ -111,12 +143,12 @@ public class EntityEventArgs
     /// The type/topic of this event.
     /// </summary>
     public EntityEventType EventTopic { get; init; }
-    
+
     /// <summary>
     /// The previous position of this Entity.
     /// </summary>
     public Vector2 OldPosition { get; init; }
-    
+
     /// <summary>
     /// The new position of this Entity.
     /// </summary>

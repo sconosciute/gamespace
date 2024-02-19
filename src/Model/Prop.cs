@@ -1,11 +1,13 @@
-﻿using gamespace.View;
+﻿using System.Runtime.InteropServices;
+using gamespace.View;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
 public class Prop : PhysicsObj
 {
-    public Prop(Vector2 worldCoordinate, int width, int height) : base(worldCoordinate, width, height, false, false)
+    public Prop(Vector2 worldCoordinate, int width, int height, bool hasCollision) 
+        : base(worldCoordinate, width, height, false, false, hasCollision)
     {
     }
 
