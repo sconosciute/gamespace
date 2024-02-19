@@ -21,24 +21,24 @@ public class Game1 : Game
         var adapter = new GraphicsAdapter();
         
         const string fileName = "launchConfig.json";
-        var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
-        var settings = LoadSettings(path);
-        if (settings != null)
-        {
-            if (settings.IsDynamic)
-            {
-                graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
-                graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
-            }
-            else
-            {
-                graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
-                graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
-            }
-
-            graphics.IsFullScreen = settings.IsFullScreened;
-        }
-        graphics.ApplyChanges();
+        // var path = Path.Combine(Environment.CurrentDirectory, "Configs\\", fileName);
+        // var settings = LoadSettings(path);
+        // if (settings != null)
+        // {
+        //     if (settings.IsDynamic)
+        //     {
+        //         graphics.PreferredBackBufferWidth = adapter.CurrentDisplayMode.Width;
+        //         graphics.PreferredBackBufferHeight = adapter.CurrentDisplayMode.Height;
+        //     }
+        //     else
+        //     {
+        //         graphics.PreferredBackBufferWidth = settings.DefaultResWidth;
+        //         graphics.PreferredBackBufferHeight = settings.DefaultResHeight;
+        //     }
+        //
+        //     graphics.IsFullScreen = settings.IsFullScreened;
+        // }
+        // graphics.ApplyChanges();
         
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
