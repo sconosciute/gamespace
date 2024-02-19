@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
@@ -6,42 +7,32 @@ namespace gamespace.Managers;
 
 public class AnimationManager
 {
-    private Animation _animation;
+    private readonly Dictionary<object, Animation> _animations = new();
+    private object _lastKey;
 
-    private float _timer;
-    
-    public Vector2 Position { get; set; }
-
-    public AnimationManager(Animation animation)
+    public void AddAnimation(object key, Animation animation)
     {
-        _animation = animation;
+        _animations.Add(key, animation);
+        _lastKey ??= key;
     }
 
-    public void Play(Animation animation)
+    public void Update(object key)
     {
-        // TODO: implement handling
-    }
-
-    public void Stop(Animation animation)
-    {
-        _timer = 0f;
-
-        _animation.CurrentFrame = 0;
-    }
-    
-    public void Update(GameTime gameTime)
-    { 
-        _timer += (float)gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
-
-        if (_timer > _animation.FrameSpeed)
+        if (_animations.TryGetValue(key, out var value))
         {
-            _timer = 0f;
-            _animation.CurrentFrame++;
-
-            if (_animation.CurrentFrame >= _animation.FrameCount)
-            {
-                _animation.CurrentFrame = 0;
-            }
+            value.Start();
+            _animations[key].Update();
+            _lastKey = key;
         }
+        else
+        {
+            _animations[_lastKey].Stop();
+            _animations[_lastKey].Reset();
+        }
+    }
+
+    public void Draw(Vector2 position)
+    {
+        _animations[_lastKey].Draw((position));
     }
 }
