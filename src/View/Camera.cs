@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,6 +19,8 @@ public class Camera
     private readonly Guid _playerId;
 
     private readonly List<RenderObject> _renderables = new();
+
+    private readonly ILogger _log;
     
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
@@ -34,6 +37,7 @@ public class Camera
     /// <param name="resolution">Point representing target resolution (width, height).</param>
     public Camera(Guid playerId, GraphicsDevice graphicsDevice, Point resolution)
     {
+        _log = Globals.LogFactory.CreateLogger<Camera>();
         _gfx = graphicsDevice;
         _target = new RenderTarget2D(_gfx, resolution.X, resolution.Y);
         _playerId = playerId;
@@ -45,15 +49,15 @@ public class Camera
     /// <summary>
     /// Draw the current state of all render objects to a frame. May either render immediately upon completion or defer rendering and make a separate call to RenderFrame.
     /// </summary>
-    /// <param name="renderNow">Render immediately upon completion if true, defaults to true.</param>
-    public void DrawFrame(bool renderNow = true)
+    /// <param name="renderMode">Render immediately or defer to a RenderFrame call. Default to immediate.</param>
+    public void DrawFrame(RenderMode renderMode = RenderMode.Immediate)
     {
         foreach (var robj in _renderables)
         {
             robj.Draw();
         }
 
-        if (renderNow)
+        if (renderMode == RenderMode.Immediate)
         {
             RenderFrame();
         }
@@ -102,13 +106,12 @@ public class Camera
 
     private void UpdateTranslationMatrix(Vector2 position)
     {
-        var halfPlayerSize = 16;
+        const int halfPlayerSize = 8;
         var dx = (_target.Width / 2f) - (position.X * Globals.TileSize + halfPlayerSize);
         var dy = (_target.Height / 2f) - (position.Y * Globals.TileSize  + halfPlayerSize);
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         Translation = newTranslation;
-        Console.Out.WriteLine($"Updated Translation to \n{Translation}");
     }
 
     /// <summary>
@@ -131,4 +134,10 @@ public class Camera
         if (args.EventTopic != EntityEventType.Moved) return;
         UpdateTranslationMatrix(args.NewPosition);
     }
+}
+
+public enum RenderMode
+{
+    Immediate,
+    Deferred
 }
