@@ -55,13 +55,13 @@ public class RenderObject
         }
     }
 
-    public void AddAnimation(object key, Animation animation)
+    public void AddAnimation(AnimationName key, Animation animation)
     {
         _animations.Add(key, animation);
         _lastKey ??= key;
     }
 
-    public void Update(object key)
+    public void Update(AnimationName key)
     {
         if (_animations.TryGetValue(key, out var value))
         {
