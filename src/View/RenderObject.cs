@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using gamespace.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +16,9 @@ public class RenderObject
     private Vector2 _position;
 
     private float _layerDepth;
+    
+    private readonly Dictionary<object, Animation> _animations = new();
+    private object _lastKey;
 
     /// <summary>
     /// Generates a new RenderObject which will track an Entity for position updates.
@@ -47,6 +51,32 @@ public class RenderObject
             Console.Out.WriteLine($"Updated player position to {args.NewPosition}");
         }
     }
+
+    public void AddAnimation(object key, Animation animation)
+    {
+        _animations.Add(key, animation);
+        _lastKey ??= key;
+    }
+
+    public void Update(object key)
+    {
+        if (_animations.TryGetValue(key, out var value))
+        {
+            value.Start();
+            _animations[key].Update();
+            _lastKey = key;
+        }
+        else
+        {
+            _animations[_lastKey].Stop();
+            _animations[_lastKey].Reset();
+        }
+    }
+
+    public void Draw(Vector2 position)
+    {
+        _animations[_lastKey].Draw((position));
+    }
 }
 
 /// <summary>
@@ -69,4 +99,18 @@ public struct LayerDepth
     /// </summary>
     public const float Background = 1f;
 
+}
+
+public enum AnimationName
+{
+    N,
+    Ne,
+    E,
+    Se,
+    S,
+    Sw,
+    W,
+    Nw,
+    Use,
+    Die
 }
