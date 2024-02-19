@@ -22,4 +22,9 @@ public static class Globals
     /// The global default SpriteBatch.
     /// </summary>
     public static SpriteBatch SpriteBatch { get; set; }
+    
+    /// <summary>
+    /// TODO: Write summary.
+    /// </summary>
+    public static float TotalSeconds { get; set; }
 }
