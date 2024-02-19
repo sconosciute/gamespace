@@ -52,7 +52,7 @@ public class Animation
         {
                 if (!_active) return;
 
-                _frameTimeLeft -= Globals.TotalSeconds;
+                // _frameTimeLeft -= Globals.TotalSeconds;
 
                 if (!(_frameTimeLeft <= 0)) return;
                 _frameTimeLeft += _frameTime;
