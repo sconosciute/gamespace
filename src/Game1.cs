@@ -1,4 +1,5 @@
 ﻿using gamespace.Managers;
+using gamespace.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,7 +20,7 @@ public class Game1 : Game
         
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = SettingsManager.GenerateGraphics(this);
-        
+        TestMobInventory();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
@@ -63,5 +64,15 @@ public class Game1 : Game
     {
         _gm.Draw();
         base.Draw(gameTime);
+    }
+
+    private void TestMobInventory()
+    {
+        var tempMob = new Mob(Vector2.One, 1, 1, 10, 10, 1, null, "Zombie", 10);
+        _log.LogInformation("Inventory before: " + tempMob.Inventory[0]);
+        Item tempIt = new Item(false, "idk", "idk", 0);
+        tempMob.AddToInventory(tempIt);
+        _log.LogInformation("Inventory after: " + tempMob.Inventory[0]);
+        tempMob.InventoryUse();
     }
 }
