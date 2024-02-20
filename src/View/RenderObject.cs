@@ -18,8 +18,8 @@ public class RenderObject
 
     private float _layerDepth;
     
-    private readonly Dictionary<object, Animation> _animations = new();
-    private object _lastKey;
+    private readonly Dictionary<AnimationAction, Animation> _animations = new();
+    private AnimationAction _lastKey;
 
     private ILogger _log;
         
@@ -55,13 +55,14 @@ public class RenderObject
         }
     }
 
-    public void AddAnimation(AnimationName key, Animation animation)
+    public void AddAnimation(AnimationAction key, Animation animation)
     {
         _animations.Add(key, animation);
-        _lastKey ??= key;
+        //TODO: refactor
+        // _lastKey ??= key;
     }
 
-    public void Update(AnimationName key)
+    public void Update(AnimationAction key)
     {
         if (_animations.TryGetValue(key, out var value))
         {
@@ -104,7 +105,7 @@ public struct LayerDepth
 
 }
 
-public enum AnimationName
+public enum AnimationAction
 {
     N,
     Ne,
