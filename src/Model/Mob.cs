@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
@@ -28,8 +29,11 @@ public class Mob : Character
     }
     public void InventoryUse()
     {
-        var wantedItem = FirstNonEmpty(_inventory);
+        var index = Array.IndexOf(_inventory, FirstNonEmpty(_inventory));
+        //var wantedItem = FirstNonEmpty(_inventory);
+        var wantedItem = _inventory[index];
         var wantedItemUse = wantedItem.GetItemUse();
+        _inventory[index] = null;
         wantedItemUse.Invoke();
     }
     public void AddToInventory(Item newItem)
@@ -40,15 +44,7 @@ public class Mob : Character
 
     private static Item FirstNonEmpty(IEnumerable<Item> values)
     {
-        foreach (var item in values)
-        {
-            if (item != null)
-            {
-                return item;
-            }
-        }
-
-        return null;
+        return values.FirstOrDefault(item => item != null);
     }
     //properties
     public Item[] Inventory { get; }

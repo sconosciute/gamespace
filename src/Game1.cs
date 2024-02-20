@@ -69,10 +69,20 @@ public class Game1 : Game
     private void TestMobInventory()
     {
         var tempMob = new Mob(Vector2.One, 1, 1, 10, 10, 1, null, "Zombie", 10);
-        _log.LogInformation("Inventory before: " + tempMob.Inventory[0]);
-        Item tempIt = new Item(false, "idk", "idk", 0);
-        tempMob.AddToInventory(tempIt);
-        _log.LogInformation("Inventory after: " + tempMob.Inventory[0]);
+        var tempSmall = new Item(Item.ItemType.SmallHealthPot);
+        var tempMedium = new Item(Item.ItemType.MediumHealthPot);
+        var tempLarge = new Item(Item.ItemType.LargeHealthPot);
+        tempMob.AddToInventory(tempSmall);
+        _log.LogInformation("test for small heal: " + tempMob.Inventory[0]);
+        _log.LogInformation("used small heal: ");
+        tempMob.InventoryUse();
+        tempMob.AddToInventory(tempMedium);
+        _log.LogInformation("test for medium heal: " + tempMob.Inventory[0]);
+        _log.LogInformation("used medium heal: ");
+        tempMob.InventoryUse();
+        tempMob.AddToInventory(tempLarge);
+        _log.LogInformation("test for large heal: " + tempMob.Inventory[0]);
+        _log.LogInformation("used large heal: ");
         tempMob.InventoryUse();
     }
 }
