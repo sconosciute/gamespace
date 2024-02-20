@@ -12,6 +12,8 @@ public class Game1 : Game
     private readonly GameManager _gm;
     private readonly ILogger _log;
 
+    public SpriteFont Font;
+
     public Game1()
     {
         
@@ -30,7 +32,8 @@ public class Game1 : Game
     protected override void Initialize()
     {
         _log.LogInformation("Initializing Game");
-        Globals.Init(content: Content, spriteBatch: new SpriteBatch(GraphicsDevice));
+        var font = Content.Load<SpriteFont>("font");
+        Globals.Init(content: Content, spriteBatch: new SpriteBatch(GraphicsDevice), font);
         
         base.Initialize();
     }

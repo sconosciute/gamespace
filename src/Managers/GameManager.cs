@@ -11,10 +11,6 @@ public class GameManager
 {
     private const int WorldSize = 51;
 
-    //16:9 Widescreen resolution suitable for 16px tile sizes.
-    private const int VResWidth = 640;
-    private const int VResHeight = 360;
-
     private readonly GraphicsDeviceManager _gfx;
     private readonly Camera _camera;
     private readonly Player _player;
@@ -27,7 +23,7 @@ public class GameManager
         TempSetRes();
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
-        _camera = new Camera(_player.EntityId, _gfx.GraphicsDevice, new Point(VResWidth, VResHeight));
+        _camera = new Camera(_player.EntityId, _gfx.GraphicsDevice);
 
         _player.EntityEvent += _camera.HandleEntityEvent;
     }
@@ -35,8 +31,9 @@ public class GameManager
     private void TempSetRes()
     {
         _gfx.PreferredBackBufferWidth = 1920;
-        _gfx.PreferredBackBufferHeight = 800;
+        _gfx.PreferredBackBufferHeight = 1080;
         _gfx.ApplyChanges();
+        Globals.updateZoom(_gfx.GraphicsDevice);
     }
 
     public void InitPlayerWorld()
@@ -70,7 +67,9 @@ public class GameManager
     {
         _camera.BeginFrame();
         _world.DebugDrawMap();
-        _camera.DrawFrame();
+        _camera.DrawFrame(RenderMode.Deferred);
+        Globals.SpriteBatch.DrawString(Globals.Font, "TEST STRING PLEASE IGNORE", Vector2.Zero, Color.Red, 0f, Vector2.Zero, new Vector2(0.4f, 0.4f), SpriteEffects.None, 0f);
+        _camera.RenderFrame();
     }
 
     public Texture2D GetTexture(string assetName)
