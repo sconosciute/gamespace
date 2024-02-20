@@ -4,7 +4,6 @@ using gamespace.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
 
 namespace gamespace.View;
 
@@ -37,9 +36,22 @@ public class RenderObject
         _layerDepth = layerDepth;
         _entityId = entityId;
 
-        _animations[AnimationAction.S] = new Animation(texture, 16, 16, 4, 0.1f, AnimationAction.S);
+        if (texture.Name == Textures.Player)
+        {
+            // TODO: Make actual *animations* rather than having manual changes to change sprite shown.
+            // NOTE: Bug with tiles where if the AnimationAction is anything but facing South, tiles lose their color.
+            _animations[AnimationAction.Se] = new Animation(texture, 16, 16, 4, 0.1f, 
+                AnimationAction.Se);
+        }
+        else
+        {
+            // Fixes bug mentioned above, need to look at more later.
+            _animations[AnimationAction.S] = new Animation(texture, 16, 16, 4, 0.1f, 
+                AnimationAction.S);
+        }
     }
-
+    
+    // TODO: Make appropriate changes to update animations whenever there is an input.
     public void Update(GameTime gameTime, AnimationAction action)
     {
         foreach (var animation in _animations.Values)
