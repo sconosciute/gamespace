@@ -16,8 +16,8 @@ public class Item
         
     }
     
-
-   // public delegate void ItemUsedCallback();
+    
+   // May change this to just take Type as constructor and generate rest of the info based off type
     public Item(bool canUseOutCombat, string itemName, string itemDescription, ItemType type)
     {
         _canUseOutCombat = canUseOutCombat;
