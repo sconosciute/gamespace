@@ -21,9 +21,15 @@ public abstract class Character : Entity
         _baseDmg = baseDmg;
     }
     //Made this for health potion
-    //TODO: Add check to make sure new health is not > than maxHP.
     public void AddHealth(int amount)
     {
-        Health += amount;
+        if (Health + amount <= _maxHp)
+        {
+            Health += amount;
+        }
+        else
+        {
+            Health = _maxHp;
+        }
     }
 }
