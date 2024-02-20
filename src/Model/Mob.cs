@@ -30,9 +30,8 @@ public class Mob : Character
     public void InventoryUse()
     {
         var index = Array.IndexOf(_inventory, FirstNonEmpty(_inventory));
-        //var wantedItem = FirstNonEmpty(_inventory);
         var wantedItem = _inventory[index];
-        var wantedItemUse = wantedItem.GetItemUse();
+        var wantedItemUse = wantedItem.GetItemUse(this);
         _inventory[index] = null;
         wantedItemUse.Invoke();
     }

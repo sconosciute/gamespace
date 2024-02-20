@@ -14,7 +14,6 @@ public class Item
     }
     
     
-   // May change this to just take Type as constructor and generate rest of the info based off type
    //changing itemName to infer off type, and temporally making description do the same.
     public Item(ItemType type)
     {
@@ -23,20 +22,20 @@ public class Item
         _type = type;
     }
 
-    public ItemUsedCallback GetItemUse()
+    public ItemUsedCallback GetItemUse(Character user)
     {
         switch (_type)
         {
             case ItemType.SmallHealthPot :
-                void SmallHealPotionUse() => Console.Write("You have been slightly healed!");
+                void SmallHealPotionUse() => user.AddHealth(25);
                 return SmallHealPotionUse;
 
             case ItemType.MediumHealthPot:
-                void MediumHealPotionUse() => Console.Write("You have been medium healed!");
+                void MediumHealPotionUse() => user.AddHealth(50);
                 return MediumHealPotionUse;
             
             case ItemType.LargeHealthPot:
-                void LargeHealPotionUse() => Console.Write("You have been largely healed!");
+                void LargeHealPotionUse() => user.AddHealth(75);
                 return LargeHealPotionUse;
                 
             default:
@@ -46,10 +45,9 @@ public class Item
     }
     
     //Properties
-    public String ItemName { get; }
-    public String ItemDescription { get; }
-    // To String
-    public override string? ToString()
+    public string ItemName { get; init; }
+    public string ItemDescription { get; init; }
+    public override string ToString()
     {
             return ItemName;
     }
