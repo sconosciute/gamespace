@@ -9,59 +9,78 @@ namespace gamespace.View;
 public class Animation
 {
         private readonly Texture2D _texture;
-        private readonly List<Rectangle> _sourceRectangles = new();
-        private readonly int _frames;
-        private int _frame;
+        private readonly int _frameWidth;
+        private readonly int _frameHeight;
+        private readonly int _totalFrames;
         private readonly float _frameTime;
-        private float _frameTimeLeft;
-        private bool _active = true;
+        private int _currentFrame;
+        private float _timer;
+        private AnimationAction _action;
         
-        public Animation(Texture2D texture, int framesX, int framesY, float frameTime, int row = 1)
+        public Animation(Texture2D texture, int framesX, int framesY, int totalFrames, float frameTime, AnimationAction action)
         {
                 _texture = texture;
+                _frameWidth = framesX;
+                _frameHeight = framesY;
+                _totalFrames = totalFrames;
                 _frameTime = frameTime;
-                _frameTimeLeft = _frameTime;
-                _frames = framesX;
-                var frameWidth = _texture.Width / framesX;
-                var frameHeight = _texture.Height / framesY;
+                _timer = 0f;
+                _currentFrame = 0;
+                _action = action;
+                
+                UpdateSourceRectangle();
+        }
 
-                for (var i = 0; i < _frames; i++)
+        public Rectangle SourceRectangle { get; private set; }
+        
+        public void Update(GameTime gameTime, AnimationAction action)
+        {
+                if (_action != action)
                 {
-                        _sourceRectangles.Add(new Rectangle(i * frameWidth, (row - 1) * frameHeight, 
-                                frameWidth, frameHeight));
+                        _action = action;
+                        UpdateSourceRectangle();
                 }
+
+                _timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (!(_timer > _frameTime)) return;
+                _timer = 0f;
+                _currentFrame = (_currentFrame + 1) % _totalFrames;
+                UpdateSourceRectangle();
         }
 
-        public void Stop()
+        private void UpdateSourceRectangle()
         {
-                _active = false;
+                var rowOffset = _action switch
+                {
+                        AnimationAction.S => 0,
+                        AnimationAction.Sw => 1,
+                        AnimationAction.W => 2,
+                        AnimationAction.Nw => 3,
+                        AnimationAction.N => 4,
+                        AnimationAction.Ne => 5,
+                        AnimationAction.E => 6,
+                        AnimationAction.Se => 7,
+                        _ => 0
+                };
+
+                var row = (_currentFrame % (_texture.Height / _frameHeight)) + rowOffset;
+                var col = _currentFrame / (_texture.Height / _frameHeight);
+
+                SourceRectangle = new Rectangle(col * _frameWidth, row * _frameHeight, _frameWidth, _frameHeight);
         }
+}
 
-        public void Start()
-        {
-                _active = true;
-        }
-
-        public void Reset()
-        {
-                _frame = 0;
-                _frameTimeLeft = _frameTime;
-        }
-
-        public void Update()
-        {
-                if (!_active) return;
-
-                // _frameTimeLeft -= Globals.TotalSeconds;
-
-                if (!(_frameTimeLeft <= 0)) return;
-                _frameTimeLeft += _frameTime;
-                _frame = (_frame + 1) % _frames;
-        }
-
-        public void Draw(Vector2 pos)
-        {
-                Globals.SpriteBatch.Draw(_texture, pos, _sourceRectangles[_frame], Color.White, 0,
-                        Vector2.Zero, Vector2.One, SpriteEffects.None, 1);
-        }
+public enum AnimationAction
+{
+        N,
+        Ne,
+        E,
+        Se,
+        S,
+        Sw,
+        W,
+        Nw,
+        Use,
+        Die
 }
