@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using Loyc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +21,12 @@ public class Camera
     private readonly List<RenderObject> _renderables = new();
 
     private readonly ILogger _log;
+
+    private float _zoom = 1.2f;
+    
+    private const float ZoomAdj = 0.01f;
+
+    private Vector2 _trackedPosition = Vector2.Zero;
     
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
@@ -39,7 +46,32 @@ public class Camera
         _gfx = graphicsDevice;
         _playerId = playerId;
 
-        UpdateTranslationMatrix(Vector2.Zero);
+        UpdateTranslationMatrix();
+    }
+
+    /// <summary>
+    /// Adjusts the camera zoom value based on thrown event from InputManager.
+    /// </summary>
+    public void HandleZoomEvent(ZoomEventType zm)
+    {
+        switch (zm)
+        {
+            case ZoomEventType.Down:
+                _zoom -= ZoomAdj;
+                break;
+            case ZoomEventType.Up:
+                _zoom += ZoomAdj;
+                break;
+            case ZoomEventType.Reset:
+                _zoom = 1f;
+                break;
+            default:
+                throw new InvalidStateException("Invalid Zoom event in Camera");
+        }
+
+        _zoom = Math.Clamp(_zoom, 1f, 1.5f);
+        UpdateTranslationMatrix();
+        _log.LogDebug("updated zoom to {zm}", _zoom);
     }
 
     /// <summary>
@@ -64,6 +96,7 @@ public class Camera
     /// </summary>
     public void BeginFrame()
     {
+        _gfx.Clear(Color.Black);
         Globals.SpriteBatch.Begin(transformMatrix: Translation, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
     }
     
@@ -73,21 +106,17 @@ public class Camera
     public void RenderFrame()
     {
         Globals.SpriteBatch.End();
-        // _gfx.SetRenderTarget(null);
-        // _gfx.Clear(Color.Black);
-        // Globals.SpriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
-        // Globals.SpriteBatch.Draw(_target, _drawDestination, Color.White);
-        // Globals.SpriteBatch.End();
     }
 
-    private void UpdateTranslationMatrix(Vector2 position)
+    private void UpdateTranslationMatrix()
     {
+        var zm = (float) Math.Pow(2, _zoom) - 1;
         const int halfPlayerSize = 8;
-        var dx = (_gfx.PresentationParameters.Bounds.Width / 2f) - (position.X * Globals.TileSize + halfPlayerSize) * Globals.Zoom;
-        var dy = (_gfx.PresentationParameters.Bounds.Height / 2f) - (position.Y * Globals.TileSize  + halfPlayerSize) * Globals.Zoom;
+        var dx = (_gfx.PresentationParameters.Bounds.Width / 2f) - (_trackedPosition.X * Globals.TileSize + halfPlayerSize) * Globals.Scale * zm;
+        var dy = (_gfx.PresentationParameters.Bounds.Height / 2f) - (_trackedPosition.Y * Globals.TileSize  + halfPlayerSize) * Globals.Scale * zm;
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
-        var scale = Matrix.CreateScale(Globals.Zoom);
+        var scale = Matrix.CreateScale(Globals.Scale * zm);
         Translation = scale * newTranslation;
     }
 
@@ -109,7 +138,8 @@ public class Camera
     {
         if (sender != _playerId) return;
         if (args.EventTopic != EntityEventType.Moved) return;
-        UpdateTranslationMatrix(args.NewPosition);
+        _trackedPosition = args.NewPosition;
+        UpdateTranslationMatrix();
     }
 }
 
@@ -117,4 +147,11 @@ public enum RenderMode
 {
     Immediate,
     Deferred
+}
+
+public enum ZoomEventType
+{
+    Up,
+    Down,
+    Reset
 }

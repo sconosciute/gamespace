@@ -24,7 +24,8 @@ public class GameManager
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfx.GraphicsDevice);
-
+        
+        InputManager.ZoomEvent += _camera.HandleZoomEvent;
         _player.EntityEvent += _camera.HandleEntityEvent;
     }
 
@@ -33,7 +34,7 @@ public class GameManager
         _gfx.PreferredBackBufferWidth = 1920;
         _gfx.PreferredBackBufferHeight = 1080;
         _gfx.ApplyChanges();
-        Globals.updateZoom(_gfx.GraphicsDevice);
+        Globals.UpdateScale(_gfx.GraphicsDevice);
     }
 
     public void InitPlayerWorld()

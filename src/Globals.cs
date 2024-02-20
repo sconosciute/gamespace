@@ -34,15 +34,13 @@ public static class Globals
     /// The font to use for all in-game text rendering
     /// </summary>
     public static SpriteFont Font { get; private set; }
+    
+    public static float Scale { get; private set; } = 1f;
 
-
-    public const float Scale  = 4f;
-    public static float Zoom { get; set; } = 1f;
-
-    public static void updateZoom(GraphicsDevice gfx)
+    public static void UpdateScale(GraphicsDevice gfx)
     {
-        var windowScale = 2560 / gfx.PresentationParameters.Bounds.Width;
-        Zoom = windowScale * Scale;
+        var windowScale = gfx.PresentationParameters.Bounds.Width / 640;
+        Scale = windowScale;
     }
 
     /// <summary>
