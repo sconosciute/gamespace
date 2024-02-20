@@ -8,8 +8,8 @@ namespace gamespace.Managers;
 
 public static class SettingsManager
 {
-    private const int DefaultResHeight = 800;
-    private const int DefaultResWidth = 800;
+    private const int DefaultResHeight = 1080;
+    private const int DefaultResWidth = 1920;
     private const bool FullScreen = false;
     private const bool DynamicRes = false;
 

@@ -33,7 +33,7 @@ public class Player : Character
     {
         if (!IsInventoryFull())
         {
-            int firstEmptyIndex = System.Array.IndexOf(_inventory, null);
+            var firstEmptyIndex = System.Array.IndexOf(_inventory, null);
             _inventory[firstEmptyIndex] = newItem;
         }
     }
