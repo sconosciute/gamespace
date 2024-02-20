@@ -19,7 +19,6 @@ public class RenderObject
     private float _layerDepth;
     
     private readonly Dictionary<AnimationAction, Animation> _animations = new();
-    private AnimationAction _lastKey;
 
     private ILogger _log;
         
@@ -37,11 +36,24 @@ public class RenderObject
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
         _layerDepth = layerDepth;
         _entityId = entityId;
+
+        _animations[AnimationAction.S] = new Animation(texture, 16, 16, 4, 0.1f, AnimationAction.S);
+    }
+
+    public void Update(GameTime gameTime, AnimationAction action)
+    {
+        foreach (var animation in _animations.Values)
+        {
+            animation.Update(gameTime, action);
+        }
     }
     
     public void Draw()
     {
-        Globals.SpriteBatch.Draw(_texture, _position, Color.White);
+        foreach (var animation in _animations.Values)
+        {
+            Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White);
+        }
     }
     
     public void HandleEntityEvent(Guid sender, EntityEventArgs args)
@@ -53,33 +65,6 @@ public class RenderObject
             _position.X *= Globals.TileSize;
             _position.Y *= Globals.TileSize;
         }
-    }
-
-    public void AddAnimation(AnimationAction key, Animation animation)
-    {
-        _animations.Add(key, animation);
-        //TODO: refactor
-        // _lastKey ??= key;
-    }
-
-    public void Update(AnimationAction key)
-    {
-        if (_animations.TryGetValue(key, out var value))
-        {
-            value.Start();
-            _animations[key].Update();
-            _lastKey = key;
-        }
-        else
-        {
-            _animations[_lastKey].Stop();
-            _animations[_lastKey].Reset();
-        }
-    }
-
-    public void Draw(Vector2 position)
-    {
-        _animations[_lastKey].Draw((position));
     }
 }
 
@@ -103,18 +88,4 @@ public struct LayerDepth
     /// </summary>
     public const float Background = 1f;
 
-}
-
-public enum AnimationAction
-{
-    N,
-    Ne,
-    E,
-    Se,
-    S,
-    Sw,
-    W,
-    Nw,
-    Use,
-    Die
 }
