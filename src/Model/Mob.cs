@@ -10,24 +10,28 @@ public class Mob : Character
     private const int InventorySize = 5;
 
     private string _name;
+    private bool _canUseItems;
+    private bool _canMove;
     private int _hp;
     private int _damage;
     private readonly Item[] _inventory;
 
-    private enum Types
+    public enum MobTypes
     {
         //TODO: add types, unsure what they are as of now
+        Turret
     }
 
     //May change this constructor to just take position, and generate rest of the info by Type?
-    public Mob(Vector2 worldCoordinate, int width, int height, int hp, int energy, int baseDmg, World world,
-        string name, int damage) :
-        base(worldCoordinate, width, height, hp, energy, baseDmg, world)
+    public Mob(Vector2 worldCoordinate, int hp, int energy, int baseDmg, World world,
+        string name, int damage, MobTypes type) :
+        base(worldCoordinate, 1, 1, hp, energy, baseDmg, world)
     {
         _name = name;
         _hp = hp;
         _damage = damage;
         _inventory = Inventory = new Item[InventorySize];
+        GenerateMob(type);
     }
 
     public bool InventoryUse()
@@ -62,6 +66,19 @@ public class Mob : Character
         return values.FirstOrDefault(item => item != null);
     }
 
+    private void GenerateMob(MobTypes typeOfMob)
+    {
+        switch (typeOfMob)
+        {
+            case MobTypes.Turret:
+                _canMove = false;
+                _canUseItems = false;
+                break;
+            default:
+                Console.Write("Mob does not exist");
+                break;
+        }
+    }
     //properties
     public Item[] Inventory { get; }
 }
