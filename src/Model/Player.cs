@@ -37,4 +37,11 @@ public class Player : Character
             _inventory[firstEmptyIndex] = newItem;
         }
     }
+    
+    // === EVENT HANDLING ===-------------------------------------------------------------------------------------------
+
+    public void HandleMoveEvent(Vector2 moveVec)
+    {
+        MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
+    }
 }

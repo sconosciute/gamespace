@@ -11,6 +11,7 @@ public class Game1 : Game
     private double _lastUpTime;
     private readonly GameManager _gm;
     private readonly ILogger _log;
+    private GuiManager _gui;
 
     public SpriteFont Font;
 
@@ -27,6 +28,7 @@ public class Game1 : Game
         IsMouseVisible = true;
 
         _gm = new GameManager(graphics);
+        _gui = _gm.InitGui();
     }
 
     protected override void Initialize()
@@ -48,14 +50,14 @@ public class Game1 : Game
         _gm.AddTexture(Textures.OpaqueBg);
         _gm.AddTexture(Textures.TransparentBg);
         
-        _gm.InitGui();
-        _gm.InitPlayerWorld();
+        _gui.InitBgTextures();
+        _gm.TempInitPlayerWorld();
     }
 
     protected override void Update(GameTime gameTime)
     {
         var now = gameTime.TotalGameTime.TotalMilliseconds;
-        InputManager.Update();
+        _gui.Update();
 
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {

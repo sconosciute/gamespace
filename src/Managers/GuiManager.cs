@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,21 +11,42 @@ public class GuiManager
     private readonly List<GuiPanel> _panels = new();
     private readonly GraphicsDevice _gfx;
     private readonly GameManager _gm;
+    private readonly InputManager _input;
     private Matrix _drawScale;
 
-    public Texture2D OpaqueBg { get; init; }
-    public Texture2D TransparentBg { get; init; }
+    public Texture2D OpaqueBg { get; private set; }
+    public Texture2D TransparentBg { get; private set; }
 
     private readonly SpriteBatch _guiSpriteBatch;
 
-    public GuiManager(GraphicsDevice gfx, GameManager gm)
+    public GuiManager(GraphicsDevice gfx, GameManager gm, Camera camera)
     {
         _gfx = gfx;
         _gm = gm;
+        _input = InputManager.GetInputManager(this);
+        _input.ZoomEvent += camera.HandleZoomEvent;
+        
+        _guiSpriteBatch = new SpriteBatch(_gfx);
+    }
 
+    public void InitBgTextures()
+    {
         OpaqueBg = _gm.GetTexture(Textures.OpaqueBg);
         TransparentBg = _gm.GetTexture(Textures.TransparentBg);
-        _guiSpriteBatch = new SpriteBatch(_gfx);
+    }
+
+    /// <summary>
+    /// Registers an entity to listen for MoveEvents from the InputManager.
+    /// </summary>
+    /// <param name="player">The player entity to control, will replace the current entity if one exists.</param>
+    public void RegisterControlledEntity(Player player)
+    {
+        _input.MoveEvent += player.HandleMoveEvent;
+    }
+
+    public void Update()
+    {
+        _input.Update();
     }
 
     //=== GUI RENDERING ===---------------------------------------------------------------------------------------------

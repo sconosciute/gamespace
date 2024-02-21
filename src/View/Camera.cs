@@ -117,7 +117,7 @@ public class Camera
         _renderables.Add(renderObject);
     }
     
-    //=== BEGIN EVENT HANDLERS ===--------------------------------------------------------------------------------------
+    //=== EVENT HANDLING ===--------------------------------------------------------------------------------------
 
     /// <summary>
     /// Listens for Player position updates to update the Camera position.
@@ -146,7 +146,7 @@ public class Camera
                 _zoom += ZoomAdj;
                 break;
             case ZoomEventType.Reset:
-                _zoom = 1f;
+                _zoom = 1.2f;
                 break;
             default:
                 throw new InvalidStateException("Invalid Zoom event in Camera");

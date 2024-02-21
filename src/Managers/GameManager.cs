@@ -25,29 +25,23 @@ public class GameManager
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
-        
-        InputManager.ZoomEvent += _camera.HandleZoomEvent;
+    }
+    
+    //=== INITIALIZATION - CALL ONCE! ===-------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Initializes the GUI manager with relevant Camera information and returns that Manager.
+    /// </summary>
+    /// <returns>The GUI Manager related to this Game Manager.</returns>
+    public GuiManager InitGui()
+    {
+        return _gui ??= new GuiManager(_gfxMan.GraphicsDevice, this, _camera);
+    }
+
+    public void TempInitPlayerWorld()
+    {
         _player.EntityEvent += _camera.HandleEntityEvent;
-    }
-
-    public void InitGui()
-    {
-        if (_gui == null)
-        {
-            _gui = new GuiManager(_gfxMan.GraphicsDevice, this);
-        }
-    }
-
-    private void SetResolution(int width, int height)
-    {
-        _gfxMan.PreferredBackBufferWidth = width;
-        _gfxMan.PreferredBackBufferHeight = height;
-        _gfxMan.ApplyChanges();
-        Globals.UpdateScale(_gfxMan.GraphicsDevice);
-    }
-
-    public void InitPlayerWorld()
-    {
+        _gui.RegisterControlledEntity(_player);
         Guid dummy = Guid.NewGuid();
         
         var robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate, layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
@@ -69,7 +63,17 @@ public class GameManager
         _world.TryPlaceTile(new Point(20, 6),BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(21, 5),BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
 
-        _gui.OpenMainMenu();
+        //_gui.OpenMainMenu();
+    }
+    
+    //=== GAME LOOP ===-------------------------------------------------------------------------------------------------
+    
+    /// <summary>
+    /// Runs physics updates on all Entities.
+    /// </summary>
+    public void FixedUpdate()
+    {
+        _player.FixedUpdate();
     }
 
     /// <summary>
@@ -84,6 +88,8 @@ public class GameManager
         _camera.RenderFrame();
         _gui.RenderGui();
     }
+    
+    //=== MANAGEMENT FUNCTIONS ===--------------------------------------------------------------------------------------
 
     public Texture2D GetTexture(string assetName)
     {
@@ -100,11 +106,16 @@ public class GameManager
         var text = Globals.Content.Load<Texture2D>(textureName);
         _textures.Add(text.Name, text);
     }
-
-    public void FixedUpdate()
+    
+    private void SetResolution(int width, int height)
     {
-        _player.FixedUpdate();
+        _gfxMan.PreferredBackBufferWidth = width;
+        _gfxMan.PreferredBackBufferHeight = height;
+        _gfxMan.ApplyChanges();
+        Globals.UpdateScale(_gfxMan.GraphicsDevice);
     }
+    
+    //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
     {
