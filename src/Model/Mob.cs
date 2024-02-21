@@ -36,6 +36,10 @@ public class Mob : Character
 
     public bool InventoryUse()
     {
+        if (_canUseItems == false)
+        {
+            return false; //This type cannot use items
+        }
         var index = Array.IndexOf(_inventory, FirstNonEmpty(_inventory));
         if (index < 0)
         {
