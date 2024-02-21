@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using Loyc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +13,6 @@ namespace gamespace.View;
 /// </summary>
 public class Camera
 {
-    private readonly RenderTarget2D _target;
     private readonly GraphicsDevice _gfx;
     private Rectangle _drawDestination;
     
@@ -21,6 +21,12 @@ public class Camera
     private readonly List<RenderObject> _renderables = new();
 
     private readonly ILogger _log;
+
+    private float _zoom = 1.2f;
+    
+    private const float ZoomAdj = 0.01f;
+
+    private Vector2 _trackedPosition = Vector2.Zero;
     
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
@@ -29,22 +35,31 @@ public class Camera
 
     /// <summary>
     /// Initiates a new fixed resolution camera that tracks the Player.
-    ///
+    /// 
     /// The camera will control all rendering and drawing, use BeginFrame in place of SpriteBatch.Begin().
     /// </summary>
     /// <param name="playerId">Entity ID of player to follow.</param>
     /// <param name="graphicsDevice">The backend graphics device.</param>
-    /// <param name="resolution">Point representing target resolution (width, height).</param>
-    public Camera(Guid playerId, GraphicsDevice graphicsDevice, Point resolution)
+    public Camera(Guid playerId, GraphicsDevice graphicsDevice)
     {
         _log = Globals.LogFactory.CreateLogger<Camera>();
         _gfx = graphicsDevice;
-        _target = new RenderTarget2D(_gfx, resolution.X, resolution.Y);
         _playerId = playerId;
 
-        ScaleViewport();
-        UpdateTranslationMatrix(Vector2.Zero);
+        UpdateTranslationMatrix();
     }
+    
+    //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
+    public delegate void CameraEventHandler(Matrix scale);
+
+    public event CameraEventHandler CameraEvent;
+
+    protected virtual void OnCameraEvent(Matrix scale)
+    {
+        CameraEvent?.Invoke(scale);
+    }
+    
+    //=== RENDERING ===-------------------------------------------------------------------------------------------------
 
     /// <summary>
     /// Draw the current state of all render objects to a frame. May either render immediately upon completion or defer rendering and make a separate call to RenderFrame.
@@ -68,8 +83,8 @@ public class Camera
     /// </summary>
     public void BeginFrame()
     {
-        _gfx.SetRenderTarget(_target);
-        Globals.SpriteBatch.Begin(transformMatrix: Translation);
+        _gfx.Clear(Color.Black);
+        Globals.SpriteBatch.Begin(transformMatrix: Translation, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
     }
     
     /// <summary>
@@ -78,40 +93,19 @@ public class Camera
     public void RenderFrame()
     {
         Globals.SpriteBatch.End();
-        _gfx.SetRenderTarget(null);
-        _gfx.Clear(Color.Black);
-        Globals.SpriteBatch.Begin();
-        Globals.SpriteBatch.Draw(_target, _drawDestination, Color.White);
-        Globals.SpriteBatch.End();
     }
 
-    public void ScaleViewport()
+    private void UpdateTranslationMatrix()
     {
-        var screenSize = _gfx.PresentationParameters.Bounds;
-
-        var scaleX = (float)screenSize.Width / _target.Width;
-        var scaleY = (float)screenSize.Height / _target.Height;
-        var scale = Math.Min(scaleX, scaleY);
-
-        var newWidth = (int)Math.Truncate(_target.Width * scale);
-        var newHeight = (int)Math.Truncate(_target.Height * scale);
-        var left = (screenSize.Width - newWidth) / 2;
-        var top = (screenSize.Height - newHeight) / 2;
-
-        _drawDestination = new Rectangle(left, top, newWidth, newHeight);
-        Console.Out.WriteLine($"Updated Viewport to {_drawDestination}");
-
-        _gfx.Viewport = new Viewport(_drawDestination);
-    }
-
-    private void UpdateTranslationMatrix(Vector2 position)
-    {
+        var zm = (float) Math.Pow(2, _zoom) - 1;
         const int halfPlayerSize = 8;
-        var dx = (_target.Width / 2f) - (position.X * Globals.TileSize + halfPlayerSize);
-        var dy = (_target.Height / 2f) - (position.Y * Globals.TileSize  + halfPlayerSize);
+        var dx = (_gfx.PresentationParameters.Bounds.Width / 2f) - (_trackedPosition.X * Globals.TileSize + halfPlayerSize) * Globals.Scale * zm;
+        var dy = (_gfx.PresentationParameters.Bounds.Height / 2f) - (_trackedPosition.Y * Globals.TileSize  + halfPlayerSize) * Globals.Scale * zm;
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
-        Translation = newTranslation;
+        var scale = Matrix.CreateScale(Globals.Scale * zm);
+        Translation = scale * newTranslation;
+        OnCameraEvent(scale);
     }
 
     /// <summary>
@@ -122,6 +116,8 @@ public class Camera
     {
         _renderables.Add(renderObject);
     }
+    
+    //=== EVENT HANDLING ===--------------------------------------------------------------------------------------
 
     /// <summary>
     /// Listens for Player position updates to update the Camera position.
@@ -132,7 +128,33 @@ public class Camera
     {
         if (sender != _playerId) return;
         if (args.EventTopic != EntityEventType.Moved) return;
-        UpdateTranslationMatrix(args.NewPosition);
+        _trackedPosition = args.NewPosition;
+        UpdateTranslationMatrix();
+    }
+    
+    /// <summary>
+    /// Adjusts the camera zoom value based on thrown event from InputManager.
+    /// </summary>
+    public void HandleZoomEvent(ZoomEventType zm)
+    {
+        switch (zm)
+        {
+            case ZoomEventType.Down:
+                _zoom -= ZoomAdj;
+                break;
+            case ZoomEventType.Up:
+                _zoom += ZoomAdj;
+                break;
+            case ZoomEventType.Reset:
+                _zoom = 1.2f;
+                break;
+            default:
+                throw new InvalidStateException("Invalid Zoom event in Camera");
+        }
+
+        _zoom = Math.Clamp(_zoom, 1f, 1.5f);
+        UpdateTranslationMatrix();
+        _log.LogDebug("updated zoom to {zm}", _zoom);
     }
 }
 
@@ -140,4 +162,11 @@ public enum RenderMode
 {
     Immediate,
     Deferred
+}
+
+public enum ZoomEventType
+{
+    Up,
+    Down,
+    Reset
 }

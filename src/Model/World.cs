@@ -111,7 +111,7 @@ public class World
             {
                 position.X = worldX * 16;
                 position.Y = worldY * 16;
-                Globals.SpriteBatch.Draw(testTile, position, Color.White);
+                Globals.SpriteBatch.Draw(testTile, position, Color.Aquamarine);
             }
         }
     }

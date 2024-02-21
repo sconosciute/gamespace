@@ -7,10 +7,11 @@ namespace gamespace;
 public static class Globals
 {
 
-    public static void Init(ContentManager content, SpriteBatch spriteBatch)
+    public static void Init(ContentManager content, SpriteBatch spriteBatch, SpriteFont font)
     {
         Content ??= content;
         SpriteBatch ??= spriteBatch;
+        Font ??= font;
     }
     
     /// <summary>
@@ -28,6 +29,19 @@ public static class Globals
     /// The global default SpriteBatch.
     /// </summary>
     public static SpriteBatch SpriteBatch { get; private set; }
+    
+    /// <summary>
+    /// The font to use for all in-game text rendering
+    /// </summary>
+    public static SpriteFont Font { get; private set; }
+    
+    public static float Scale { get; private set; } = 1f;
+
+    public static void UpdateScale(GraphicsDevice gfx)
+    {
+        var windowScale = gfx.PresentationParameters.Bounds.Width / 640;
+        Scale = windowScale;
+    }
 
     /// <summary>
     /// The global LoggerFactory for getting loggers throughout the program.
