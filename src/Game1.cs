@@ -68,7 +68,7 @@ public class Game1 : Game
 
     private void TestMobInventory()
     {
-        var tempMob = new Mob(Vector2.One, 1, 1, 10, 10, 1, null, "Zombie", 10);
+        var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, Mob.MobTypes.Turret);
         var tempSmall = new Item(Item.ItemType.SmallHealthPot);
         var tempMedium = new Item(Item.ItemType.MediumHealthPot);
         var tempLarge = new Item(Item.ItemType.LargeHealthPot);
