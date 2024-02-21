@@ -46,10 +46,11 @@ public static class Build
     }
     public struct Items
     {
-        public static Item SmallHealthPotion()
+        public static Item SmallHealthPotion(Character user, out ItemUsedCallback useItem)
         {
             var smallPotion = new Item("Small health potion", 
-                "This will heal small wounds", Item.ItemType.SmallHealthPot);
+                "This will heal small wounds", Item.ItemType.SmallHealthPot); 
+            useItem = Item.useSmallPotion(user);
             return smallPotion;
         }
         

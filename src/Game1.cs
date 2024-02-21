@@ -68,10 +68,10 @@ public class Game1 : Game
 
     private void TestMobInventory()
     {
-        var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, Mob.MobTypes.Turret);
-        var tempSmall = new Item(Item.ItemType.SmallHealthPot);
-        var tempMedium = new Item(Item.ItemType.MediumHealthPot);
-        var tempLarge = new Item(Item.ItemType.LargeHealthPot);
+        var tempMob =  new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, Mob.MobTypes.Turret);
+        var tempSmall = Build.Items.SmallHealthPotion(tempMob);//new Item(Item.ItemType.SmallHealthPot);
+        var tempMedium = //new Item(Item.ItemType.MediumHealthPot);
+        var tempLarge = //new Item(Item.ItemType.LargeHealthPot);
         tempMob.AddToInventory(tempSmall);
         _log.LogInformation("test for small heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used small heal: ");

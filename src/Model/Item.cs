@@ -8,6 +8,7 @@ public class Item
     private readonly ItemType _type;
     private readonly string _itemName;
     private readonly string _itemDescription;
+    //public delegate void ItemUsedCallback();
     public enum ItemType
     {
         SmallHealthPot = 0,
@@ -23,7 +24,7 @@ public class Item
         _itemDescription = itemDescription;
         _type = type;
     }
-
+    //public delegate void ItemUsedCallback();
     public ItemUsedCallback GetItemUse(Character user)
     {
         switch (_type)
@@ -45,7 +46,12 @@ public class Item
                 void NoReference() => Console.Write("Cannot find case");
         }
     }
-    
+
+    public static ItemUsedCallback useSmallPotion(Character user)
+    {
+        return SmallHealPotionUse;
+        void SmallHealPotionUse() => user.AddHealth(25);
+    }
     //Properties
     private string ItemName { get; init; }
     public string ItemDescription { get; init; }
