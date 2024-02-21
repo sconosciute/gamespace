@@ -27,17 +27,17 @@ public class Item
         switch (_type)
         {
             case ItemType.SmallHealthPot :
-                void SmallHealPotionUse() => user.AddHealth(25);
                 return SmallHealPotionUse;
+                void SmallHealPotionUse() => user.AddHealth(25);
 
             case ItemType.MediumHealthPot:
-                void MediumHealPotionUse() => user.AddHealth(50);
                 return MediumHealPotionUse;
-            
+                void MediumHealPotionUse() => user.AddHealth(50);
+
             case ItemType.LargeHealthPot:
-                void LargeHealPotionUse() => user.AddHealth(75);
                 return LargeHealPotionUse;
-                
+                void LargeHealPotionUse() => user.AddHealth(75);
+
             default:
                 return NoReference;
                 void NoReference() => Console.Write("Cannot find case");
@@ -45,7 +45,7 @@ public class Item
     }
     
     //Properties
-    public string ItemName { get; init; }
+    private string ItemName { get; init; }
     public string ItemDescription { get; init; }
     public override string ToString()
     {
