@@ -31,7 +31,6 @@ public class Mob : Character
         _hp = hp;
         _damage = damage;
         _inventory = Inventory = new Item[InventorySize];
-        
     }
 
     public bool InventoryUse()
@@ -40,6 +39,7 @@ public class Mob : Character
         {
             return false; //This type cannot use items
         }
+
         var index = Array.IndexOf(_inventory, FirstNonEmpty(_inventory));
         if (index < 0)
         {
@@ -83,6 +83,7 @@ public class Mob : Character
                 break;
         }
     }
+
     //properties
     public Item[] Inventory { get; }
 }

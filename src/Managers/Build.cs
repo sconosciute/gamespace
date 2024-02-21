@@ -29,6 +29,7 @@ public static class Build
             return prop;
         }
     }
+
     public struct Mobs
     {
         public static Mob Turret(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
@@ -44,15 +45,15 @@ public static class Build
             return mob;
         }
     }
+
     public struct Items
     {
         public static Item SmallHealthPotion(Character user, out ItemUsedCallback useItem)
         {
-            var smallPotion = new Item("Small health potion", 
-                "This will heal small wounds", Item.ItemType.SmallHealthPot); 
-            useItem = Item.useSmallPotion(user);
+            var smallPotion = new Item("Small health potion",
+                "This will heal small wounds", Item.ItemType.SmallHealthPot);
+            useItem = Item.UseSmallPotion(user);
             return smallPotion;
         }
-        
     }
 }

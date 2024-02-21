@@ -1,13 +1,17 @@
 using System;
 
 namespace gamespace.Model;
+
 public delegate void ItemUsedCallback();
+
 public class Item
 {
     // Figure out later how to draw these items in inventory.
     private readonly ItemType _type;
     private readonly string _itemName;
+
     private readonly string _itemDescription;
+
     //public delegate void ItemUsedCallback();
     public enum ItemType
     {
@@ -15,21 +19,22 @@ public class Item
         MediumHealthPot = 1,
         LargeHealthPot = 2,
     }
-    
-    
-   //changing itemName to infer off type, and temporally making description do the same.
+
+
+    //changing itemName to infer off type, and temporally making description do the same.
     public Item(string itemName, string itemDescription, ItemType type)
     {
         _itemName = itemName;
         _itemDescription = itemDescription;
         _type = type;
     }
+
     //public delegate void ItemUsedCallback();
     public ItemUsedCallback GetItemUse(Character user)
     {
         switch (_type)
         {
-            case ItemType.SmallHealthPot :
+            case ItemType.SmallHealthPot:
                 return SmallHealPotionUse;
                 void SmallHealPotionUse() => user.AddHealth(25);
 
@@ -47,16 +52,18 @@ public class Item
         }
     }
 
-    public static ItemUsedCallback useSmallPotion(Character user)
+    public static ItemUsedCallback UseSmallPotion(Character user)
     {
         return SmallHealPotionUse;
         void SmallHealPotionUse() => user.AddHealth(25);
     }
+
     //Properties
     private string ItemName { get; init; }
     public string ItemDescription { get; init; }
+
     public override string ToString()
     {
-            return ItemName;
+        return ItemName;
     }
 }
