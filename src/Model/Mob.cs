@@ -31,7 +31,7 @@ public class Mob : Character
         _hp = hp;
         _damage = damage;
         _inventory = Inventory = new Item[InventorySize];
-        GenerateMob(type);
+        
     }
 
     public bool InventoryUse()
