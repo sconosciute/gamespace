@@ -42,26 +42,27 @@ public class GameManager
     public void InitPlayerWorld()
     {
         Guid dummy = Guid.NewGuid();
-        
-        var robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate, layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
+
+        var robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
+            layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(robj);
         _player.EntityEvent += robj.HandleEntityEvent;
         robj.Update(new GameTime());
 
 
-        _world.TryPlaceTile(new Point(5, 5),BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(5, 6),BuildTile(new Vector2(5f, 6f), Build.Props.Wall));
-        
-        _world.TryPlaceTile(new Point(10, 5),BuildTile(new Vector2(10f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(11, 5),BuildTile(new Vector2(11f, 5f), Build.Props.Wall));
-        
-        _world.TryPlaceTile(new Point(-5, 5),BuildTile(new Vector2(-5f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(-5, 6),BuildTile(new Vector2(-5f, 6f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(-4, 5),BuildTile(new Vector2(-4f, 5f), Build.Props.Wall));
-        
-        _world.TryPlaceTile(new Point(20, 5),BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(20, 6),BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(21, 5),BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(5, 5), BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(5, 6), BuildTile(new Vector2(5f, 6f), Build.Props.Wall));
+
+        _world.TryPlaceTile(new Point(10, 5), BuildTile(new Vector2(10f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(11, 5), BuildTile(new Vector2(11f, 5f), Build.Props.Wall));
+
+        _world.TryPlaceTile(new Point(-5, 5), BuildTile(new Vector2(-5f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(-5, 6), BuildTile(new Vector2(-5f, 6f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(-4, 5), BuildTile(new Vector2(-4f, 5f), Build.Props.Wall));
+
+        _world.TryPlaceTile(new Point(20, 5), BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(20, 6), BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
+        _world.TryPlaceTile(new Point(21, 5), BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
     }
 
     /// <summary>
@@ -103,5 +104,4 @@ public class GameManager
     }
 
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
-    
 }

@@ -17,11 +17,11 @@ public class RenderObject
     private Vector2 _position;
 
     private float _layerDepth;
-    
+
     private readonly Dictionary<AnimationAction, Animation> _animations = new();
 
     private ILogger _log;
-        
+
     /// <summary>
     /// Generates a new RenderObject which will track an Entity for position updates.
     /// </summary>
@@ -31,7 +31,7 @@ public class RenderObject
     /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
     public RenderObject(Texture2D texture, Vector2 worldPosition, float layerDepth, Guid? entityId = null)
     {
-        _log = Globals.LogFactory.CreateLogger <RenderObject> ();
+        _log = Globals.LogFactory.CreateLogger<RenderObject>();
         _texture = texture;
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
         _layerDepth = layerDepth;
@@ -40,7 +40,8 @@ public class RenderObject
         if (texture.Name != Textures.Player) return;
         // TODO: fix RenderObject!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Placeholder that will be removed once implementation is complete.
-        _animations[GetAnimationAction(worldPosition)] = new Animation(texture, 16, 16, 4, 0.1f, GetAnimationAction(worldPosition));
+        _animations[GetAnimationAction(worldPosition)] =
+            new Animation(texture, 16, 16, 4, 0.1f, GetAnimationAction(worldPosition));
     }
 
     private static AnimationAction GetAnimationAction(Vector2 direction)
@@ -55,20 +56,20 @@ public class RenderObject
 
         return directions.GetValueOrDefault(direction, AnimationAction.S);
     }
-    
+
     // TODO: Make appropriate changes to update animations whenever there is an input.
     public void Update(GameTime gameTime)
     {
         var direction = InputManager.Direction;
 
         var action = GetAnimationAction(direction);
-        
+
         foreach (var animation in _animations.Values)
         {
             animation.Update(gameTime, action);
         }
     }
-    
+
     public void Draw()
     {
         if (_texture.Name == Textures.Player)
@@ -83,7 +84,7 @@ public class RenderObject
             Globals.SpriteBatch.Draw(_texture, _position, Color.White);
         }
     }
-    
+
     public void HandleEntityEvent(Guid sender, EntityEventArgs args)
     {
         if (sender != _entityId) return;
@@ -105,15 +106,14 @@ public struct LayerDepth
     /// Objects in the foreground will be drawn over everything else. Place Entities here.
     /// </summary>
     public const float Foreground = 0f;
-    
+
     /// <summary>
     /// Objects in the midground will be drawn between the other two layers. Props that render over the floor but under entities are best placed here.
     /// </summary>
     public const float Midground = 0.5f;
-    
+
     /// <summary>
     /// Objects in the background will be drawn underneath all other objects.
     /// </summary>
     public const float Background = 1f;
-
 }
