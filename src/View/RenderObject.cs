@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using gamespace.Managers;
 using gamespace.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
@@ -36,24 +37,32 @@ public class RenderObject
         _layerDepth = layerDepth;
         _entityId = entityId;
 
-        if (texture.Name == Textures.Player)
+        if (texture.Name != Textures.Player) return;
+        // TODO: fix RenderObject!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Placeholder that will be removed once implementation is complete.
+        _animations[GetAnimationAction(worldPosition)] = new Animation(texture, 16, 16, 4, 0.1f, GetAnimationAction(worldPosition));
+    }
+
+    private static AnimationAction GetAnimationAction(Vector2 direction)
+    {
+        var directions = new Dictionary<Vector2, AnimationAction>
         {
-            // TODO: Make actual *animations* rather than having manual changes to change sprite shown.
-            // NOTE: Bug with tiles where if the AnimationAction is anything but facing South, tiles lose their color.
-            _animations[AnimationAction.Se] = new Animation(texture, 16, 16, 4, 0.1f, 
-                AnimationAction.Se);
-        }
-        else
-        {
-            // Fixes bug mentioned above, need to look at more later.
-            _animations[AnimationAction.S] = new Animation(texture, 16, 16, 4, 0.1f, 
-                AnimationAction.S);
-        }
+            { new Vector2(1, 0), AnimationAction.E },
+            { new Vector2(-1, 0), AnimationAction.W },
+            { new Vector2(0, -1), AnimationAction.N },
+            { new Vector2(0, 1), AnimationAction.S }
+        };
+
+        return directions.GetValueOrDefault(direction, AnimationAction.S);
     }
     
     // TODO: Make appropriate changes to update animations whenever there is an input.
-    public void Update(GameTime gameTime, AnimationAction action)
+    public void Update(GameTime gameTime)
     {
+        var direction = InputManager.Direction;
+
+        var action = GetAnimationAction(direction);
+        
         foreach (var animation in _animations.Values)
         {
             animation.Update(gameTime, action);
@@ -62,9 +71,16 @@ public class RenderObject
     
     public void Draw()
     {
-        foreach (var animation in _animations.Values)
+        if (_texture.Name == Textures.Player)
         {
-            Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White);
+            foreach (var animation in _animations.Values)
+            {
+                Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White);
+            }
+        }
+        else
+        {
+            Globals.SpriteBatch.Draw(_texture, _position, Color.White);
         }
     }
     
