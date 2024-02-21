@@ -45,7 +45,10 @@ public class Game1 : Game
         _gm.AddTexture(Textures.TestTile);
         _gm.AddTexture(Textures.TestBars);
         _gm.AddTexture(Textures.Collider);
+        _gm.AddTexture(Textures.OpaqueBg);
+        _gm.AddTexture(Textures.TransparentBg);
         
+        _gm.InitGui();
         _gm.InitPlayerWorld();
     }
 

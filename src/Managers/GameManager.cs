@@ -11,30 +11,39 @@ public class GameManager
 {
     private const int WorldSize = 51;
 
-    private readonly GraphicsDeviceManager _gfx;
+    private readonly GraphicsDeviceManager _gfxMan;
     private readonly Camera _camera;
+    private GuiManager _gui;
     private readonly Player _player;
     private readonly World _world;
     private readonly Dictionary<string, Texture2D> _textures = new();
 
     public GameManager(GraphicsDeviceManager graphics)
     {
-        _gfx = graphics;
-        TempSetRes();
+        _gfxMan = graphics;
+        SetResolution(1920, 1080);
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
-        _camera = new Camera(_player.EntityId, _gfx.GraphicsDevice);
+        _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
         
         InputManager.ZoomEvent += _camera.HandleZoomEvent;
         _player.EntityEvent += _camera.HandleEntityEvent;
     }
 
-    private void TempSetRes()
+    public void InitGui()
     {
-        _gfx.PreferredBackBufferWidth = 1920;
-        _gfx.PreferredBackBufferHeight = 1080;
-        _gfx.ApplyChanges();
-        Globals.UpdateScale(_gfx.GraphicsDevice);
+        if (_gui == null)
+        {
+            _gui = new GuiManager(_gfxMan.GraphicsDevice, this);
+        }
+    }
+
+    private void SetResolution(int width, int height)
+    {
+        _gfxMan.PreferredBackBufferWidth = width;
+        _gfxMan.PreferredBackBufferHeight = height;
+        _gfxMan.ApplyChanges();
+        Globals.UpdateScale(_gfxMan.GraphicsDevice);
     }
 
     public void InitPlayerWorld()
@@ -59,6 +68,8 @@ public class GameManager
         _world.TryPlaceTile(new Point(20, 5),BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(20, 6),BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(21, 5),BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
+
+        _gui.OpenMainMenu();
     }
 
     /// <summary>
@@ -69,8 +80,9 @@ public class GameManager
         _camera.BeginFrame();
         _world.DebugDrawMap();
         _camera.DrawFrame(RenderMode.Deferred);
-        Globals.SpriteBatch.DrawString(Globals.Font, "TEST STRING PLEASE IGNORE", Vector2.Zero, Color.Red, 0f, Vector2.Zero, new Vector2(0.4f, 0.4f), SpriteEffects.None, 0f);
+        
         _camera.RenderFrame();
+        _gui.RenderGui();
     }
 
     public Texture2D GetTexture(string assetName)

@@ -56,4 +56,10 @@ public class MenuPanel : GuiPanel
     {
         _buttons.Add(button);
     }
+
+    public override void Draw(SpriteBatch batch)
+    {
+        base.Draw(batch);
+        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch);
+    }
 }

@@ -48,31 +48,18 @@ public class Camera
 
         UpdateTranslationMatrix();
     }
+    
+    //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
+    public delegate void CameraEventHandler(Matrix scale);
 
-    /// <summary>
-    /// Adjusts the camera zoom value based on thrown event from InputManager.
-    /// </summary>
-    public void HandleZoomEvent(ZoomEventType zm)
+    public event CameraEventHandler CameraEvent;
+
+    protected virtual void OnCameraEvent(Matrix scale)
     {
-        switch (zm)
-        {
-            case ZoomEventType.Down:
-                _zoom -= ZoomAdj;
-                break;
-            case ZoomEventType.Up:
-                _zoom += ZoomAdj;
-                break;
-            case ZoomEventType.Reset:
-                _zoom = 1f;
-                break;
-            default:
-                throw new InvalidStateException("Invalid Zoom event in Camera");
-        }
-
-        _zoom = Math.Clamp(_zoom, 1f, 1.5f);
-        UpdateTranslationMatrix();
-        _log.LogDebug("updated zoom to {zm}", _zoom);
+        CameraEvent?.Invoke(scale);
     }
+    
+    //=== RENDERING ===-------------------------------------------------------------------------------------------------
 
     /// <summary>
     /// Draw the current state of all render objects to a frame. May either render immediately upon completion or defer rendering and make a separate call to RenderFrame.
@@ -118,6 +105,7 @@ public class Camera
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         var scale = Matrix.CreateScale(Globals.Scale * zm);
         Translation = scale * newTranslation;
+        OnCameraEvent(scale);
     }
 
     /// <summary>
@@ -128,6 +116,8 @@ public class Camera
     {
         _renderables.Add(renderObject);
     }
+    
+    //=== BEGIN EVENT HANDLERS ===--------------------------------------------------------------------------------------
 
     /// <summary>
     /// Listens for Player position updates to update the Camera position.
@@ -140,6 +130,31 @@ public class Camera
         if (args.EventTopic != EntityEventType.Moved) return;
         _trackedPosition = args.NewPosition;
         UpdateTranslationMatrix();
+    }
+    
+    /// <summary>
+    /// Adjusts the camera zoom value based on thrown event from InputManager.
+    /// </summary>
+    public void HandleZoomEvent(ZoomEventType zm)
+    {
+        switch (zm)
+        {
+            case ZoomEventType.Down:
+                _zoom -= ZoomAdj;
+                break;
+            case ZoomEventType.Up:
+                _zoom += ZoomAdj;
+                break;
+            case ZoomEventType.Reset:
+                _zoom = 1f;
+                break;
+            default:
+                throw new InvalidStateException("Invalid Zoom event in Camera");
+        }
+
+        _zoom = Math.Clamp(_zoom, 1f, 1.5f);
+        UpdateTranslationMatrix();
+        _log.LogDebug("updated zoom to {zm}", _zoom);
     }
 }
 
