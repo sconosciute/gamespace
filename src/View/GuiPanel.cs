@@ -34,6 +34,7 @@ public abstract class GuiPanel
 
     protected void DrawText(Vector2 position, string message, SpriteBatch batch)
     {
+        //TODO: Provide difference between Title and Body text.
         var scale = new Vector2(Globals.Scale, Globals.Scale);
         batch.DrawString(Globals.Font, message, position, Color.Red, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
