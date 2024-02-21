@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
@@ -14,8 +12,8 @@ public class Animation
         private readonly int _totalFrames;
         private readonly float _frameTime;
         private int _currentFrame;
-        private float _timer;
         private AnimationAction _action;
+        private double _lastUpCall;
         
         public Animation(Texture2D texture, int framesX, int framesY, int totalFrames, float frameTime, AnimationAction action)
         {
@@ -24,8 +22,6 @@ public class Animation
                 _frameHeight = framesY;
                 _totalFrames = totalFrames;
                 _frameTime = frameTime;
-                _timer = 0f;
-                _currentFrame = 0;
                 _action = action;
                 
                 UpdateSourceRectangle();
@@ -35,16 +31,16 @@ public class Animation
         
         public void Update(GameTime gameTime, AnimationAction action)
         {
+                var now = gameTime.TotalGameTime.TotalMilliseconds;
+                
                 if (_action != action)
                 {
                         _action = action;
                         UpdateSourceRectangle();
                 }
 
-                _timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (!(_timer > _frameTime)) return;
-                _timer = 0f;
+                if (!(_lastUpCall == 0 || now - _lastUpCall >= _frameTime)) return;
+                _lastUpCall = now;
                 _currentFrame = (_currentFrame + 1) % _totalFrames;
                 UpdateSourceRectangle();
         }
@@ -64,8 +60,8 @@ public class Animation
                         _ => 0
                 };
 
-                var row = (_currentFrame % (_texture.Height / _frameHeight)) + rowOffset;
-                var col = _currentFrame / (_texture.Height / _frameHeight);
+                var row = _currentFrame / (_texture.Width / _frameWidth) + rowOffset;
+                var col = _currentFrame % (_texture.Height / _frameHeight);
 
                 SourceRectangle = new Rectangle(col * _frameWidth, row * _frameHeight, _frameWidth, _frameHeight);
         }
