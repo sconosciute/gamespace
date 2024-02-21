@@ -46,6 +46,7 @@ public class GameManager
         var robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate, layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(robj);
         _player.EntityEvent += robj.HandleEntityEvent;
+        robj.Update(new GameTime());
 
 
         _world.TryPlaceTile(new Point(5, 5),BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
