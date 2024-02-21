@@ -53,7 +53,7 @@ public class GuiManager
     //=== GUI RENDERING ===---------------------------------------------------------------------------------------------
     public void RenderGui()
     {
-        _guiSpriteBatch.Begin(transformMatrix: _drawScale, blendState: BlendState.AlphaBlend,
+        _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend,
             samplerState: SamplerState.PointClamp);
         foreach (var panel in _panels)
         {
@@ -73,9 +73,17 @@ public class GuiManager
 
     public void OpenMainMenu()
     {
-        var center = new Point(320, 180);
-        var menu = MenuPanel.BuildMenu(center, this);
-        menu.Shown = true;
-        _panels.Add(menu);
+        //TODO: Refactor this to only update draw box placement after screen size update.
+        var screenSpace = _gfx.PresentationParameters.Bounds;
+        var width = (int)(screenSpace.Width * 1f / 3f);
+        var topBotBuff = (int)(screenSpace.Height * 1f / 10f);
+        var height = (int)(screenSpace.Height - (2 * topBotBuff));
+        var drawBox = new Rectangle(width, topBotBuff, width, height);
+        var mainMenu = new MenuPanel(drawBox, this)
+        {
+            Shown = true,
+            IsActive = true
+        };
+        _panels.Add(mainMenu);
     }
 }

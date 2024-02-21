@@ -34,7 +34,8 @@ public abstract class GuiPanel
 
     protected void DrawText(Vector2 position, string message, SpriteBatch batch)
     {
-        batch.DrawString(Globals.Font, message, position, Color.Red, 0f, Vector2.Zero, new Vector2(1f, 1f), SpriteEffects.None, 0f);
+        var scale = new Vector2(Globals.Scale, Globals.Scale);
+        batch.DrawString(Globals.Font, message, position, Color.Red, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
 
     public virtual void Draw(SpriteBatch batch)
