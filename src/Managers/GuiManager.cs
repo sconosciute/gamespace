@@ -25,6 +25,7 @@ public class GuiManager
         _gm = gm;
         _input = InputManager.GetInputManager(this);
         _input.ZoomEvent += camera.HandleZoomEvent;
+        camera.CameraEvent += HandleCameraEvent;
         
         _guiSpriteBatch = new SpriteBatch(_gfx);
     }
@@ -52,7 +53,7 @@ public class GuiManager
     //=== GUI RENDERING ===---------------------------------------------------------------------------------------------
     public void RenderGui()
     {
-        _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend,
+        _guiSpriteBatch.Begin(transformMatrix: _drawScale, blendState: BlendState.AlphaBlend,
             samplerState: SamplerState.PointClamp);
         foreach (var panel in _panels)
         {
@@ -63,7 +64,7 @@ public class GuiManager
     }
 
     //=== EVENT HANDLING ===--------------------------------------------------------------------------------------------
-    public void HandleCameraEvent(Matrix scale)
+    private void HandleCameraEvent(Matrix scale)
     {
         _drawScale = scale;
     }
@@ -72,7 +73,7 @@ public class GuiManager
 
     public void OpenMainMenu()
     {
-        var center = new Point(_gfx.PresentationParameters.Bounds.Width / 2, _gfx.PresentationParameters.Bounds.Height / 2);
+        var center = new Point(320, 180);
         var menu = MenuPanel.BuildMenu(center, this);
         menu.Shown = true;
         _panels.Add(menu);

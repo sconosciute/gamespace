@@ -8,8 +8,8 @@ namespace gamespace.View;
 public class MenuPanel : GuiPanel
 {
     private const string Title = "Main Menu";
-    private const int MenuWidth = 360;
-    private const int MenuHeight = 640;
+    private const int MenuWidth = 320;
+    private const int MenuHeight = 320;
 
     private List<GuiButton> _buttons;
     
