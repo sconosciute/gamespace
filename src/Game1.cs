@@ -17,13 +17,12 @@ public class Game1 : Game
 
     public Game1()
     {
-        
         _log = Globals.LogFactory.CreateLogger<Game1>();
-        
+
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = new GraphicsDeviceManager(this);
         var adapter = new GraphicsAdapter();
-        
+
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
@@ -36,7 +35,7 @@ public class Game1 : Game
         _log.LogInformation("Initializing Game");
         var font = Content.Load<SpriteFont>("font");
         Globals.Init(content: Content, spriteBatch: new SpriteBatch(GraphicsDevice), font);
-        
+
         base.Initialize();
     }
 
@@ -49,7 +48,7 @@ public class Game1 : Game
         _gm.AddTexture(Textures.Collider);
         _gm.AddTexture(Textures.OpaqueBg);
         _gm.AddTexture(Textures.TransparentBg);
-        
+
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();
     }
@@ -61,10 +60,10 @@ public class Game1 : Game
 
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
-            _gm.FixedUpdate();
+            _gm.FixedUpdate(gameTime);
             _lastUpTime = now;
         }
-        
+
         base.Update(gameTime);
     }
 
