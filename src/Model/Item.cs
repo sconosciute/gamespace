@@ -6,7 +6,7 @@ public delegate void ItemUsedCallback();
 
 public class Item
 {
-    // Figure out later how to draw these items in inventory.
+    //TODO: Figure out how to draw these in player inventory, and in chests.
     private readonly ItemType _type;
     public string ItemName { get; init; }
     public string ItemDescription { get; init; }

@@ -69,11 +69,11 @@ public class Game1 : Game
         //TODO: split this up into different unit tests.
         var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, true, true, Mob.MobTypes.Hostile);
         var tempSmall =
-            Build.Items.SmallHealthPotion(tempMob); //new Item(Item.ItemType.SmallHealthPot);
+            Build.Items.SmallHealthPotion(tempMob);
         var tempMedium =
-            Build.Items.MediumHealthPotion(tempMob); //new Item(Item.ItemType.MediumHealthPot);
+            Build.Items.MediumHealthPotion(tempMob); 
         var tempLarge =
-            Build.Items.LargeHealthPotion(tempMob); //new Item(Item.ItemType.LargeHealthPot);
+            Build.Items.LargeHealthPotion(tempMob); 
         tempMob.AddToInventory(tempSmall);
         _log.LogInformation("test for small heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used small heal: ");

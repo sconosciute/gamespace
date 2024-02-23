@@ -34,7 +34,6 @@ public static class Build
     {
         public static Mob Turret(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
         {
-            //TODO: Discuss how to handle world here.
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Turret",
                 10, false, false, Mob.MobTypes.Hostile);
             //TODO: Add a Turret Model
