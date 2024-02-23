@@ -38,23 +38,36 @@ public class RenderObject
         _entityId = entityId;
 
         if (texture.Name != Textures.Player) return;
-        // TODO: fix RenderObject!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // Placeholder that will be removed once implementation is complete.
         _animations[GetAnimationAction(worldPosition)] =
-            new Animation(texture, 16, 16, 4, 0.1f, GetAnimationAction(worldPosition));
+            new Animation(texture, 16, 16, 4, 100.0f, GetAnimationAction(worldPosition));
     }
 
     private static AnimationAction GetAnimationAction(Vector2 direction)
     {
-        var directions = new Dictionary<Vector2, AnimationAction>
-        {
-            { new Vector2(1, 0), AnimationAction.E },
-            { new Vector2(-1, 0), AnimationAction.W },
-            { new Vector2(0, -1), AnimationAction.N },
-            { new Vector2(0, 1), AnimationAction.S }
-        };
+        direction.Normalize();
 
-        return directions.GetValueOrDefault(direction, AnimationAction.S);
+        if (Math.Abs(direction.X) > Math.Abs(direction.Y))
+        {
+            switch (direction.X)
+            {
+                case > 0:
+                    return AnimationAction.E;
+                case < 0:
+                    return AnimationAction.W;
+            }
+        }
+        else
+        {
+            switch (direction.Y)
+            {
+                case > 0:
+                    return AnimationAction.S;
+                case < 0:
+                    return AnimationAction.N;
+            }
+        }
+
+        return AnimationAction.S;
     }
 
     // TODO: Make appropriate changes to update animations whenever there is an input.
