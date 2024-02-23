@@ -10,7 +10,9 @@ public class Item
     private readonly ItemType _type;
     public string ItemName { get; init; }
     public string ItemDescription { get; init; }
+
     public ItemUsedCallback ItemUse;
+
     public enum ItemType
     {
         HealingItem
@@ -27,17 +29,23 @@ public class Item
     {
         ItemUse = SmallHealPotionUse;
         return SmallHealPotionUse;
-        void SmallHealPotionUse() => user.AddHealth(25);
+
+        void SmallHealPotionUse() => Console.Write("Healed small wounds, 25");
+        /*{
+        user.AddHealth(25); Live version:
+        Console.Write("Healed small wounds, 25"); Testing:
+        }*/
     }
 
     public ItemUsedCallback UseMediumPotion(Character user)
     {
         ItemUse = MediumHealPotionUse;
         return MediumHealPotionUse;
-        void MediumHealPotionUse() => user.AddHealth(50);
+
+        void MediumHealPotionUse() => Console.Write("Healed medium wounds, 50");
         /*{
         user.AddHealth(50); Live version:
-        Console.Write("Healed large wounds, 50"); Testing:
+        Console.Write("Healed medium wounds, 50"); Testing:
         }*/
     }
 
@@ -45,16 +53,17 @@ public class Item
     {
         ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse;
-        void LargeHealPotionUse() => user.AddHealth(75);
+
+        void LargeHealPotionUse() => Console.Write("Healed large wounds, 75");
         /*{
         user.AddHealth(75); Live version:
         Console.Write("Healed large wounds, 75"); Testing:
         }*/
     }
-    //Properties
 
     public override string ToString()
     {
-        return ItemName;
+        var itemInfo = "Name: " + ItemName + " Item Description: " + ItemDescription + " Item Type: " + _type;
+        return itemInfo;
     }
 }
