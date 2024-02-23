@@ -48,27 +48,29 @@ public static class Build
 
     public struct Items
     {
-        public static Item SmallHealthPotion(Character user, out ItemUsedCallback useItem)
+        //TODO: Remove user from here, we will not know the user until after it is set, we could have a get, set that runs on pickup?
+        public static Item SmallHealthPotion(Character user)
         {
             var smallPotion = new Item("Small health potion",
                 "This will heal small wounds", Item.ItemType.HealingItem);
-            useItem = Item.UseSmallPotion(user);
+            smallPotion.UseSmallPotion(user);
+            // = Item.UseSmallPotion(user);
             return smallPotion;
         }
 
-        public static Item MediumHealthPotion(Character user, out ItemUsedCallback useItem)
+        public static Item MediumHealthPotion(Character user)
         {
             var mediumPotion = new Item("Medium health potion",
                 "This will heal Medium wounds", Item.ItemType.HealingItem);
-            useItem = Item.UseMediumPotion(user);
+            mediumPotion.UseMediumPotion(user);
             return mediumPotion;
         }
 
-        public static Item LargeHealthPotion(Character user, out ItemUsedCallback useItem)
+        public static Item LargeHealthPotion(Character user)
         {
             var largePotion = new Item("large health potion",
                 "This will heal severe wounds", Item.ItemType.HealingItem);
-            useItem = Item.UseLargePotion(user);
+            largePotion.UseLargePotion(user);
             return largePotion;
         }
     }

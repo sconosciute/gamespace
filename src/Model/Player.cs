@@ -33,12 +33,10 @@ public class Player : Character
             return false;
         }
 
-        /*var wantedItem = _inventory[inventorySlot];
-        Item smallpot = Build.Items.SmallHealthPotion(null, out var useItem);
-        var wantedItemUse = useItem;*/
-        this._inventory[inventorySlot] = null;
-        //wantedItemUse.Invoke();
-        usedCallback.Invoke();
+        var wantedItem = _inventory[inventorySlot];
+        var wantedItemUse = wantedItem.ItemUse;
+        _inventory[inventorySlot] = null;
+        wantedItemUse.Invoke();
         return true;
     }
 

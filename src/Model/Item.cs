@@ -10,7 +10,7 @@ public class Item
     private readonly ItemType _type;
     public string ItemName { get; init; }
     public string ItemDescription { get; init; }
-
+    public ItemUsedCallback ItemUse;
     public enum ItemType
     {
         HealingItem
@@ -23,16 +23,17 @@ public class Item
         _type = type;
     }
 
-    public static ItemUsedCallback UseSmallPotion(Character user)
+    public ItemUsedCallback UseSmallPotion(Character user)
     {
+        ItemUse = SmallHealPotionUse;
         return SmallHealPotionUse;
         void SmallHealPotionUse() => user.AddHealth(25);
     }
 
-    public static ItemUsedCallback UseMediumPotion(Character user)
+    public ItemUsedCallback UseMediumPotion(Character user)
     {
+        ItemUse = MediumHealPotionUse;
         return MediumHealPotionUse;
-
         void MediumHealPotionUse() => user.AddHealth(50);
         /*{
         user.AddHealth(50); Live version:
@@ -40,10 +41,10 @@ public class Item
         }*/
     }
 
-    public static ItemUsedCallback UseLargePotion(Character user)
+    public ItemUsedCallback UseLargePotion(Character user)
     {
+        ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse;
-
         void LargeHealPotionUse() => user.AddHealth(75);
         /*{
         user.AddHealth(75); Live version:

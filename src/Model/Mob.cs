@@ -35,7 +35,7 @@ public class Mob : Character
         _inventory = Inventory = new Item[InventorySize];
     }
 
-    public bool InventoryUse(ItemUsedCallback useItem)
+    public bool InventoryUse()
     {
         if (_canUseItems == false)
         {
@@ -49,10 +49,10 @@ public class Mob : Character
         }
 
         var wantedItem = _inventory[index];
-        //var wantedItemUse = wantedItem.GetItemUse(this);
+        var wantedItemUse = wantedItem.ItemUse;
         _inventory[index] = null;
         //wantedItemUse.Invoke();
-        useItem.Invoke();
+        wantedItemUse.Invoke();
         return true;
     }
 

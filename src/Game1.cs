@@ -70,25 +70,22 @@ public class Game1 : Game
         //TODO: split this up into different unit tests.
         var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, true, true, Mob.MobTypes.Turret);
         var tempSmall =
-            Build.Items.SmallHealthPotion(tempMob,
-                out var smallPotionUsedCallback); //new Item(Item.ItemType.SmallHealthPot);
+            Build.Items.SmallHealthPotion(tempMob); //new Item(Item.ItemType.SmallHealthPot);
         var tempMedium =
-            Build.Items.MediumHealthPotion(tempMob,
-                out var mediumPotionUsedCallback); //new Item(Item.ItemType.MediumHealthPot);
+            Build.Items.MediumHealthPotion(tempMob); //new Item(Item.ItemType.MediumHealthPot);
         var tempLarge =
-            Build.Items.LargeHealthPotion(tempMob,
-                out var largePotionUsedCallback); //new Item(Item.ItemType.LargeHealthPot);
+            Build.Items.LargeHealthPotion(tempMob); //new Item(Item.ItemType.LargeHealthPot);
         tempMob.AddToInventory(tempSmall);
         _log.LogInformation("test for small heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used small heal: ");
-        tempMob.InventoryUse(smallPotionUsedCallback);
+        tempMob.InventoryUse();
         tempMob.AddToInventory(tempMedium);
         _log.LogInformation("test for medium heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used medium heal: ");
-        tempMob.InventoryUse(mediumPotionUsedCallback);
+        tempMob.InventoryUse();
         tempMob.AddToInventory(tempLarge);
         _log.LogInformation("test for large heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used large heal: ");
-        tempMob.InventoryUse(largePotionUsedCallback);
+        tempMob.InventoryUse();
     }
 }
