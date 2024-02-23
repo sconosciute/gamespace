@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
@@ -16,10 +17,16 @@ public abstract class Character : Entity
     public Character(Vector2 worldCoordinate, int width, int height, int hp, int energy, int baseDmg, World world) :
         base(width, height, world, worldCoordinate)
     {
+        if (hp <= 0)
+        {
+            throw new ArithmeticException("Max HP cannot be zero or negative");
+        }
+
         Health = _maxHp = hp;
         _energy = _maxEnergy = energy;
         _baseDmg = baseDmg;
     }
+
     //Made this for health potion
     public void AddHealth(int amount)
     {
