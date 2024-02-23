@@ -8,48 +8,19 @@ public class Item
 {
     // Figure out later how to draw these items in inventory.
     private readonly ItemType _type;
-    private readonly string _itemName;
+    public string ItemName { get; init; }
+    public string ItemDescription { get; init; }
 
-    private readonly string _itemDescription;
-
-    //public delegate void ItemUsedCallback();
     public enum ItemType
     {
-        SmallHealthPot = 0,
-        MediumHealthPot = 1,
-        LargeHealthPot = 2,
+        HealingItem
     }
 
-
-    //changing itemName to infer off type, and temporally making description do the same.
     public Item(string itemName, string itemDescription, ItemType type)
     {
-        _itemName = itemName;
-        _itemDescription = itemDescription;
+        ItemName = itemName;
+        ItemDescription = itemDescription;
         _type = type;
-    }
-
-    //public delegate void ItemUsedCallback();
-    public ItemUsedCallback GetItemUse(Character user)
-    {
-        switch (_type)
-        {
-            case ItemType.SmallHealthPot:
-                return SmallHealPotionUse;
-                void SmallHealPotionUse() => user.AddHealth(25);
-
-            case ItemType.MediumHealthPot:
-                return MediumHealPotionUse;
-                void MediumHealPotionUse() => user.AddHealth(50);
-
-            case ItemType.LargeHealthPot:
-                return LargeHealPotionUse;
-                void LargeHealPotionUse() => user.AddHealth(75);
-
-            default:
-                return NoReference;
-                void NoReference() => Console.Write("Cannot find case");
-        }
     }
 
     public static ItemUsedCallback UseSmallPotion(Character user)
@@ -58,9 +29,28 @@ public class Item
         void SmallHealPotionUse() => user.AddHealth(25);
     }
 
+    public static ItemUsedCallback UseMediumPotion(Character user)
+    {
+        return MediumHealPotionUse;
+
+        void MediumHealPotionUse() => user.AddHealth(50);
+        /*{
+        user.AddHealth(50); Live version:
+        Console.Write("Healed large wounds, 50"); Testing:
+        }*/
+    }
+
+    public static ItemUsedCallback UseLargePotion(Character user)
+    {
+        return LargeHealPotionUse;
+
+        void LargeHealPotionUse() => user.AddHealth(75);
+        /*{
+        user.AddHealth(75); Live version:
+        Console.Write("Healed large wounds, 75"); Testing:
+        }*/
+    }
     //Properties
-    private string ItemName { get; init; }
-    public string ItemDescription { get; init; }
 
     public override string ToString()
     {

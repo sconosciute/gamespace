@@ -26,17 +26,19 @@ public class Player : Character
         base.FixedUpdate();
     }
 
-    public bool InventoryUse(int inventorySlot)
+    public bool InventoryUse(int inventorySlot, ItemUsedCallback usedCallback)
     {
         if (inventorySlot is < 0 or > InventorySize)
         {
             return false;
         }
 
-        var wantedItem = _inventory[inventorySlot];
-        var wantedItemUse = wantedItem.GetItemUse(this);
-        _inventory[inventorySlot] = null;
-        wantedItemUse.Invoke();
+        /*var wantedItem = _inventory[inventorySlot];
+        Item smallpot = Build.Items.SmallHealthPotion(null, out var useItem);
+        var wantedItemUse = useItem;*/
+        this._inventory[inventorySlot] = null;
+        //wantedItemUse.Invoke();
+        usedCallback.Invoke();
         return true;
     }
 

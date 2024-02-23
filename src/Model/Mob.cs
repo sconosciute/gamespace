@@ -24,16 +24,18 @@ public class Mob : Character
 
     //May change this constructor to just take position, and generate rest of the info by Type?
     public Mob(Vector2 worldCoordinate, int hp, int energy, int baseDmg, World world,
-        string name, int damage, MobTypes type) :
+        string name, int damage, bool canMove, bool canUseItems, MobTypes type) :
         base(worldCoordinate, 1, 1, hp, energy, baseDmg, world)
     {
         _name = name;
         _hp = hp;
         _damage = damage;
+        _canMove = canMove;
+        _canUseItems = canUseItems;
         _inventory = Inventory = new Item[InventorySize];
     }
 
-    public bool InventoryUse()
+    public bool InventoryUse(ItemUsedCallback useItem)
     {
         if (_canUseItems == false)
         {
@@ -47,9 +49,10 @@ public class Mob : Character
         }
 
         var wantedItem = _inventory[index];
-        var wantedItemUse = wantedItem.GetItemUse(this);
+        //var wantedItemUse = wantedItem.GetItemUse(this);
         _inventory[index] = null;
-        wantedItemUse.Invoke();
+        //wantedItemUse.Invoke();
+        useItem.Invoke();
         return true;
     }
 

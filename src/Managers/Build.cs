@@ -34,12 +34,12 @@ public static class Build
     {
         public static Mob Turret(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
         {
-            //TODO: Discuss how to handle world here, if it is needed and what to do. and what to do with type
+            //TODO: Discuss how to handle world here.
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Turret",
-                10, Mob.MobTypes.Turret);
-            //TODO: Discuss and handle renderable here, if needed.
+                10, false, false, Mob.MobTypes.Turret);
+            //TODO: Add a Turret Model
             renderable = new RenderObject(
-                texture: gm.GetTexture(Textures.Turret), //Something like this?
+                texture: null, //gm.GetTexture(Textures.Turret), //Something like this?
                 worldPosition: worldPosition,
                 layerDepth: LayerDepth.Background);
             return mob;
@@ -51,9 +51,25 @@ public static class Build
         public static Item SmallHealthPotion(Character user, out ItemUsedCallback useItem)
         {
             var smallPotion = new Item("Small health potion",
-                "This will heal small wounds", Item.ItemType.SmallHealthPot);
+                "This will heal small wounds", Item.ItemType.HealingItem);
             useItem = Item.UseSmallPotion(user);
             return smallPotion;
+        }
+
+        public static Item MediumHealthPotion(Character user, out ItemUsedCallback useItem)
+        {
+            var mediumPotion = new Item("Medium health potion",
+                "This will heal Medium wounds", Item.ItemType.HealingItem);
+            useItem = Item.UseMediumPotion(user);
+            return mediumPotion;
+        }
+
+        public static Item LargeHealthPotion(Character user, out ItemUsedCallback useItem)
+        {
+            var largePotion = new Item("large health potion",
+                "This will heal severe wounds", Item.ItemType.HealingItem);
+            useItem = Item.UseLargePotion(user);
+            return largePotion;
         }
     }
 }

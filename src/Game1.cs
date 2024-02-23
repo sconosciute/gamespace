@@ -15,9 +15,8 @@ public class Game1 : Game
 
     public Game1()
     {
-        
         _log = Globals.LogFactory.CreateLogger<Game1>();
-        
+
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = SettingsManager.GenerateGraphics(this);
         TestMobInventory();
@@ -31,7 +30,7 @@ public class Game1 : Game
     {
         _log.LogInformation("Initializing Game");
         Globals.Init(content: Content, spriteBatch: new SpriteBatch(GraphicsDevice));
-        
+
         base.Initialize();
     }
 
@@ -42,7 +41,7 @@ public class Game1 : Game
         _gm.AddTexture(Textures.TestTile);
         _gm.AddTexture(Textures.TestBars);
         _gm.AddTexture(Textures.Collider);
-        
+
         _gm.InitPlayerWorld();
     }
 
@@ -56,7 +55,7 @@ public class Game1 : Game
             _gm.FixedUpdate();
             _lastUpTime = now;
         }
-        
+
         base.Update(gameTime);
     }
 
@@ -68,21 +67,28 @@ public class Game1 : Game
 
     private void TestMobInventory()
     {
-        var tempMob =  new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, Mob.MobTypes.Turret);
-        var tempSmall = Build.Items.SmallHealthPotion(tempMob);//new Item(Item.ItemType.SmallHealthPot);
-        var tempMedium = //new Item(Item.ItemType.MediumHealthPot);
-        var tempLarge = //new Item(Item.ItemType.LargeHealthPot);
+        //TODO: split this up into different unit tests.
+        var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, true, true, Mob.MobTypes.Turret);
+        var tempSmall =
+            Build.Items.SmallHealthPotion(tempMob,
+                out var smallPotionUsedCallback); //new Item(Item.ItemType.SmallHealthPot);
+        var tempMedium =
+            Build.Items.MediumHealthPotion(tempMob,
+                out var mediumPotionUsedCallback); //new Item(Item.ItemType.MediumHealthPot);
+        var tempLarge =
+            Build.Items.LargeHealthPotion(tempMob,
+                out var largePotionUsedCallback); //new Item(Item.ItemType.LargeHealthPot);
         tempMob.AddToInventory(tempSmall);
         _log.LogInformation("test for small heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used small heal: ");
-        tempMob.InventoryUse();
+        tempMob.InventoryUse(smallPotionUsedCallback);
         tempMob.AddToInventory(tempMedium);
         _log.LogInformation("test for medium heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used medium heal: ");
-        tempMob.InventoryUse();
+        tempMob.InventoryUse(mediumPotionUsedCallback);
         tempMob.AddToInventory(tempLarge);
         _log.LogInformation("test for large heal: " + tempMob.Inventory[0]);
         _log.LogInformation("used large heal: ");
-        tempMob.InventoryUse();
+        tempMob.InventoryUse(largePotionUsedCallback);
     }
 }
