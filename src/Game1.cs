@@ -22,7 +22,6 @@ public class Game1 : Game
         TestMobInventory();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
-
         _gm = new GameManager(graphics);
     }
 
@@ -68,7 +67,7 @@ public class Game1 : Game
     private void TestMobInventory()
     {
         //TODO: split this up into different unit tests.
-        var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, true, true, Mob.MobTypes.Turret);
+        var tempMob = new Mob(Vector2.One, 50, 50, 5, null, "turret", 5, true, true, Mob.MobTypes.Hostile);
         var tempSmall =
             Build.Items.SmallHealthPotion(tempMob); //new Item(Item.ItemType.SmallHealthPot);
         var tempMedium =

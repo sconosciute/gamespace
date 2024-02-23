@@ -14,12 +14,14 @@ public class Mob : Character
     private bool _canMove;
     private int _hp;
     private int _damage;
+    private MobTypes _type;
     private readonly Item[] _inventory;
+    public Item[] Inventory => _inventory;
 
     public enum MobTypes
     {
-        //TODO: add types, unsure what they are as of now
-        Turret
+        Hostile,
+        Passive
     }
 
     //May change this constructor to just take position, and generate rest of the info by Type?
@@ -32,7 +34,8 @@ public class Mob : Character
         _damage = damage;
         _canMove = canMove;
         _canUseItems = canUseItems;
-        _inventory = Inventory = new Item[InventorySize];
+        _type = type;
+        _inventory = new Item[InventorySize];
     }
 
     public bool InventoryUse()
@@ -72,21 +75,4 @@ public class Mob : Character
     {
         return values.FirstOrDefault(item => item != null);
     }
-
-    private void GenerateMob(MobTypes typeOfMob)
-    {
-        switch (typeOfMob)
-        {
-            case MobTypes.Turret:
-                _canMove = false;
-                _canUseItems = false;
-                break;
-            default:
-                Console.Write("Mob does not exist");
-                break;
-        }
-    }
-
-    //properties
-    public Item[] Inventory { get; }
 }

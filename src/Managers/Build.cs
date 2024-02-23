@@ -36,7 +36,7 @@ public static class Build
         {
             //TODO: Discuss how to handle world here.
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Turret",
-                10, false, false, Mob.MobTypes.Turret);
+                10, false, false, Mob.MobTypes.Hostile);
             //TODO: Add a Turret Model
             renderable = new RenderObject(
                 texture: null, //gm.GetTexture(Textures.Turret), //Something like this?
