@@ -22,7 +22,6 @@ public class Game1 : Game
         
         //TODO: Move graphics info to a WindowManager class or include in SettingsManager
         var graphics = SettingsManager.GenerateGraphics(this);
-        TestMobInventory();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
