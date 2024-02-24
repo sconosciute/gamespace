@@ -1,5 +1,3 @@
-using System;
-
 namespace gamespace.Model;
 
 public delegate void ItemUsedCallback();
@@ -12,6 +10,7 @@ public class Item
     public string ItemDescription { get; init; }
 
     public ItemUsedCallback ItemUse;
+    public Character User { get; set; }
 
     public enum ItemType
     {
@@ -25,45 +24,46 @@ public class Item
         _type = type;
     }
 
-    public ItemUsedCallback UseSmallPotion(Character user)
+    public ItemUsedCallback UseSmallPotion()
     {
         ItemUse = SmallHealPotionUse;
         return SmallHealPotionUse;
 
-        void SmallHealPotionUse() => Console.Write("Healed small wounds, 25");
+        void SmallHealPotionUse() => User.AddHealth(25);
         /*{
         user.AddHealth(25); Live version:
         Console.Write("Healed small wounds, 25"); Testing:
         }*/
     }
 
-    public ItemUsedCallback UseMediumPotion(Character user)
+    public ItemUsedCallback UseMediumPotion()
     {
         ItemUse = MediumHealPotionUse;
         return MediumHealPotionUse;
 
-        void MediumHealPotionUse() => Console.Write("Healed medium wounds, 50");
+        void MediumHealPotionUse() => User.AddHealth(50);
         /*{
-        user.AddHealth(50); Live version:
+        User.AddHealth(50); Live version:
         Console.Write("Healed medium wounds, 50"); Testing:
         }*/
     }
 
-    public ItemUsedCallback UseLargePotion(Character user)
+    public ItemUsedCallback UseLargePotion()
     {
         ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse;
 
-        void LargeHealPotionUse() => Console.Write("Healed large wounds, 75");
+        void LargeHealPotionUse() => User.AddHealth(75);
         /*{
-        user.AddHealth(75); Live version:
+        User.AddHealth(75); Live version:
         Console.Write("Healed large wounds, 75"); Testing:
         }*/
     }
 
     public override string ToString()
     {
-        var itemInfo = "Name: " + ItemName + " Item Description: " + ItemDescription + " Item Type: " + _type;
+        var itemInfo = "Name: " + ItemName + " Item Description: " 
+                       + ItemDescription + " Item Type: " + _type;
         return itemInfo;
     }
 }

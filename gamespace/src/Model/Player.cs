@@ -1,7 +1,6 @@
 ﻿using System;
 using gamespace.Managers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Model;
 
@@ -49,6 +48,7 @@ public class Player : Character
             return false; //inventory is full
         }
 
+        newItem.User = this;
         _inventory[firstEmptyIndex] = newItem;
         return true;
     }
