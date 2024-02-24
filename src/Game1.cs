@@ -59,7 +59,7 @@ public class Game1 : Game
 
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
-            _gm.FixedUpdate();
+            _gm.FixedUpdate(gameTime);
             _lastUpTime = now;
         }
         
