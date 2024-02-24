@@ -64,8 +64,7 @@ public class GameManager
         _world.TryPlaceTile(new Point(20, 5), BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(20, 6), BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(21, 5), BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
-
-        _gui.OpenMainMenu();
+        
     }
 
     //=== GAME LOOP ===-------------------------------------------------------------------------------------------------
