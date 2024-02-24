@@ -1,6 +1,7 @@
 ﻿using System;
 using gamespace.Managers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Model;
 
