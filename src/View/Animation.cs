@@ -15,12 +15,10 @@ public class Animation
     private int _currentFrame;
     private AnimationAction _action;
     private double _lastUpCall;
-    private readonly ILogger _log;
 
     public Animation(Texture2D texture, int framesX, int framesY, int totalFrames, float frameTime,
         AnimationAction action)
     {
-        _log = Globals.LogFactory.CreateLogger<Animation>();
         _texture = texture;
         _frameWidth = framesX;
         _frameHeight = framesY;
@@ -35,7 +33,6 @@ public class Animation
 
     public void Update(GameTime gameTime, AnimationAction action)
     {
-        _log.LogInformation("Animation update fired.");
         var now = gameTime.TotalGameTime.TotalMilliseconds;
 
         if (_action != action)

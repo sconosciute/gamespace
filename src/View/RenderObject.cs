@@ -44,8 +44,6 @@ public class RenderObject
 
     private static AnimationAction GetAnimationAction(Vector2 direction)
     {
-        direction.Normalize();
-
         if (Math.Abs(direction.X) > Math.Abs(direction.Y))
         {
             switch (direction.X)
@@ -70,7 +68,6 @@ public class RenderObject
         return AnimationAction.S;
     }
 
-    // TODO: Make appropriate changes to update animations whenever there is an input.
     public void Update(GameTime gameTime)
     {
         var direction = InputManager.Direction;
@@ -89,11 +86,13 @@ public class RenderObject
         {
             foreach (var animation in _animations.Values)
             {
-                Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White);
+                Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White, 0f, 
+                    Vector2.Zero, 1f, SpriteEffects.None, _layerDepth);
             }
         }
         else
         {
+            // TODO: Fix problem where using LayerDepth causes issues for other textures other than player.
             Globals.SpriteBatch.Draw(_texture, _position, Color.White);
         }
     }
