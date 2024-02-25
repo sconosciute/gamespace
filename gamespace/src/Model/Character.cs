@@ -39,4 +39,9 @@ public abstract class Character : Entity
             Health = _maxHp;
         }
     }
+
+    public override string ToString()
+    {
+        return "Max HP: " + _maxHp + " Energy: " + _energy + " Base DMG: " + _baseDmg;
+    }
 }

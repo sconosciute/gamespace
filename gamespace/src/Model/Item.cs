@@ -14,7 +14,8 @@ public class Item
 
     public enum ItemType
     {
-        HealingItem
+        HealingItem,
+        TestingItem
     }
 
     public Item(string itemName, string itemDescription, ItemType type)
@@ -58,6 +59,11 @@ public class Item
         User.AddHealth(75); Live version:
         Console.Write("Healed large wounds, 75"); Testing:
         }*/
+    }
+
+    public void UseTestItem()
+    {
+       //TODO: Make a method for easy testing.
     }
 
     public override string ToString()

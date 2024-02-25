@@ -83,6 +83,13 @@ public static class Build
             largePotion.UseLargePotion();
             return largePotion;
         }
-        
+
+        public static Item TestItem()
+        {
+            var testItem = new Item("Test",
+                "This item should only be used for testing", Item.ItemType.TestingItem);
+            testItem.UseTestItem();
+            return testItem;
+        }
     }
 }

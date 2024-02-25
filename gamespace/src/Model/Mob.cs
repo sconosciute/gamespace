@@ -76,4 +76,11 @@ public class Mob : Character
     {
         return values.FirstOrDefault(item => item != null);
     }
+
+    public override string ToString()
+    {
+        var result = base.ToString() + " Name: " + _name + " Type: " + _type + " HP: " + _hp + " DMG: " + _damage +
+               " can use items: " + _canUseItems + " can move: " + _canMove;
+        return result;
+    }
 }
