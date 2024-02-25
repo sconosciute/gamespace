@@ -10,6 +10,7 @@ public class Player : Character
 
     private string _name;
     private Item[] _inventory;
+    public Item[] Inventory => _inventory;
 
     public Player(string name, World world)
         : base(Vector2.Zero, 1, 1, 100, 100, 10, world)
@@ -52,7 +53,12 @@ public class Player : Character
         _inventory[firstEmptyIndex] = newItem;
         return true;
     }
-    
+
+    public override string ToString()
+    {
+        var result = base.ToString() + " Name: " + _name;
+        return result;
+    }
     // === EVENT HANDLING ===-------------------------------------------------------------------------------------------
 
     public void HandleMoveEvent(Vector2 moveVec)

@@ -43,6 +43,7 @@ public static class Build
                 layerDepth: LayerDepth.Background);
             return mob;
         }
+
         public static Mob RogueRanger(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
         {
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Rogue Ranger",
