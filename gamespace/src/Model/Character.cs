@@ -28,7 +28,7 @@ public abstract class Character : Entity
     }
 
     //Made this for health potion
-    public void AddHealth(int amount)
+    public string AddHealth(int amount)
     {
         if (Health + amount <= _maxHp)
         {
@@ -38,6 +38,8 @@ public abstract class Character : Entity
         {
             Health = _maxHp;
         }
+
+        return "Health now: " + Health;
     }
 
     public override string ToString()

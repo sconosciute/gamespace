@@ -8,13 +8,16 @@ namespace gamespaceunittests;
 public class MobTest
 {
     private readonly World _testWorld = new World(1, 1);
+    private Mob _testerMob;
+    private Item _testerItem = Build.Items.TestItem();
+    
     [SetUp]
     public void SetUp()
     {
-        var testerMob = new Mob(Vector2.Zero, 100, 100, 10, 
+        _testerMob = new Mob(Vector2.Zero, 100, 100, 10, 
             _testWorld, "test", 10, true, true, 
             Mob.MobTypes.Hostile);
-        var testItem = Build.Items.TestItem();
+        //var _testerItem = Build.Items.TestItem();
     }
 
     [Test]
@@ -51,8 +54,11 @@ public class MobTest
     }
 
     [Test]
-    public void InventoryTest()
+    public void AddInventoryTest()
     {
-        
+        _testerMob.AddToInventory(_testerItem);
+        var expectedData = new Item[5];
+        expectedData[0] = _testerItem;
+        Assert.That(_testerMob.Inventory, Is.EqualTo(expectedData));
     }
 }

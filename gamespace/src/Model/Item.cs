@@ -1,6 +1,8 @@
+using System;
+
 namespace gamespace.Model;
 
-public delegate void ItemUsedCallback();
+public delegate string ItemUsedCallback(); //Made this string instead of void, for more testable code
 
 public class Item
 {
@@ -29,9 +31,9 @@ public class Item
     {
         ItemUse = SmallHealPotionUse;
         return SmallHealPotionUse;
-
-        void SmallHealPotionUse() => User.AddHealth(25);
-        /*{
+        
+        string SmallHealPotionUse() => User.AddHealth(25);
+        /*
         user.AddHealth(25); Live version:
         Console.Write("Healed small wounds, 25"); Testing:
         }*/
@@ -42,7 +44,7 @@ public class Item
         ItemUse = MediumHealPotionUse;
         return MediumHealPotionUse;
 
-        void MediumHealPotionUse() => User.AddHealth(50);
+        string MediumHealPotionUse() => User.AddHealth(50);
         /*{
         User.AddHealth(50); Live version:
         Console.Write("Healed medium wounds, 50"); Testing:
@@ -54,16 +56,19 @@ public class Item
         ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse;
 
-        void LargeHealPotionUse() => User.AddHealth(75);
+        string LargeHealPotionUse() => User.AddHealth(75);
         /*{
         User.AddHealth(75); Live version:
         Console.Write("Healed large wounds, 75"); Testing:
         }*/
     }
 
-    public void UseTestItem()
+    public string UseTestItem()
     {
-       //TODO: Make a method for easy testing.
+       ItemUse = LargeHealPotionUse;
+       return LargeHealPotionUse();
+
+       string LargeHealPotionUse() => "Item works!";
     }
 
     public override string ToString()
