@@ -5,6 +5,9 @@ using Assert = Loyc.MiniTest.Assert;
 
 namespace gamespaceunittests
 {
+    /// <summary>
+    /// A testing class for Item.
+    /// </summary>
     public class ItemTests
     {
         private readonly Item _testerItem = Build.Items.TestItem();
@@ -17,7 +20,10 @@ namespace gamespaceunittests
         public void Setup()
         {
         }
-
+        
+        /// <summary>
+        /// A method to test our small potion build method.
+        /// </summary>
         [Test]
         public void TestSmallPotionBuild()
         {
@@ -27,7 +33,9 @@ namespace gamespaceunittests
                                         "HealingItem";
             Assert.AreEqual(expectedData, smallPotion.ToString());
         }
-
+        /// <summary>
+        /// A method to test our build medium potion method.
+        /// </summary>
         [Test]
         public void TestMediumPotionBuild()
         {
@@ -37,7 +45,10 @@ namespace gamespaceunittests
                                         "HealingItem";
             Assert.AreEqual(expectedData, mediumPotion.ToString());
         }
-
+        
+        /// <summary>
+        /// A method to test our build large potion method.
+        /// </summary>
         [Test]
         public void TestLargePotionBuild()
         {
@@ -47,7 +58,10 @@ namespace gamespaceunittests
                                         "HealingItem";
             Assert.AreEqual(expectedData, largePotion.ToString());
         }
-
+        
+        /// <summary>
+        /// A method to test our build test item method.
+        /// </summary>
         [Test]
         public void TestBuildingTestItem()
         {
@@ -58,14 +72,22 @@ namespace gamespaceunittests
 
             Assert.AreEqual(expectedData, testItem.ToString());
         }
-
+        
+        //TODO: Test the key item builders.
+        
+        /// <summary>
+        /// Test if the items user changes when it is added to a characters inventory.
+        /// </summary>
         [Test]
         public void TestUserChange()
         {
             _testerMob.AddToInventory(_testerItem);
             Assert.AreEqual(_testerMob, _testerItem.User);
         }
-
+        
+        /// <summary>
+        /// Tests the itemUse of our test item.
+        /// </summary>
         [Test]
         public void TestItemUse()
         {
