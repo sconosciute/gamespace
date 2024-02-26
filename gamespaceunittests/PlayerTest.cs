@@ -77,4 +77,15 @@ public class PlayerTest
         testerPlayer.AddHealth(50);
         Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
     }
+
+    [Test]
+    public void AddKeyItemTest()
+    {
+        var testerPlayer = new Player("Test", _testWorld);
+        var testerItem = Build.Items.Cog();
+        var expectedData = new Item[4];
+        expectedData[0] = testerItem;
+        testerPlayer.AddToInventory(testerItem);
+        Assert.That(testerPlayer.KeyItemInventory, Is.EqualTo(expectedData));
+    }
 }

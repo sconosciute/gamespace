@@ -121,4 +121,14 @@ public class MobTest
 
         Assert.That(testerMob.Health, Is.EqualTo(expectedData));
     }
+
+    [Test]
+    public void AddKeyItemTest()
+    {
+        var testerMob = new Mob(Vector2.Zero, 100, 100, 10,
+            _testWorld, "test", 10, true, true,
+            Mob.MobTypes.Hostile);
+        var testKeyItem = Build.Items.Cog();
+        Assert.That(testerMob.AddToInventory(testKeyItem), Is.EqualTo(false));
+    }
 }

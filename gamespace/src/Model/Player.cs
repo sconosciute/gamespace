@@ -14,6 +14,7 @@ public class Player : Character
     private Item[] _keyItemInventory;
 
     public Item[] Inventory => _inventory;
+    public Item[] KeyItemInventory => _keyItemInventory;
 
     public Player(string name, World world)
         : base(Vector2.Zero, 1, 1, 100, 100, 10, world)
