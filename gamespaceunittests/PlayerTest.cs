@@ -9,6 +9,9 @@ public class PlayerTest
     private Player _testPlayer = new Player("Test", _testWorld);
     private Item _testItem = Build.Items.TestItem();
 
+    /// <summary>
+    /// A test to verify that our player constructor works as expected.
+    /// </summary>
     [Test]
     public void PlayerConstructorTest()
     {
@@ -19,6 +22,9 @@ public class PlayerTest
         Assert.That(testerPlayer.ToString(), Is.EqualTo(expectedData));
     }
 
+    /// <summary>
+    /// A test to verify that AddHealth can remove HP from our player as expected.
+    /// </summary>
     [Test]
     public void PlayerRemoveHealthTest()
     {
@@ -28,6 +34,9 @@ public class PlayerTest
         Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
     }
 
+    /// <summary>
+    /// A test to verify that our add to inventory adds an item to the usable inventory as expected.
+    /// </summary>
     [Test]
     public void AddInventoryTest()
     {
@@ -37,6 +46,9 @@ public class PlayerTest
         Assert.That(_testPlayer.Inventory, Is.EqualTo(expectedData));
     }
 
+    /// <summary>
+    /// A test to verify that use item works on the potion in slot 0 as expected.
+    /// </summary>
     [Test]
     public void UseInventorySlotTest()
     {
@@ -51,6 +63,9 @@ public class PlayerTest
         Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
     }
 
+    /// <summary>
+    /// A test to verify that inventory use returns false with an empty inventory.
+    /// </summary>
     [Test]
     public void UseInventorySlotEmptyTest()
     {
@@ -58,6 +73,9 @@ public class PlayerTest
         Assert.That(testerPlayer.InventoryUse(0), Is.EqualTo(false));
     }
 
+    /// <summary>
+    /// A test to verify that Add health works as expected.
+    /// </summary>
     [Test]
     public void AddHealthTest()
     {
@@ -68,6 +86,9 @@ public class PlayerTest
         Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
     }
 
+    /// <summary>
+    /// A test to verify that add health does not let current HP exceed max HP.
+    /// </summary>
     [Test]
     public void AddHealthTestExceedsMax()
     {
@@ -78,6 +99,9 @@ public class PlayerTest
         Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
     }
 
+    /// <summary>
+    /// A test to verify that adding a key item puts it in the players key inventory as expected.
+    /// </summary>
     [Test]
     public void AddKeyItemTest()
     {
