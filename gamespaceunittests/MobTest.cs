@@ -17,7 +17,6 @@ public class MobTest
         _testerMob = new Mob(Vector2.Zero, 100, 100, 10,
             _testWorld, "test", 10, true, true,
             Mob.MobTypes.Hostile);
-        //var _testerItem = Build.Items.TestItem();
     }
 
     [Test]
@@ -58,6 +57,16 @@ public class MobTest
     }
 
     [Test]
+    public void PlayerRemoveHealthTest()
+    {
+        var testerMob = new Mob(Vector2.Zero, 100, 100, 10, _testWorld,
+            "test", 10, true, true, Mob.MobTypes.Hostile);
+        testerMob.AddHealth(-25);
+        var expectedData = 75;
+        Assert.That(testerMob.Health, Is.EqualTo(expectedData));
+    }
+
+    [Test]
     public void AddInventoryTest()
     {
         _testerMob.AddToInventory(_testerItem);
@@ -69,18 +78,47 @@ public class MobTest
     [Test]
     public void AddHealthTest()
     {
-        //TODO: Set health lower than max, add a number that increase current HP but not over max HP.
+        var testerMob = new Mob(Vector2.Zero, 100, 100, 10, _testWorld,
+            "test", 10, true, true, Mob.MobTypes.Hostile);
+        testerMob.AddHealth(-50);
+        testerMob.AddHealth(25);
+        var expectedData = 75;
+        Assert.That(testerMob.Health, Is.EqualTo(expectedData));
     }
 
     [Test]
     public void AddHealthTestExceedsMax()
     {
-        //TODO: Set health lower than max, add a number that increase current HP over max HP.
+        var testerMob = new Mob(Vector2.Zero, 100, 100, 10, _testWorld,
+            "test", 10, true, true, Mob.MobTypes.Hostile);
+        testerMob.AddHealth(-25);
+        testerMob.AddHealth(50);
+        var expectedData = 100;
+        Assert.That(testerMob.Health, Is.EqualTo(expectedData));
+    }
+
+    [Test]
+    public void UseInventorySlotEmptyTest()
+    {
+        var testerMob = new Mob(Vector2.Zero, 100, 100, 10,
+            _testWorld, "test", 10, true, true,
+            Mob.MobTypes.Hostile);
+        Assert.That(testerMob.InventoryUse(), Is.EqualTo(false));
     }
 
     [Test]
     public void TestHealthPotionOnMob()
     {
-        //TODO: Add a health potion, Set health lower than max, call use item on health potion. Check that health is set correct.
+        var testerMob = new Mob(Vector2.Zero, 100, 100, 10,
+            _testWorld, "test", 10, true, true,
+            Mob.MobTypes.Hostile);
+        var testSmallPot = Build.Items.SmallHealthPotion();
+        testerMob.AddToInventory(testSmallPot);
+        testerMob.AddHealth(-50);
+        testerMob.InventoryUse();
+
+        var expectedData = 75;
+
+        Assert.That(testerMob.Health, Is.EqualTo(expectedData));
     }
 }

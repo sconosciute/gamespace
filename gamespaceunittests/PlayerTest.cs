@@ -20,6 +20,15 @@ public class PlayerTest
     }
 
     [Test]
+    public void PlayerRemoveHealthTest()
+    {
+        var testerPlayer = new Player("test", _testWorld);
+        testerPlayer.AddHealth(-25);
+        var expectedData = 75;
+        Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
+    }
+
+    [Test]
     public void AddInventoryTest()
     {
         _testPlayer.AddToInventory(_testItem);
@@ -31,7 +40,41 @@ public class PlayerTest
     [Test]
     public void UseInventorySlotTest()
     {
-        _testPlayer.AddToInventory(_testItem);
-        //TODO: Player use slot 0, test method.
+        var testerPlayer = new Player("test", _testWorld);
+        var testSmallPot = Build.Items.SmallHealthPotion();
+        testerPlayer.AddToInventory(testSmallPot);
+        testerPlayer.AddHealth(-50);
+        testerPlayer.InventoryUse(0);
+
+        var expectedData = 75;
+
+        Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
+    }
+
+    [Test]
+    public void UseInventorySlotEmptyTest()
+    {
+        var testerPlayer = new Player("test", _testWorld);
+        Assert.That(testerPlayer.InventoryUse(0), Is.EqualTo(false));
+    }
+
+    [Test]
+    public void AddHealthTest()
+    {
+        var testerPlayer = new Player("Test", _testWorld);
+        var expectedData = 75;
+        testerPlayer.AddHealth(-50);
+        testerPlayer.AddHealth(25);
+        Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
+    }
+
+    [Test]
+    public void AddHealthTestExceedsMax()
+    {
+        var testerPlayer = new Player("Test", _testWorld);
+        var expectedData = 100;
+        testerPlayer.AddHealth(-25);
+        testerPlayer.AddHealth(50);
+        Assert.That(testerPlayer.Health, Is.EqualTo(expectedData));
     }
 }

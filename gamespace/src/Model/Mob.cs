@@ -52,6 +52,10 @@ public class Mob : Character
         }
 
         var wantedItem = _inventory[index];
+        if (wantedItem == null)
+        {
+            return false;
+        }
         var wantedItemUse = wantedItem.ItemUse;
         _inventory[index] = null;
         //wantedItemUse.Invoke();
@@ -66,7 +70,7 @@ public class Mob : Character
         {
             return false; //inventory is full
         }
-
+        
         newItem.User = this;
         _inventory[firstEmptyIndex] = newItem;
         return true;

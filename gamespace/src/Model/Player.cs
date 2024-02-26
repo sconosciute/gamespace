@@ -35,6 +35,10 @@ public class Player : Character
         }
 
         var wantedItem = _inventory[inventorySlot];
+        if (wantedItem == null)
+        {
+            return false;
+        }
         var wantedItemUse = wantedItem.ItemUse;
         _inventory[inventorySlot] = null;
         wantedItemUse.Invoke();

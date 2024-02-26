@@ -7,9 +7,9 @@ namespace gamespaceunittests
 {
     public class ItemTests
     {
-        private readonly Item testerItem = Build.Items.TestItem();
+        private readonly Item _testerItem = Build.Items.TestItem();
 
-        private readonly Mob testerMob = new Mob(Vector2.Zero, 100, 100, 10,
+        private readonly Mob _testerMob = new Mob(Vector2.Zero, 100, 100, 10,
             new World(1, 1), "test", 10, true, true,
             Mob.MobTypes.Hostile);
 
@@ -62,18 +62,15 @@ namespace gamespaceunittests
         [Test]
         public void TestUserChange()
         {
-            testerMob.AddToInventory(testerItem);
-            Assert.AreEqual(testerMob, testerItem.User);
+            _testerMob.AddToInventory(_testerItem);
+            Assert.AreEqual(_testerMob, _testerItem.User);
         }
 
         [Test]
         public void TestItemUse()
         {
-            //TODO: Figure out how to test this.
             var expectedData = "Item works!";
-            //testerItem.ItemUse.Invoke();
-            //var trueData = testerItem.ItemUse.Invoke();
-            Assert.AreEqual(expectedData, testerItem.ItemUse.Invoke());
+            Assert.AreEqual(expectedData, _testerItem.ItemUse.Invoke());
         }
     }
 }
