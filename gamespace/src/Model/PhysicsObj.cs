@@ -41,8 +41,8 @@ public abstract class PhysicsObj
 
     public override string ToString()
     {
-        return "World Coordinate: " + WorldCoordinate + " Width: " + Width + " Height " + Height + " Has movement " +
-               _hasMovement + " Has friction " + _hasFriction + " Has collision " + CanCollide;
+        return "World Coordinate: " + WorldCoordinate + " Width: " + Width + " Height: " + Height + " Has movement: " +
+               _hasMovement + " Has friction: " + _hasFriction + " Has collision: " + CanCollide;
     }
 
     public abstract void FixedUpdate();
