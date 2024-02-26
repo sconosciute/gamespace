@@ -72,9 +72,13 @@ public class GameManager
     /// <summary>
     /// Runs physics updates on all Entities.
     /// </summary>
-    public void FixedUpdate(GameTime gameTime)
+    public void FixedUpdate()
     {
         _player.FixedUpdate();
+    }
+
+    public void AnimationUpdate(GameTime gameTime)
+    {
         _robj.Update(gameTime);
     }
 
