@@ -65,6 +65,10 @@ public class Mob : Character
 
     public bool AddToInventory(Item newItem)
     {
+        if (newItem.IsKeyItem)
+        {
+            return false; //Mobs should not be able to hold key items.
+        }
         var firstEmptyIndex = Array.IndexOf(_inventory, null);
         if (firstEmptyIndex < 0)
         {

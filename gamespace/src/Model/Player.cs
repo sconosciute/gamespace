@@ -7,9 +7,12 @@ namespace gamespace.Model;
 public class Player : Character
 {
     private const int InventorySize = 5;
+    private const int KeyInventorySize = 4;
 
     private string _name;
     private Item[] _inventory;
+    private Item[] _keyItemInventory;
+
     public Item[] Inventory => _inventory;
 
     public Player(string name, World world)
@@ -17,6 +20,7 @@ public class Player : Character
     {
         _name = name;
         _inventory = new Item[InventorySize];
+        _keyItemInventory = new Item[KeyInventorySize];
     }
 
     public new void FixedUpdate()
@@ -39,6 +43,7 @@ public class Player : Character
         {
             return false;
         }
+
         var wantedItemUse = wantedItem.ItemUse;
         _inventory[inventorySlot] = null;
         wantedItemUse.Invoke();
@@ -47,15 +52,30 @@ public class Player : Character
 
     public bool AddToInventory(Item newItem)
     {
-        var firstEmptyIndex = Array.IndexOf(_inventory, null);
-        if (firstEmptyIndex < 0)
+        if (newItem.IsKeyItem)
         {
-            return false; //inventory is full
-        }
+            var firstEmptyIndex = Array.IndexOf(_keyItemInventory, null);
+            if (firstEmptyIndex < 0)
+            {
+                return false; //inventory is full
+            }
 
-        newItem.User = this;
-        _inventory[firstEmptyIndex] = newItem;
-        return true;
+            newItem.User = this;
+            _keyItemInventory[firstEmptyIndex] = newItem;
+            return true;
+        }
+        else
+        {
+            var firstEmptyIndex = Array.IndexOf(_inventory, null);
+            if (firstEmptyIndex < 0)
+            {
+                return false;
+            }
+
+            newItem.User = this;
+            _inventory[firstEmptyIndex] = newItem;
+            return true;
+        }
     }
 
     public override string ToString()
