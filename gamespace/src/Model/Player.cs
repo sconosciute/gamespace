@@ -27,7 +27,7 @@ public class Player : Character
         base.FixedUpdate();
     }
 
-    public bool InventoryUse(int inventorySlot, ItemUsedCallback usedCallback)
+    public bool InventoryUse(int inventorySlot)
     {
         if (inventorySlot is < 0 or > InventorySize)
         {
