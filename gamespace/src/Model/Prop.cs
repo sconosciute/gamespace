@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using gamespace.View;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
