@@ -28,12 +28,12 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
-        if (_mapWidth <= 0)
+        if (width <= 0)
         {
             throw new ArithmeticException("Width cannot be zero or negative");
         }
 
-        if (_mapHeight <= 0)
+        if (height <= 0)
         {
             throw new ArithmeticException("Height cannot be zero or negative");
         }
