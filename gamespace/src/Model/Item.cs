@@ -10,6 +10,7 @@ public class Item
     private readonly ItemType _type;
     public string ItemName { get; init; }
     public string ItemDescription { get; init; }
+    public bool IsKeyItem { get; init; }
 
     public ItemUsedCallback ItemUse;
     public Character User { get; set; }
@@ -17,13 +18,15 @@ public class Item
     public enum ItemType
     {
         HealingItem,
-        TestingItem
+        TestingItem,
+        KeyItem
     }
 
-    public Item(string itemName, string itemDescription, ItemType type)
+    public Item(string itemName, string itemDescription, bool isKeyItem, ItemType type)
     {
         ItemName = itemName;
         ItemDescription = itemDescription;
+        IsKeyItem = isKeyItem;
         _type = type;
     }
 
