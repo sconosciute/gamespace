@@ -63,7 +63,7 @@ public static class Build
         public static Item SmallHealthPotion()
         {
             var smallPotion = new Item("Small health potion",
-                "This will heal small wounds", Item.ItemType.HealingItem);
+                "This will heal small wounds", false, Item.ItemType.HealingItem);
             smallPotion.UseSmallPotion();
             // = Item.UseSmallPotion(user);
             return smallPotion;
@@ -72,7 +72,7 @@ public static class Build
         public static Item MediumHealthPotion()
         {
             var mediumPotion = new Item("Medium health potion",
-                "This will heal medium wounds", Item.ItemType.HealingItem);
+                "This will heal medium wounds", false, Item.ItemType.HealingItem);
             mediumPotion.UseMediumPotion();
             return mediumPotion;
         }
@@ -80,15 +80,41 @@ public static class Build
         public static Item LargeHealthPotion()
         {
             var largePotion = new Item("Large health potion",
-                "This will heal severe wounds", Item.ItemType.HealingItem);
+                "This will heal severe wounds", false, Item.ItemType.HealingItem);
             largePotion.UseLargePotion();
             return largePotion;
         }
+        //Key Items
 
+        public static Item Cog()
+        {
+            var cog = new Item("Cog", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return cog;
+        }
+
+        public static Item Wires()
+        {
+            var wires = new Item("Wires", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return wires;
+        }
+
+        public static Item Lever()
+        {
+            var lever = new Item("Lever", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return lever;
+        }
+
+        public static Item ControlPanel()
+        {
+            var controlPanel = new Item("Control panel", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return controlPanel;
+        }
+        
+        //Test item, this can be deleted upon final iteration.
         public static Item TestItem()
         {
             var testItem = new Item("Test",
-                "This item should only be used for testing", Item.ItemType.TestingItem);
+                "This item should only be used for testing", false, Item.ItemType.TestingItem);
             testItem.UseTestItem();
             return testItem;
         }
