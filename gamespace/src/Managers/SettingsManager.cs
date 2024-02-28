@@ -25,8 +25,7 @@ public static class SettingsManager
         var graphics = new GraphicsDeviceManager(game);
         var adapter = new GraphicsAdapter();
 
-        const string fileName = "launchConfig.json";
-        var settings = LoadLaunchSettings(fileName);
+        var settings = LoadLaunchSettings(ConfNames.LaunchConfig);
         if (settings != null)
         {
             if (settings.IsDynamic)
@@ -49,35 +48,25 @@ public static class SettingsManager
 
     private static LaunchSettings LoadLaunchSettings(string fileName)
     {
-        var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        baseDir = Path.Combine(baseDir, "GameSpace");
-        var launchConfigDir = Path.Combine(baseDir, "LaunchSettings");
-        var path = Path.Combine(launchConfigDir, fileName);
-        try
+        if (TryReadConfig(fileName, out var data))
         {
-            var jsonString = File.ReadAllText(path);
-            var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
+            var settings = JsonSerializer.Deserialize<LaunchSettings>(data);
             return settings;
         }
-        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
+
+        else
         {
-            var defaultSettings = new LaunchSettings
+            var settings = new LaunchSettings()
             {
                 DefaultResHeight = DefaultResHeight,
                 DefaultResWidth = DefaultResWidth,
                 IsFullScreened = FullScreen,
                 IsDynamic = DynamicRes
             };
-            Directory.CreateDirectory(launchConfigDir);
-            UpdateSettings(path, defaultSettings);
-            return defaultSettings;
+            var jsonData = JsonSerializer.Serialize(settings);
+            TryWriteConfig(fileName, jsonData);
+            return settings;
         }
-    }
-
-    private static void UpdateSettings(string path, object defaultSettings)
-    {
-        var json = JsonSerializer.Serialize(defaultSettings);
-        File.WriteAllText(path, json);
     }
 
     /// <summary>
