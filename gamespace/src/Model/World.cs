@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Loyc.Collections;
+using gamespace.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,7 +20,20 @@ public class World
     private readonly int _maxY;
     private readonly int _xOffset;
     private readonly int _yOffset;
+    
+    //Adding these for prototyping World Gen
+    private static readonly Vector2 MoveRight = new(1, 0);
+    private static readonly Vector2 MoveLeft = new(-1, 0);
+    private static readonly Vector2 MoveUp = new(0, -1);
+    private static readonly Vector2 MoveDown = new(0, 1);
+    private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
+    private const int DesiredNumberOfRooms = 4;
+    private const int MaxHallwayLength = 15;
+    private const int MinHallwayLength = 5;
+    private static readonly Random Rand = new Random();
+    private Vector2 lastDirection;
 
+    private Vector2 currentPOS = new(0, 0);
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
     /// </summary>
@@ -100,7 +113,33 @@ public class World
         this[position.X, position.Y] = tile;
         return true;
     }
+    /// <summary>
+    /// A prototype method for world gen.
+    /// Using https://www.freecodecamp.org/news/how-to-make-your-own-procedural-dungeon-map-generator-using-the-random-walk-algorithm-e0085c8aa9a/
+    /// as an outline.
+    /// </summary>
+    private void GenerateWorld(int numberOfRoomsLeft)
+    {
+        if (numberOfRoomsLeft == 0)
+        {
+            return;
+        }
 
+        Vector2 randomDirection;
+        do
+        {
+            randomDirection = Directions[Rand.Next(0, 3)];
+        } while (randomDirection.X == -lastDirection.X || randomDirection.Y == -lastDirection.Y );  //Checks to make sure it is not back tracking. Floating point error should not matter
+
+        var tunnelLength = Rand.Next(MinHallwayLength, MaxHallwayLength);
+
+        for (int i = 0; i < tunnelLength; i++)
+        {   
+            
+            //TODO: Add floors, using current POS + randomDirection.
+        }
+    }
+    
     public void DebugDrawMap()
     {
         var testTile = Globals.Content.Load<Texture2D>("tile");
