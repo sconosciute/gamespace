@@ -20,7 +20,7 @@ public class Game1 : Game
         
         _log = Globals.LogFactory.CreateLogger<Game1>();
         
-        //TODO: Move graphics info to a WindowManager class or include in SettingsManager
+        SettingsManager.Init(_log);
         var graphics = SettingsManager.GenerateGraphics(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
