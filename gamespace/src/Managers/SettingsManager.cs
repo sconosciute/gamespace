@@ -24,7 +24,7 @@ public static class SettingsManager
     {
         var graphics = new GraphicsDeviceManager(game);
         var adapter = new GraphicsAdapter();
-        
+
         const string fileName = "launchConfig.json";
         var settings = LoadLaunchSettings(fileName);
         if (settings != null)
@@ -42,13 +42,15 @@ public static class SettingsManager
 
             graphics.IsFullScreen = settings.IsFullScreened;
         }
+
         graphics.ApplyChanges();
         return graphics;
     }
+
     private static LaunchSettings LoadLaunchSettings(string fileName)
     {
         var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-         baseDir = Path.Combine(baseDir, "GameSpace");
+        baseDir = Path.Combine(baseDir, "GameSpace");
         var launchConfigDir = Path.Combine(baseDir, "LaunchSettings");
         var path = Path.Combine(launchConfigDir, fileName);
         try
@@ -57,7 +59,7 @@ public static class SettingsManager
             var settings = JsonSerializer.Deserialize<LaunchSettings>(jsonString);
             return settings;
         }
-        catch (Exception ex) when(ex is FileNotFoundException or DirectoryNotFoundException)
+        catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException)
         {
             var defaultSettings = new LaunchSettings
             {
@@ -66,11 +68,12 @@ public static class SettingsManager
                 IsFullScreened = FullScreen,
                 IsDynamic = DynamicRes
             };
-            Directory.CreateDirectory(launchConfigDir); 
+            Directory.CreateDirectory(launchConfigDir);
             UpdateSettings(path, defaultSettings);
             return defaultSettings;
         }
     }
+
     private static void UpdateSettings(string path, object defaultSettings)
     {
         var json = JsonSerializer.Serialize(defaultSettings);
@@ -85,8 +88,9 @@ public static class SettingsManager
     /// <returns>True if the file has been successfully written, else false.</returns>
     public static bool TryWriteConfig(in string fileName, in string toWrite)
     {
-        var confDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        confDir = Path.Combine(confDir, ConfNames.ConfigDir);
+        var confDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            ConfNames.ConfigDir);
 
         if (!Directory.Exists(confDir))
         {
@@ -96,11 +100,31 @@ public static class SettingsManager
         var filePath = Path.Combine(confDir, fileName);
         try
         {
-            File.WriteAllText(fileName, toWrite);
+            File.WriteAllText(filePath, toWrite);
         }
-        catch (Exception e)
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
         {
-            _log.LogInformation("Failed to write file to disc due to {ex}", e);
+            _log.LogInformation("Failed to write {file} to disc due to {ex}", fileName, e);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static bool TryReadConfig(in string fileName, out string data)
+    {
+        var confDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            ConfNames.ConfigDir);
+        var filePath = Path.Combine(confDir, fileName);
+        try
+        {
+            data = File.ReadAllText(filePath);
+        }
+        catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
+        {
+            _log.LogInformation("Failed to read {file} to disc due to {ex}", fileName, e);
+            data = null;
             return false;
         }
 
@@ -110,7 +134,7 @@ public static class SettingsManager
 
 public static class ConfNames
 {
-    public const string ConfigDir = "configs";
+    public const string ConfigDir = "Gamespace\\configs";
     public const string LaunchConfig = "launchConfig.json";
     public const string KeyBinds = "keyBindings.json";
 }

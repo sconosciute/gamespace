@@ -47,7 +47,7 @@ public class GuiManager
 
     public void Update()
     {
-        _input.Update();
+        _input.Update(_gm.GameIsPaused);
     }
 
     //=== GUI RENDERING ===---------------------------------------------------------------------------------------------
