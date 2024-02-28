@@ -19,14 +19,6 @@ public class Player : Character
         _inventory = new Item[InventorySize];
     }
 
-    public new void FixedUpdate()
-    {
-        var direction = InputManager.Direction;
-        MoveSpeed = new Vector2(BaseMoveSpeed * direction.X, BaseMoveSpeed * direction.Y);
-
-        base.FixedUpdate();
-    }
-
     public bool InventoryUse(int inventorySlot)
     {
         if (inventorySlot is < 0 or > InventorySize)
@@ -65,7 +57,7 @@ public class Player : Character
     }
     // === EVENT HANDLING ===-------------------------------------------------------------------------------------------
 
-    public void HandleMoveEvent(Vector2 moveVec)
+    public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
     }

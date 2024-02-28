@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using gamespace.View;
 using Loyc.Geometry;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -10,13 +11,15 @@ namespace gamespace.Managers;
 
 public sealed class InputManager
 {
+    //TODO: Make this instanced and remove the public static API for movement, require event handling.
     private static Vector2 _direction;
     public static Vector2 Direction => _direction;
     public static bool Moving => _direction != Vector2.Zero;
 
-    public delegate void InputCallback();
+    private delegate void InputCallback();
 
-    private Dictionary<Keys, InputCallback> _keyMap;
+    private readonly Dictionary<Keys, InputCallback> _keyMap;
+    private readonly List<(Keys, InputCallback, InputCallbacks)> _defaultBinds = new();
     private readonly Dictionary<InputCallback, InputCallbacks> _callbackToEnum = new();
     private readonly Dictionary<InputCallbacks, InputCallback> _enumToCallback = new();
 
@@ -24,18 +27,26 @@ public sealed class InputManager
 
     private GuiManager _manager;
 
-    private List<(Keys, InputCallback, InputCallbacks)> _defaultBinds = new();
+    private ILogger _log;
 
-    private InputManager(GuiManager manager)
+    private InputManager(in GuiManager manager)
     {
+        _log = Globals.LogFactory.CreateLogger<InputManager>();
         _manager = manager;
         _instance = this;
         InitDefaultBindingsList();
         _keyMap = new Dictionary<Keys, InputCallback>();
         InitBindingsMaps();
 
-        //TODO: Function to read in keybinds.
-        Console.Out.WriteLine(SettingsManager.TryReadConfig(ConfNames.KeyBinds, out var bs));
+        if (!SettingsManager.TryReadConfig(ConfNames.KeyBinds, out var data)) return;
+        _log.LogInformation("Found custom key binds, loading...");
+        var keyMap = JsonSerializer.Deserialize<Dictionary<Keys, InputCallbacks>>(data);
+        foreach (var bind in keyMap)
+        {
+            _keyMap.Remove(bind.Key);
+            _keyMap.Add(bind.Key, _enumToCallback[bind.Value]);
+        }
+        _log.LogInformation("Keybinds successfully loaded as \n {binds}", _keyMap);
     }
 
     private void InitBindingsMaps()
@@ -67,7 +78,7 @@ public sealed class InputManager
         _defaultBinds.Add((Keys.OemPlus, ZoomRst, InputCallbacks.ZoomRst));
     }
 
-    public void SetKeyBind(Keys key, InputCallbacks callback)
+    public void SetKeyBind(in Keys key, in InputCallbacks callback)
     {
         var func = _enumToCallback[callback];
         _keyMap.Remove(key);
@@ -88,13 +99,14 @@ public sealed class InputManager
         SettingsManager.TryWriteConfig(ConfNames.KeyBinds, json);
     }
 
-    public static InputManager GetInputManager(GuiManager manager)
+    public static InputManager GetInputManager(in GuiManager manager)
     {
         return _instance ??= new InputManager(manager);
     }
 
     public void Update(in bool gameIsPaused)
     {
+        var oldDir = _direction;
         _direction = Vector2.Zero;
         var keyboardState = Keyboard.GetState();
 
@@ -104,8 +116,11 @@ public sealed class InputManager
             callback?.Invoke();
         }
 
-        if (_direction == Vector2.Zero) return;
-        _direction.Normalize();
+        if (_direction == oldDir) return;
+        if (_direction != Vector2.Zero)
+        {
+            _direction.Normalize();
+        }
         OnMoveEvent(_direction);
     }
 
@@ -114,14 +129,14 @@ public sealed class InputManager
     /// <summary>
     /// Player move event handler type.
     /// </summary>
-    public delegate void MoveInputHandler(Vector2 moveVec);
+    public delegate void MoveInputHandler(in Vector2 moveVec);
 
     /// <summary>
     /// Player move event dispatch.
     /// </summary>
     public event MoveInputHandler MoveEvent;
 
-    private void OnMoveEvent(Vector2 moveVec)
+    private void OnMoveEvent(in Vector2 moveVec)
     {
         MoveEvent?.Invoke(moveVec);
     }
