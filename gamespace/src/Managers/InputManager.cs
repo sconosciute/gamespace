@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json;
 using gamespace.View;
-using Loyc.Geometry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -27,7 +25,7 @@ public sealed class InputManager
 
     private GuiManager _manager;
 
-    private ILogger _log;
+    private readonly ILogger _log;
 
     private InputManager(in GuiManager manager)
     {
