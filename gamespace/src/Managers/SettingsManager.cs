@@ -15,12 +15,12 @@ public static class SettingsManager
     private const bool DynamicRes = false;
     private static ILogger _log;
 
-    public static void Init(ILogger logger)
+    public static void Init(in ILogger logger)
     {
         _log ??= logger;
     }
 
-    public static GraphicsDeviceManager GenerateGraphics(Game1 game)
+    public static GraphicsDeviceManager GenerateGraphics(in Game1 game)
     {
         var graphics = new GraphicsDeviceManager(game);
         var adapter = new GraphicsAdapter();
@@ -46,7 +46,7 @@ public static class SettingsManager
         return graphics;
     }
 
-    private static LaunchSettings LoadLaunchSettings(string fileName)
+    private static LaunchSettings LoadLaunchSettings(in string fileName)
     {
         if (TryReadConfig(fileName, out var data))
         {
@@ -100,6 +100,12 @@ public static class SettingsManager
         return true;
     }
 
+    /// <summary>
+    /// Tries to read the specified config file from the users AppData/Local folder.
+    /// </summary>
+    /// <param name="fileName">The ConfNames file to attempt to read.</param>
+    /// <param name="data">The read in contents of the file or null if failed to read.</param>
+    /// <returns>True if the file was successfully read, else false.</returns>
     public static bool TryReadConfig(in string fileName, out string data)
     {
         var confDir = Path.Combine(
@@ -123,7 +129,18 @@ public static class SettingsManager
 
 public static class ConfNames
 {
+    /// <summary>
+    /// The directory where all game Config files are stored relative to the OS storage location.
+    /// </summary>
     public const string ConfigDir = "Gamespace\\configs";
+    
+    /// <summary>
+    /// Name of the Graphics configuration file inside the config directory.
+    /// </summary>
     public const string LaunchConfig = "launchConfig.json";
+    
+    /// <summary>
+    /// Name of the key bindings config file 
+    /// </summary>
     public const string KeyBinds = "keyBindings.json";
 }
