@@ -15,20 +15,27 @@ public abstract class GuiPanel
     /// Determines if this panel should capture input.
     /// </summary>
     public bool IsActive { get; set; } = false;
+    
+    /// <summary>
+    /// The parent of this GuiPanel, may be null if this panel is directly controlled by the GuiManager.
+    /// </summary>
+    public GuiPanel Parent { get; init; }
 
     public GuiManager Manager { get; init; }
     
-    protected Rectangle DrawBox { get; private set; }
+    public Rectangle DrawBox { get; protected set; }
     
     private string _title;
     private Texture2D _background;
 
 
-    protected GuiPanel(string title, Rectangle drawBox, GuiManager manager, Texture2D background = null)
+    protected GuiPanel(string title, Rectangle drawBox, GuiManager manager, GuiPanel parent = null,
+        Texture2D background = null)
     {
         _title = title;
         DrawBox = drawBox;
         Manager = manager;
+        Parent = parent;
         _background = background ?? manager.OpaqueBg;
     }
 

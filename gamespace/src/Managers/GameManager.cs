@@ -25,7 +25,7 @@ public class GameManager
     public GameManager(GraphicsDeviceManager graphics)
     {
         _gfxMan = graphics;
-        SetResolution(1920, 1080);
+        SetResolution(2160, 1440);
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
@@ -69,6 +69,7 @@ public class GameManager
         _world.TryPlaceTile(new Point(20, 6), BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
         _world.TryPlaceTile(new Point(21, 5), BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
         
+        _gui.OpenMainMenu();
     }
 
     //=== GAME LOOP ===-------------------------------------------------------------------------------------------------
