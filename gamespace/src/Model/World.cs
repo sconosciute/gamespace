@@ -8,9 +8,12 @@ namespace gamespace.Model;
 
 public class World
 {
+    public const int NumberOfRooms = 10;
+    
     /**Sparse list of all map tiles by x, y order  **/
     private Dictionary<Vector2, Tile> _tiles = new();
-    
+
+    private List<Rectangle> _roomBounds = new List<Rectangle>();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
     private readonly int _mapWidth;
@@ -28,10 +31,6 @@ public class World
     private static readonly Vector2 MoveUp = new(0, -1);
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
-    private const int DesiredNumberOfRooms = 4;
-    private const int MaxHallwayLength = 4;
-    private const int MinHallwayLength = 1;
-    private static readonly Random Rand = new Random();
     private Vector2 _lastDirection;
 
     private Vector2 _currentPos = new(0, 0);
@@ -120,6 +119,37 @@ public class World
 
         this[position.X, position.Y] = tile;
         return true;
+    }
+
+    public bool CheckRoomOverlap(Rectangle newRoom)
+    {
+        PrintRoomsDebug();
+        foreach (var rect in _roomBounds)
+        {
+            if (!Rectangle.Intersect(rect, newRoom).IsEmpty)
+            {
+                return true; 
+            }
+        }
+
+        _roomBounds.Add(newRoom);
+        return false; 
+    }
+
+    private void PrintTilesDebug()
+    {
+        foreach (KeyValuePair<Vector2, Tile> entry in _tiles)
+        {
+            Console.Out.WriteLine(entry.Key + " " + entry.Value);
+        }
+    }
+
+    private void PrintRoomsDebug()
+    {
+        foreach (var rect in _roomBounds)
+        {
+            Console.Out.WriteLine(rect);
+        }
     }
     
     public void DebugDrawMap()
