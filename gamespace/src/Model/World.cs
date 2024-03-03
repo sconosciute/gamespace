@@ -10,6 +10,7 @@ public class World
 {
     /**Sparse list of all map tiles by x, y order  **/
     private Dictionary<Vector2, Tile> _tiles = new();
+    
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
     private readonly int _mapWidth;
@@ -31,9 +32,16 @@ public class World
     private const int MaxHallwayLength = 15;
     private const int MinHallwayLength = 5;
     private static readonly Random Rand = new Random();
-    private Vector2 lastDirection;
+    private Vector2 _lastDirection;
 
-    private Vector2 currentPOS = new(0, 0);
+    private Vector2 _currentPos = new(2, 2);
+    //This property will likely be removed before completion
+    public Vector2 CurrentPos
+    {
+        get { return _currentPos; }
+        set { _currentPos = value;  }
+    }
+
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
     /// </summary>
@@ -118,7 +126,7 @@ public class World
     /// Using https://www.freecodecamp.org/news/how-to-make-your-own-procedural-dungeon-map-generator-using-the-random-walk-algorithm-e0085c8aa9a/
     /// as an outline.
     /// </summary>
-    private void GenerateWorld(int numberOfRoomsLeft)
+    public void GenerateWorld(int numberOfRoomsLeft)
     {
         if (numberOfRoomsLeft == 0)
         {
@@ -129,15 +137,22 @@ public class World
         do
         {
             randomDirection = Directions[Rand.Next(0, 3)];
-        } while (randomDirection.X == -lastDirection.X || randomDirection.Y == -lastDirection.Y );  //Checks to make sure it is not back tracking. Floating point error should not matter
+        } while (randomDirection.X == -_lastDirection.X || randomDirection.Y == -_lastDirection.Y );  //Checks to make sure it is not back tracking. Floating point error should not matter
 
         var tunnelLength = Rand.Next(MinHallwayLength, MaxHallwayLength);
 
+        //TEMPMAP
         for (int i = 0; i < tunnelLength; i++)
         {   
-            
+            //add floor tile,
+            _currentPos += randomDirection;
+            //TryPlaceTile(_currentPos, new Tile());
+            //Try to place it into temp, if any overlap occurs, we just break out, try again.
             //TODO: Add floors, using current POS + randomDirection.
         }
+            //If there is no overlap, add into worlds _tiles map
+        //Build the room,
+        //recursively call GenerateWorld(numberOfRoomsLeft - 1)
     }
     
     public void DebugDrawMap()
@@ -154,4 +169,5 @@ public class World
             }
         }
     }
+    //private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 }
