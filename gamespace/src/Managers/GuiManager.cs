@@ -70,20 +70,17 @@ public class GuiManager
     }
 
     //=== PRE-BAKED PANELS ===------------------------------------------------------------------------------------------
-
+    /// <summary>
+    /// Removes the specified panel from the GUI tree to allow it to be GC'd
+    /// </summary>
+    /// <param name="panel"></param>
+    public void Delete(GuiPanel panel)
+    {
+        _panels.Remove(panel);
+    }
+    
     public void OpenMainMenu()
     {
-        //TODO: Refactor this to only update draw box placement after screen size update.
-        var screenSpace = _gfx.PresentationParameters.Bounds;
-        var width = (int)(screenSpace.Width * 1f / 3f);
-        var topBotBuff = (int)(screenSpace.Height * 1f / 10f);
-        var height = (int)(screenSpace.Height - (2 * topBotBuff));
-        var drawBox = new Rectangle(width, topBotBuff, width, height);
-        var mainMenu = new MenuPanel(drawBox, this)
-        {
-            Shown = true,
-            IsActive = true
-        };
-        _panels.Add(mainMenu);
+        _panels.Add(Bake.MainMenu(_gfx, this));
     }
 }

@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace gamespace.Managers;
 
+/// <summary>
+/// Utility class for building Model objects.
+/// </summary>
 public static class Build
 {
     public struct Props
