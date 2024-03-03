@@ -1,4 +1,5 @@
-﻿using gamespace.Model;
+﻿using System;
+using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
@@ -9,7 +10,10 @@ public class WorldBuilder
     private World _world;
     private Camera _camera;
     private GameManager _gm;
-
+    
+    
+    private static readonly Random Rand = new Random();
+    
     public WorldBuilder(GameManager gm, Camera camera, World world)
     {
         _gm = gm;
@@ -21,6 +25,7 @@ public class WorldBuilder
     {
         var width = 5; //This does work with any static width and height
         var height = 5;
+        
         for (var k = 0; k < width + 2; k++)
         {
             _world.CurrentPos += new Vector2(1, 0);
@@ -54,6 +59,22 @@ public class WorldBuilder
             _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
             _world.CurrentPos += new Vector2(1, 0);
         }
+
+        _world.CurrentPos += new Vector2(-1, -height - 1); //Reset height
+    }
+
+    public void BuildWorld()
+    {
+        var numberOfRooms = 4;
+        for (int i = 0; i < numberOfRooms; i++)
+        {
+            var randX = Rand.Next(-25, 19);
+            var randY = Rand.Next(-19, 25);
+            MakeRoom();
+            _world.CurrentPos = new Vector2(randX, randY);
+            //BuildHallway();
+        }
+        //MakeRoom();
     }
     
     
