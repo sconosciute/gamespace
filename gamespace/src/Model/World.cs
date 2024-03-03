@@ -29,12 +29,12 @@ public class World
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
     private const int DesiredNumberOfRooms = 4;
-    private const int MaxHallwayLength = 15;
-    private const int MinHallwayLength = 5;
+    private const int MaxHallwayLength = 4;
+    private const int MinHallwayLength = 1;
     private static readonly Random Rand = new Random();
     private Vector2 _lastDirection;
 
-    private Vector2 _currentPos = new(2, 2);
+    private Vector2 _currentPos = new(0, 0);
     //This property will likely be removed before completion
     public Vector2 CurrentPos
     {
