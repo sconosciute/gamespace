@@ -10,7 +10,7 @@ public class WorldBuilder
     private World _world;
     private Camera _camera;
     private GameManager _gm;
-    
+    private const int AttemptsToPlaceRoom = 5;
     
     private static readonly Random Rand = new Random();
     
@@ -20,58 +20,78 @@ public class WorldBuilder
         _camera = camera;
         _world = world;
     }
-    
-    public void MakeRoom()
+
+    private void MakeRoom()
     {
-        var width = 5; //This does work with any static width and height
-        var height = 5;
-        
-        for (var k = 0; k < width + 2; k++)
+        var currentAttempts = 0;
+        while (true)
         {
-            _world.CurrentPos += new Vector2(1, 0);
-            _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
-            //_world.CurrentPos += new Vector2(1, 0);
-        }
-        _world.CurrentPos += new Vector2(-width - 1, 1);
-        for (var i = 0; i < height; i++)
-        {
-            //Place one wall on left
-            if (i != height / 2 && i != (height / 2 + 1))
+            var originalPos = _world.CurrentPos;
+            var width = 5; //This does work with any static width and height
+            var height = 5;
+            var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width + 2, height + 2);
+            if (_world.CheckRoomOverlap(room))
             {
-                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
-                BuildTile(_world.CurrentPos, Build.Props.Wall));
+                currentAttempts++;
+                if (currentAttempts == AttemptsToPlaceRoom)
+                {
+                    return;
+                }
+                continue;
             }
 
-            for (var j = 0; j < width; j++)
+            currentAttempts = 0;
+            for (var k = 0; k < width + 2; k++)
             {
-                //Place floors
                 _world.CurrentPos += new Vector2(1, 0);
-                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Floor));
+                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                //_world.CurrentPos += new Vector2(1, 0);
             }
-            _world.CurrentPos += new Vector2(1, 0);
-            _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
-            _world.CurrentPos += new Vector2(-width - 1, 1);
-            //Place one wall on right
-        }
-        for (var k = 0; k < width + 2; k++)
-        {
-            //_world.CurrentPos += new Vector2(1, 0);
-            _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
-            _world.CurrentPos += new Vector2(1, 0);
-        }
 
-        _world.CurrentPos += new Vector2(-1, -height - 1); //Reset height
+            _world.CurrentPos += new Vector2(-width - 1, 1);
+            for (var i = 0; i < height; i++)
+            {
+                //Place one wall on left
+                if (i != height / 2 && i != (height / 2 + 1))
+                {
+                    _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                }
+
+                for (var j = 0; j < width; j++)
+                {
+                    //Place floors
+                    _world.CurrentPos += new Vector2(1, 0);
+                    _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Floor));
+                }
+
+                _world.CurrentPos += new Vector2(1, 0);
+                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                _world.CurrentPos += new Vector2(-width - 1, 1);
+                //Place one wall on right
+            }
+
+            for (var k = 0; k < width + 2; k++)
+            {
+                //_world.CurrentPos += new Vector2(1, 0);
+                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                _world.CurrentPos += new Vector2(1, 0);
+            }
+
+            //_world.CurrentPos += new Vector2(-1, -height - 1); //Reset height
+            //_world.CurrentPos = originalPos;
+            break;
+        }
     }
 
     public void BuildWorld()
     {
-        var numberOfRooms = 4;
-        for (int i = 0; i < numberOfRooms; i++)
+        //var numberOfRooms = 10;
+        for (int i = 0; i < World.NumberOfRooms; i++)
         {
-            var randX = Rand.Next(-25, 19);
-            var randY = Rand.Next(-19, 25);
-            MakeRoom();
+            var randX = Rand.Next(-24, 17);
+            var randY = Rand.Next(-24, 17);
             _world.CurrentPos = new Vector2(randX, randY);
+            MakeRoom();
             //BuildHallway();
         }
         //MakeRoom();
