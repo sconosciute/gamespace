@@ -1,5 +1,4 @@
-﻿using System;
-using gamespace.Model;
+﻿using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
