@@ -22,7 +22,7 @@ public class Player : Character
     public new void FixedUpdate()
     {
         var direction = InputManager.Direction;
-        MoveSpeed = new Vector2(BaseMoveSpeed * direction.X, BaseMoveSpeed * direction.Y);
+        MoveSpeed = new Vector2(BaseMoveSpeed * direction.X * 3, BaseMoveSpeed * direction.Y * 3); //added times 3 for faster testing
 
         base.FixedUpdate();
     }
