@@ -121,39 +121,6 @@ public class World
         this[position.X, position.Y] = tile;
         return true;
     }
-    /// <summary>
-    /// A prototype method for world gen.
-    /// Using https://www.freecodecamp.org/news/how-to-make-your-own-procedural-dungeon-map-generator-using-the-random-walk-algorithm-e0085c8aa9a/
-    /// as an outline.
-    /// </summary>
-    public void GenerateWorld(int numberOfRoomsLeft)
-    {
-        if (numberOfRoomsLeft == 0)
-        {
-            return;
-        }
-
-        Vector2 randomDirection;
-        do
-        {
-            randomDirection = Directions[Rand.Next(0, 3)];
-        } while (randomDirection.X == -_lastDirection.X || randomDirection.Y == -_lastDirection.Y );  //Checks to make sure it is not back tracking. Floating point error should not matter
-
-        var tunnelLength = Rand.Next(MinHallwayLength, MaxHallwayLength);
-
-        //TEMPMAP
-        for (int i = 0; i < tunnelLength; i++)
-        {   
-            //add floor tile,
-            _currentPos += randomDirection;
-            //TryPlaceTile(_currentPos, new Tile());
-            //Try to place it into temp, if any overlap occurs, we just break out, try again.
-            //TODO: Add floors, using current POS + randomDirection.
-        }
-            //If there is no overlap, add into worlds _tiles map
-        //Build the room,
-        //recursively call GenerateWorld(numberOfRoomsLeft - 1)
-    }
     
     public void DebugDrawMap()
     {
