@@ -16,8 +16,6 @@ public class World
     private readonly List<Rectangle> _roomBounds = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
-    private readonly int _mapWidth;
-    private readonly int _mapHeight;
     private readonly int _minX;
     private readonly int _maxX;
     private readonly int _minY;
@@ -31,7 +29,6 @@ public class World
     private static readonly Vector2 MoveUp = new(0, -1);
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
-    private Vector2 _lastDirection;
 
     //TODO: This property will likely be removed before completion
     public Vector2 CurrentPos { get; set; } = new(-4, -3);
@@ -43,13 +40,13 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
-        _mapWidth = width;
-        _mapHeight = height;
+        var mapWidth = width;
+        var mapHeight = height;
 
-        _minX = -_mapWidth / 2;
-        _maxX = _xOffset = _mapWidth / 2;
-        _minY = -_mapHeight / 2;
-        _maxY = _yOffset = _mapHeight / 2;
+        _minX = -mapWidth / 2;
+        _maxX = _xOffset = mapWidth / 2;
+        _minY = -mapHeight / 2;
+        _maxY = _yOffset = mapHeight / 2;
     }
 
     /// <summary>
