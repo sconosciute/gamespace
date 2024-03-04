@@ -33,7 +33,7 @@ public class World
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
     private Vector2 _lastDirection;
 
-    private Vector2 _currentPos = new(0, 0);
+    private Vector2 _currentPos = new(-4, -3);
     //This property will likely be removed before completion
     public Vector2 CurrentPos
     {
@@ -162,7 +162,7 @@ public class World
             {
                 position.X = worldX * 16;
                 position.Y = worldY * 16;
-                Globals.SpriteBatch.Draw(testTile, position, Color.Aquamarine);
+                Globals.SpriteBatch.Draw(testTile, position, Color.DarkSlateGray);
             }
         }
     }
