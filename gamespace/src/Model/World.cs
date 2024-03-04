@@ -8,12 +8,12 @@ namespace gamespace.Model;
 
 public class World
 {
-    public const int NumberOfRooms = 10;
-    
-    /**Sparse list of all map tiles by x, y order  **/
-    private Dictionary<Vector2, Tile> _tiles = new();
+    public const int NumberOfRooms = 200;
 
-    private List<Rectangle> _roomBounds = new List<Rectangle>();
+    /**Sparse list of all map tiles by x, y order  **/
+    private readonly Dictionary<Vector2, Tile> _tiles = new();
+
+    private readonly List<Rectangle> _roomBounds = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
     private readonly int _mapWidth;
@@ -24,7 +24,7 @@ public class World
     private readonly int _maxY;
     private readonly int _xOffset;
     private readonly int _yOffset;
-    
+
     //Adding these for prototyping World Gen
     private static readonly Vector2 MoveRight = new(1, 0);
     private static readonly Vector2 MoveLeft = new(-1, 0);
@@ -33,13 +33,8 @@ public class World
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
     private Vector2 _lastDirection;
 
-    private Vector2 _currentPos = new(-4, -3);
-    //This property will likely be removed before completion
-    public Vector2 CurrentPos
-    {
-        get { return _currentPos; }
-        set { _currentPos = value;  }
-    }
+    //TODO: This property will likely be removed before completion
+    public Vector2 CurrentPos { get; set; } = new(-4, -3);
 
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
@@ -48,7 +43,6 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
-        
         _mapWidth = width;
         _mapHeight = height;
 
@@ -123,42 +117,25 @@ public class World
 
     public bool CheckRoomOverlap(Rectangle newRoom)
     {
-        PrintRoomsDebug();
         foreach (var rect in _roomBounds)
         {
             if (!Rectangle.Intersect(rect, newRoom).IsEmpty)
             {
-                return true; 
+                return true;
             }
         }
 
         _roomBounds.Add(newRoom);
-        return false; 
+        return false;
     }
 
-    private void PrintTilesDebug()
-    {
-        foreach (KeyValuePair<Vector2, Tile> entry in _tiles)
-        {
-            Console.Out.WriteLine(entry.Key + " " + entry.Value);
-        }
-    }
-
-    private void PrintRoomsDebug()
-    {
-        foreach (var rect in _roomBounds)
-        {
-            Console.Out.WriteLine(rect);
-        }
-    }
-    
     public void DebugDrawMap()
     {
         var testTile = Globals.Content.Load<Texture2D>("tile");
         var position = new Vector2();
-        for (int worldX = _minX; worldX <= _maxX; worldX++)
+        for (var worldX = _minX; worldX <= _maxX; worldX++)
         {
-            for (int worldY = _minY; worldY <= _maxY; worldY++)
+            for (var worldY = _minY; worldY <= _maxY; worldY++)
             {
                 position.X = worldX * 16;
                 position.Y = worldY * 16;
@@ -166,5 +143,4 @@ public class World
             }
         }
     }
-    //private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 }

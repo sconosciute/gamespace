@@ -7,17 +7,17 @@ namespace gamespace.Managers;
 
 public class WorldBuilder
 {
-    private World _world;
-    private Camera _camera;
-    private GameManager _gm;
-    private const int AttemptsToPlaceRoom = 20;
+    private readonly World _world;
+    private readonly Camera _camera;
+    private readonly GameManager _gm;
+    private const int AttemptsToPlaceRoom = 100;
     private const int RoomLowerBound = 5;
     private const int RoomUpperBound = 15;
     private int _currentRoomWidth = 5;
     private int _currentRoomHeight = 5;
-    
-    private static readonly Random Rand = new Random();
-    
+
+    private static readonly Random Rand = new();
+
     public WorldBuilder(GameManager gm, Camera camera, World world)
     {
         _gm = gm;
@@ -40,43 +40,47 @@ public class WorldBuilder
                 {
                     return;
                 }
+
                 continue;
             }
 
-            currentAttempts = 0;
             for (var k = 0; k < width + 2; k++)
             {
                 _world.CurrentPos += new Vector2(1, 0);
-                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
+                    BuildTile(_world.CurrentPos, Build.Props.Wall));
             }
 
             _world.CurrentPos += new Vector2(-width - 1, 1);
             for (var i = 0; i < height; i++)
             {
-                //Place one wall on left
                 if (i != height / 2 && i != (height / 2 - 1))
                 {
-                    _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                    _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
+                        BuildTile(_world.CurrentPos, Build.Props.Wall));
                 }
 
                 for (var j = 0; j < width; j++)
                 {
-                    //Place floors
                     _world.CurrentPos += new Vector2(1, 0);
-                    _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Floor));
+                    _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
+                        BuildTile(_world.CurrentPos, Build.Props.Floor));
                 }
 
                 _world.CurrentPos += new Vector2(1, 0);
-                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
+                    BuildTile(_world.CurrentPos, Build.Props.Wall));
                 _world.CurrentPos += new Vector2(-width - 1, 1);
                 //Place one wall on right
             }
 
             for (var k = 0; k < width + 2; k++)
             {
-                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
+                _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
+                    BuildTile(_world.CurrentPos, Build.Props.Wall));
                 _world.CurrentPos += new Vector2(1, 0);
             }
+
             break;
         }
     }
@@ -84,7 +88,7 @@ public class WorldBuilder
     public void BuildWorld()
     {
         MakeRoom();
-        for (int i = 0; i < World.NumberOfRooms; i++)
+        for (var i = 0; i < World.NumberOfRooms; i++)
         {
             _currentRoomWidth = Rand.Next(RoomLowerBound, RoomUpperBound);
             _currentRoomHeight = Rand.Next(RoomLowerBound, RoomUpperBound);
@@ -93,10 +97,9 @@ public class WorldBuilder
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
         }
-        //ConnectRooms();
     }
-    
-    
+
+
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
@@ -105,6 +108,6 @@ public class WorldBuilder
         _camera.RegisterRenderable(renderable);
         return new Tile(prop);
     }
-    
+
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 }
