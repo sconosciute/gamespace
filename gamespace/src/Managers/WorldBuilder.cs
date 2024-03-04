@@ -13,8 +13,8 @@ public class WorldBuilder
     private const int AttemptsToPlaceRoom = 20;
     private const int RoomLowerBound = 5;
     private const int RoomUpperBound = 15;
-    private int _currentRoomWidth;
-    private int _currentRoomHeight;
+    private int _currentRoomWidth = 5;
+    private int _currentRoomHeight = 5;
     
     private static readonly Random Rand = new Random();
     
@@ -30,9 +30,6 @@ public class WorldBuilder
         var currentAttempts = 0;
         while (true)
         {
-            var originalPos = _world.CurrentPos;
-            /*var width = 5; //This does work with any static width and height
-            var height = 5;*/
             var width = _currentRoomWidth;
             var height = _currentRoomHeight;
             var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width + 2, height + 2);
@@ -51,14 +48,13 @@ public class WorldBuilder
             {
                 _world.CurrentPos += new Vector2(1, 0);
                 _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
-                //_world.CurrentPos += new Vector2(1, 0);
             }
 
             _world.CurrentPos += new Vector2(-width - 1, 1);
             for (var i = 0; i < height; i++)
             {
                 //Place one wall on left
-                if (i != height / 2 && i != (height / 2 + 1))
+                if (i != height / 2 && i != (height / 2 - 1))
                 {
                     _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
                 }
@@ -78,20 +74,16 @@ public class WorldBuilder
 
             for (var k = 0; k < width + 2; k++)
             {
-                //_world.CurrentPos += new Vector2(1, 0);
                 _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y), BuildTile(_world.CurrentPos, Build.Props.Wall));
                 _world.CurrentPos += new Vector2(1, 0);
             }
-
-            //_world.CurrentPos += new Vector2(-1, -height - 1); //Reset height
-            //_world.CurrentPos = originalPos;
             break;
         }
     }
 
     public void BuildWorld()
     {
-        //var numberOfRooms = 10;
+        MakeRoom();
         for (int i = 0; i < World.NumberOfRooms; i++)
         {
             _currentRoomWidth = Rand.Next(RoomLowerBound, RoomUpperBound);
@@ -100,9 +92,8 @@ public class WorldBuilder
             var randY = Rand.Next(-24, 24 - _currentRoomHeight - 2);
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
-            //BuildHallway();
         }
-        //MakeRoom();
+        //ConnectRooms();
     }
     
     
