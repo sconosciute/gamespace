@@ -10,6 +10,7 @@ namespace gamespace.View;
 public class MenuPanel : GuiPanel
 {
     private List<GuiButton> _buttons;
+    private int _selectedButtonIndex;
 
     public MenuPanel(Rectangle drawBox, GuiManager manager,
         string title, GuiPanel parent = null, List<GuiButton> buttons = null)
@@ -18,6 +19,7 @@ public class MenuPanel : GuiPanel
         if (buttons != null)
         {
             _buttons = buttons;
+            _selectedButtonIndex = 0;
         }
         else
         {
@@ -30,10 +32,32 @@ public class MenuPanel : GuiPanel
         if (_buttons.Count <= 7)
         {
             _buttons.Add(button);
+            _selectedButtonIndex = 0;
         }
         else
         {
             throw new InvalidStateException("TOO MANY BUTTON, 7 BUTTON ONLY.");
+        }
+    }
+
+    public override void HandleInputEvent(InputManager.NavigationEvents nav)
+    {
+        switch (nav)
+        {
+            case InputManager.NavigationEvents.Up: 
+                _selectedButtonIndex = _selectedButtonIndex <= 0 ? 0 : _selectedButtonIndex - 1;
+                break;
+            case InputManager.NavigationEvents.Down:
+            {
+                var maxIndex = _selectedButtonIndex - 1;
+                _selectedButtonIndex = _selectedButtonIndex >= maxIndex ? maxIndex : _selectedButtonIndex + 1;
+                break;   
+            }
+            case InputManager.NavigationEvents.Select : _buttons[_selectedButtonIndex].OnPress();
+                break;
+            case InputManager.NavigationEvents.Escape : Delete();
+                break;
+            default: throw new ArgumentException("Navigation event does not exist");
         }
     }
 

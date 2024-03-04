@@ -45,6 +45,11 @@ public class GuiManager
         _input.MoveEvent += player.HandleMoveEvent;
     }
 
+    private void RegisterInputHandler(GuiPanel panel)
+    {
+        _input.InputEvent += panel.HandleInputEvent;
+    }
+
     public void Update()
     {
         _input.Update(_gm.GameIsPaused);
@@ -69,6 +74,14 @@ public class GuiManager
         _drawScale = scale;
     }
 
+    private void HandleInputEvent(InputManager.NavigationEvents nav)
+    {
+        if (nav == InputManager.NavigationEvents.Escape)
+        {
+            OpenMainMenu();
+        }
+    }
+
     //=== PRE-BAKED PANELS ===------------------------------------------------------------------------------------------
     /// <summary>
     /// Removes the specified panel from the GUI tree to allow it to be GC'd
@@ -76,11 +89,16 @@ public class GuiManager
     /// <param name="panel"></param>
     public void Delete(GuiPanel panel)
     {
+        _input.InputEvent -= panel.HandleInputEvent;
+        _input.InputEvent += HandleInputEvent;
         _panels.Remove(panel);
     }
     
     public void OpenMainMenu()
     {
-        _panels.Add(Bake.MainMenu(_gfx, this));
+        var menu = Bake.MainMenu(_gfx, this);
+        _input.InputEvent -= HandleInputEvent;
+        RegisterInputHandler(menu);
+        _panels.Add(menu);
     }
 }

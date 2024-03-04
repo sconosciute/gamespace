@@ -74,6 +74,10 @@ public sealed class InputManager
         _defaultBinds.Add((Keys.Add, ZoomIn, InputCallbacks.ZoomIn));
         _defaultBinds.Add((Keys.Subtract, ZoomOut, InputCallbacks.ZoomOut));
         _defaultBinds.Add((Keys.OemPlus, ZoomRst, InputCallbacks.ZoomRst));
+        _defaultBinds.Add((Keys.Up, NavUp, InputCallbacks.NavUp));
+        _defaultBinds.Add((Keys.Down, NavDown, InputCallbacks.NavDown));
+        _defaultBinds.Add((Keys.Enter, NavSelect, InputCallbacks.NavSelect));
+        _defaultBinds.Add((Keys.Escape, NavEsc, InputCallbacks.NavEsc));
     }
 
     public void SetKeyBind(in Keys key, in InputCallbacks callback)
@@ -154,6 +158,15 @@ public sealed class InputManager
         ZoomEvent?.Invoke(zm);
     }
 
+    public delegate void InputEventHandler(NavigationEvents nav);
+
+    public event InputEventHandler InputEvent;
+
+    private void OnNavEvent(NavigationEvents nav)
+    {
+        InputEvent?.Invoke(nav);
+    }
+
     //=== INPUT CALLBACKS ===-------------------------------------------------------------------------------------------
     private void MoveLeft() => _direction.X--;
     private void MoveRight() => _direction.X++;
@@ -163,6 +176,11 @@ public sealed class InputManager
     private void ZoomOut() => OnZoomEvent(ZoomEventType.Down);
     private void ZoomRst() => OnZoomEvent(ZoomEventType.Reset);
 
+    private void NavUp() => OnNavEvent(NavigationEvents.Up);
+    private void NavDown() => OnNavEvent(NavigationEvents.Down);
+    private void NavSelect() => OnNavEvent(NavigationEvents.Select);
+    private void NavEsc() => OnNavEvent(NavigationEvents.Escape);
+
     public enum InputCallbacks
     {
         MoveLeft,
@@ -171,6 +189,18 @@ public sealed class InputManager
         MoveDown,
         ZoomIn,
         ZoomOut,
-        ZoomRst
+        ZoomRst,
+        NavUp,
+        NavDown,
+        NavSelect,
+        NavEsc
+    }
+
+    public enum NavigationEvents
+    {
+        Up,
+        Down,
+        Select,
+        Escape
     }
 }

@@ -1,4 +1,5 @@
 ﻿using gamespace.Managers;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -21,13 +22,15 @@ public abstract class GuiPanel
     /// </summary>
     public GuiPanel Parent { get; init; }
 
-    public GuiManager Manager { get; init; }
+    protected GuiManager Manager { get; init; }
     
     public Rectangle DrawBox { get; protected set; }
-    
-    public Texture2D Background { get; init; }
-    
-    public string Title { get; init; }
+
+    protected Texture2D Background { get; init; }
+
+    protected string Title { get; init; }
+
+    private ILogger _log;
     
 
 
@@ -39,11 +42,24 @@ public abstract class GuiPanel
         Manager = manager;
         Parent = parent;
         Background = background ?? manager.OpaqueBg;
+
+        _log = Globals.LogFactory.CreateLogger<GuiPanel>();
     }
 
+    /// <summary>
+    /// Delete this panel from the UI.
+    /// </summary>
     public void Delete()
     {
         Manager.Delete(this);
+    }
+
+    /// <summary>
+    /// Handles input events fired from the InputManager to interact with menus.
+    /// </summary>
+    public virtual void HandleInputEvent(InputManager.NavigationEvents nav)
+    {
+        _log.LogDebug("Tried to ask non-input panel to handle input event.");
     }
 
     protected void DrawText(Vector2 position, string message, SpriteBatch batch)
