@@ -10,7 +10,11 @@ public class WorldBuilder
     private World _world;
     private Camera _camera;
     private GameManager _gm;
-    private const int AttemptsToPlaceRoom = 5;
+    private const int AttemptsToPlaceRoom = 20;
+    private const int RoomLowerBound = 5;
+    private const int RoomUpperBound = 15;
+    private int _currentRoomWidth;
+    private int _currentRoomHeight;
     
     private static readonly Random Rand = new Random();
     
@@ -27,8 +31,10 @@ public class WorldBuilder
         while (true)
         {
             var originalPos = _world.CurrentPos;
-            var width = 5; //This does work with any static width and height
-            var height = 5;
+            /*var width = 5; //This does work with any static width and height
+            var height = 5;*/
+            var width = _currentRoomWidth;
+            var height = _currentRoomHeight;
             var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width + 2, height + 2);
             if (_world.CheckRoomOverlap(room))
             {
@@ -88,8 +94,10 @@ public class WorldBuilder
         //var numberOfRooms = 10;
         for (int i = 0; i < World.NumberOfRooms; i++)
         {
-            var randX = Rand.Next(-24, 17);
-            var randY = Rand.Next(-24, 17);
+            _currentRoomWidth = Rand.Next(RoomLowerBound, RoomUpperBound);
+            _currentRoomHeight = Rand.Next(RoomLowerBound, RoomUpperBound);
+            var randX = Rand.Next(-24, 24 - _currentRoomWidth - 2);
+            var randY = Rand.Next(-24, 24 - _currentRoomHeight - 2);
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
             //BuildHallway();
