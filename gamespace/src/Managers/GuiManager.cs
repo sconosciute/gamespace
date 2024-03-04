@@ -50,9 +50,9 @@ public class GuiManager
         _input.InputEvent += panel.HandleInputEvent;
     }
 
-    public void Update()
+    public void Update(in GameTime gameTime)
     {
-        _input.Update(_gm.GameIsPaused);
+        _input.Update(_gm.GameIsPaused, gameTime);
     }
 
     //=== GUI RENDERING ===---------------------------------------------------------------------------------------------

@@ -12,7 +12,6 @@ public sealed class InputManager
     //TODO: Make this instanced and remove the public static API for movement, require event handling.
     private static Vector2 _direction;
     public static Vector2 Direction => _direction;
-    public static bool Moving => _direction != Vector2.Zero;
 
     private delegate void InputCallback();
 
@@ -20,6 +19,9 @@ public sealed class InputManager
     private readonly List<(Keys, InputCallback, InputCallbacks)> _defaultBinds = new();
     private readonly Dictionary<InputCallback, InputCallbacks> _callbackToEnum = new();
     private readonly Dictionary<InputCallbacks, InputCallback> _enumToCallback = new();
+
+    private KeyboardState _lastState;
+    private KeyboardState _currentState;
 
     private static InputManager _instance;
 
@@ -35,6 +37,7 @@ public sealed class InputManager
         InitDefaultBindingsList();
         _keyMap = new Dictionary<Keys, InputCallback>();
         InitBindingsMaps();
+        WriteKeyBindConf();
 
         if (!SettingsManager.TryReadConfig(ConfNames.KeyBinds, out var data)) return;
         _log.LogInformation("Found custom key binds, loading...");
@@ -106,16 +109,20 @@ public sealed class InputManager
         return _instance ??= new InputManager(manager);
     }
 
-    public void Update(in bool gameIsPaused)
+    public void Update(in bool gameIsPaused, in GameTime gameTime)
     {
         var oldDir = _direction;
         _direction = Vector2.Zero;
         var keyboardState = Keyboard.GetState();
 
+        var now = gameTime.TotalGameTime.TotalMilliseconds;
         foreach (var key in keyboardState.GetPressedKeys())
         {
             _keyMap.TryGetValue(key, out var callback);
-            callback?.Invoke();
+            if (_lastState.IsKeyUp(key))
+            {
+                callback?.Invoke();
+            }
         }
 
         if (_direction == oldDir) return;
@@ -126,6 +133,11 @@ public sealed class InputManager
         OnMoveEvent(_direction);
     }
 
+    private void HandleKeyboardEvent(in InputDriver.KeyEvent args)
+    {
+        
+    }
+    
     //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
 
     /// <summary>
@@ -162,7 +174,7 @@ public sealed class InputManager
 
     public event InputEventHandler InputEvent;
 
-    private void OnNavEvent(NavigationEvents nav)
+    private void OnNavEvent(in NavigationEvents nav)
     {
         InputEvent?.Invoke(nav);
     }
@@ -203,4 +215,8 @@ public sealed class InputManager
         Select,
         Escape
     }
+
+    
+
+    
 }

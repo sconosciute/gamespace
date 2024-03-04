@@ -49,7 +49,7 @@ public class MenuPanel : GuiPanel
                 break;
             case InputManager.NavigationEvents.Down:
             {
-                var maxIndex = _selectedButtonIndex - 1;
+                var maxIndex = _buttons.Count - 1;
                 _selectedButtonIndex = _selectedButtonIndex >= maxIndex ? maxIndex : _selectedButtonIndex + 1;
                 break;   
             }

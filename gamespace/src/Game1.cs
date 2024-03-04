@@ -13,8 +13,6 @@ public class Game1 : Game
     private readonly ILogger _log;
     private GuiManager _gui;
 
-    public SpriteFont Font;
-
     public Game1()
     {
         
@@ -54,9 +52,10 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        var now = gameTime.TotalGameTime.TotalMilliseconds;
-        _gui.Update();
+        _gui.Update(gameTime);
+        InputDriver.Update();
 
+        var now = gameTime.TotalGameTime.TotalMilliseconds;
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
             _gm.FixedUpdate(gameTime);
