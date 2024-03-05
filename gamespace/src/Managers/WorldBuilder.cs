@@ -106,12 +106,13 @@ public class WorldBuilder
     {
         FillMapWithWalls();
         // (1) Pick a random position not on a floor or wall, and that all adjacent tiles are also not walls , this is tested to work
-        //PickStartingTile();
+        PickStartingTile();
         //
-        // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction*2 == a wall 
-        //
+        // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction * 2 == a floor
+        // 
+        //  we can do currentPos += randomDirection for traversal. 
         // (3) Once it determines it hits a dead end, go back up the recursive stack checking at each time a new direction was picked,
-        //      if it can go any other directions.
+        //      if it can go any other directions. How to handle dead ends will be the most complicated part.
         //
         // (4) Once we go back to every turn made, and determine 
     }
@@ -124,12 +125,15 @@ public class WorldBuilder
         {
             if (_world.CheckAdj(new Point(x, y)))
             {
-                _world.TryPlaceTile(new Point(x, y), BuildTile(new Vector2(x, y), Build.Props.Wall));
+                _world.TryPlaceTile(new Point(x, y), BuildTile(new Vector2(x, y), Build.Props.Floor));
+                Console.Out.Write("X: " + x + "Y: " + y);
                 break;
             }
 
             x++;
         }
+
+        _world.CurrentPos = new Vector2(x, y);
     }
     
     public void FillMapWithWalls() //Name of method subject to change.
