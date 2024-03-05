@@ -151,16 +151,12 @@ public class World
     
     
     public bool CheckAdj(Point pos)
-    {   //TODO: ADD ANOTHER CONDITIONAL to check if any of these are out of bounds
-        if (this[pos.X - 1, pos.Y] == null && this[pos.X + 1, pos.Y] == null && this[pos.X, pos.Y + 1] == null &&
-            this[pos.X, pos.Y - 1] == null && this[pos.X + 1, pos.Y + 1] == null &&
-            this[pos.X - 1, pos.Y - 1] == null &&
-            this[pos.X - 1, pos.Y + 1] == null && this[pos.X + 1, pos.Y - 1] == null && this[pos.X, pos.Y] == null)
-        {
-            return true;
-        }
-
-        return false;
+    {
+        //TODO: ADD ANOTHER CONDITIONAL to check if any of these are out of bounds
+        return !CheckTileIsFloor(pos.X - 1, pos.Y) && !CheckTileIsFloor(pos.X + 1, pos.Y) && !CheckTileIsFloor(pos.X, pos.Y + 1) &&
+               !CheckTileIsFloor(pos.X, pos.Y - 1) && !CheckTileIsFloor(pos.X + 1, pos.Y + 1) &&
+               !CheckTileIsFloor(pos.X - 1, pos.Y - 1) && !CheckTileIsFloor(pos.X - 1, pos.Y + 1) && 
+               !CheckTileIsFloor(pos.X + 1, pos.Y - 1) && !CheckTileIsFloor(pos.X, pos.Y);
     }
     
     
