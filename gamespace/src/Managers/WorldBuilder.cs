@@ -2,7 +2,7 @@
 using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
-
+using Point = System.Drawing.Point;
 namespace gamespace.Managers;
 
 public class WorldBuilder
@@ -86,7 +86,7 @@ public class WorldBuilder
     }
 
     public void BuildWorld()
-    {
+    {   //TODO Make this not hardcoded for min and max X, Y
         MakeRoom();
         for (var i = 0; i < World.NumberOfRooms; i++)
         {
@@ -97,9 +97,54 @@ public class WorldBuilder
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
         }
+        
+        FloodFill();
+        
+    }
+    
+    public void FloodFill() //Name of method subject to change.
+    {
+        FillMapWithWalls();
+        // (1) Pick a random position not on a floor or wall, and that all adjacent tiles are also not walls , this is tested to work
+        //PickStartingTile();
+        //
+        // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction*2 == a wall 
+        //
+        // (3) Once it determines it hits a dead end, go back up the recursive stack checking at each time a new direction was picked,
+        //      if it can go any other directions.
+        //
+        // (4) Once we go back to every turn made, and determine 
     }
 
+    private void PickStartingTile()
+    {
+        var x = -24;
+        var y = -24;
+        while (true)
+        {
+            if (_world.CheckAdj(new Point(x, y)))
+            {
+                _world.TryPlaceTile(new Point(x, y), BuildTile(new Vector2(x, y), Build.Props.Wall));
+                break;
+            }
 
+            x++;
+        }
+    }
+    
+    public void FillMapWithWalls() //Name of method subject to change.
+    {
+        for (var i = _world._minY; i < _world._maxY; i++)
+        {
+            for (var j = _world._minX; j < _world._maxX; j++)
+            {
+                if (_world.CheckTileIsNull(j, i))
+                {
+                    _world.TryPlaceTile(new Point(j, i), BuildTile(new Vector2(j, i), Build.Props.Wall));
+                }
+            }
+        }
+    }
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
