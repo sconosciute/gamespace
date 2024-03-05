@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security;
 using gamespace.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Point = System.Drawing.Point;
 
 namespace gamespace.Model;
 
@@ -16,10 +18,12 @@ public class World
     private readonly List<Rectangle> _roomBounds = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
-    private readonly int _minX;
-    private readonly int _maxX;
-    private readonly int _minY;
-    private readonly int _maxY;
+    
+    //TODO: Change this to use properties
+    public readonly int _minX;
+    public readonly int _maxX;
+    public readonly int _minY;
+    public readonly int _maxY;
     private readonly int _xOffset;
     private readonly int _yOffset;
 
@@ -29,7 +33,7 @@ public class World
     private static readonly Vector2 MoveUp = new(0, -1);
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
-
+    
     //TODO: This property will likely be removed before completion
     public Vector2 CurrentPos { get; set; } = new(-4, -3);
 
@@ -92,7 +96,7 @@ public class World
     /// <param name="x">World X coordinate</param>
     /// <param name="y">World Y Coordinate</param>
     /// <returns>True if the tile exists within the world boundary else false.</returns>
-    public bool IsInBounds(int x, int y) => (x > _minX && x < _maxX && y > _minY && y < _maxY);
+    public bool IsInBounds(int x, int y) => (x >= _minX && x <= _maxX && y >= _minY && y <= _maxY);
 
     /// <summary>
     /// Places a tile at the given coordinate if and only if there is no tile present already.
@@ -125,7 +129,41 @@ public class World
         _roomBounds.Add(newRoom);
         return false;
     }
+    
+    
+    //TODO: Alter how building tiles is managed, to remove the need to use this method.
+    public bool CheckTileIsNull(int x, int y)
+    {
+        Point pos = new Point(x, y);
+        if (this[pos.X, pos.Y] != null)
+        {
+            return false;
+        }
 
+        return true;
+    }
+
+    public bool CheckTileIsFloor(int x, int y)
+    {
+        var pos = new Point(x, y);
+        return !this[pos.X, pos.Y].CanCollide;
+    }
+    
+    
+    public bool CheckAdj(Point pos)
+    {   //TODO: ADD ANOTHER CONDITIONAL to check if any of these are out of bounds
+        if (this[pos.X - 1, pos.Y] == null && this[pos.X + 1, pos.Y] == null && this[pos.X, pos.Y + 1] == null &&
+            this[pos.X, pos.Y - 1] == null && this[pos.X + 1, pos.Y + 1] == null &&
+            this[pos.X - 1, pos.Y - 1] == null &&
+            this[pos.X - 1, pos.Y + 1] == null && this[pos.X + 1, pos.Y - 1] == null && this[pos.X, pos.Y] == null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    
+    
     public void DebugDrawMap()
     {
         var testTile = Globals.Content.Load<Texture2D>("tile");
