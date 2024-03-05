@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
+
 namespace gamespace;
 
 public static class InputDriver
@@ -23,7 +24,7 @@ public static class InputDriver
 
     private static void PollKeyboard()
     {
-        CurrentState = LastState;
+        LastState = CurrentState;
         CurrentState = Keyboard.GetState();
 
         foreach (var key in CurrentState.GetPressedKeys())

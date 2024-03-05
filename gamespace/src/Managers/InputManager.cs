@@ -179,7 +179,7 @@ public sealed class InputManager
         InputEvent?.Invoke(nav);
     }
 
-    //=== INPUT CALLBACKS ===-------------------------------------------------------------------------------------------
+    #region INPUT CALLBACKS
     private void MoveLeft() => _direction.X--;
     private void MoveRight() => _direction.X++;
     private void MoveUp() => _direction.Y--;
@@ -193,6 +193,8 @@ public sealed class InputManager
     private void NavSelect() => OnNavEvent(NavigationEvents.Select);
     private void NavEsc() => OnNavEvent(NavigationEvents.Escape);
 
+    #endregion
+    
     public enum InputCallbacks
     {
         MoveLeft,
