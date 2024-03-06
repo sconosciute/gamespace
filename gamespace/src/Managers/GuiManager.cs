@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using gamespace.Model;
 using gamespace.View;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Managers;
@@ -12,7 +11,6 @@ public class GuiManager
     private readonly GraphicsDevice _gfx;
     private readonly GameManager _gm;
     private readonly InputManager _input;
-    private Matrix _drawScale;
 
     public Texture2D OpaqueBg { get; private set; }
     public Texture2D TransparentBg { get; private set; }
@@ -23,9 +21,9 @@ public class GuiManager
     {
         _gfx = gfx;
         _gm = gm;
-        _input = InputManager.GetInputManager(this);
+        _input = InputManager.GetInputManager();
         _input.ZoomEvent += camera.HandleZoomEvent;
-        camera.CameraEvent += HandleCameraEvent;
+        InputDriver.KeyboardEvent += _input.HandleKeyboardEvent;
         
         _guiSpriteBatch = new SpriteBatch(_gfx);
     }
@@ -50,12 +48,11 @@ public class GuiManager
         _input.InputEvent += panel.HandleInputEvent;
     }
 
-    public void Update(in GameTime gameTime)
+    public void Update()
     {
-        _input.Update(_gm.GameIsPaused, gameTime);
+        _input.Update();
     }
-
-    //=== GUI RENDERING ===---------------------------------------------------------------------------------------------
+    
     public void RenderGui()
     {
         _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend,
@@ -68,12 +65,6 @@ public class GuiManager
         _guiSpriteBatch.End();
     }
 
-    //=== EVENT HANDLING ===--------------------------------------------------------------------------------------------
-    private void HandleCameraEvent(Matrix scale)
-    {
-        _drawScale = scale;
-    }
-
     private void HandleInputEvent(InputManager.NavigationEvents nav)
     {
         if (nav == InputManager.NavigationEvents.Escape)
@@ -82,7 +73,7 @@ public class GuiManager
         }
     }
 
-    //=== PRE-BAKED PANELS ===------------------------------------------------------------------------------------------
+    #region Prebaked Panels
     /// <summary>
     /// Removes the specified panel from the GUI tree to allow it to be GC'd
     /// </summary>
@@ -101,4 +92,6 @@ public class GuiManager
         RegisterInputHandler(menu);
         _panels.Add(menu);
     }
+    
+    #endregion
 }

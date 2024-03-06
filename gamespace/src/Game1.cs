@@ -52,7 +52,7 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        _gui.Update(gameTime);
+        _gui.Update();
         InputDriver.Update();
 
         var now = gameTime.TotalGameTime.TotalMilliseconds;

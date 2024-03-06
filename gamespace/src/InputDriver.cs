@@ -5,8 +5,8 @@ namespace gamespace;
 
 public static class InputDriver
 {
-    private static KeyboardState CurrentState;
-    private static KeyboardState LastState;
+    private static KeyboardState _currentState;
+    private static KeyboardState _lastState;
     
     public delegate void KeyboardEventHandler(in KeyEvent args);
 
@@ -24,20 +24,20 @@ public static class InputDriver
 
     private static void PollKeyboard()
     {
-        LastState = CurrentState;
-        CurrentState = Keyboard.GetState();
+        _lastState = _currentState;
+        _currentState = Keyboard.GetState();
 
-        foreach (var key in CurrentState.GetPressedKeys())
+        foreach (var key in _currentState.GetPressedKeys())
         {
-            if (LastState[key] != KeyState.Down)
+            if (_lastState[key] != KeyState.Down)
             {
                 OnKeyboardEvent(new KeyEvent(key, KeyAction.Pressed));
             }
         }
 
-        foreach (var key in LastState.GetPressedKeys())
+        foreach (var key in _lastState.GetPressedKeys())
         {
-            if (CurrentState[key] != KeyState.Down)
+            if (_currentState[key] != KeyState.Down)
             {
                 OnKeyboardEvent(new KeyEvent(key, KeyAction.Released));
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using gamespace.View;
 using Microsoft.Extensions.Logging;
@@ -13,26 +14,22 @@ public sealed class InputManager
     private static Vector2 _direction;
     public static Vector2 Direction => _direction;
 
-    private delegate void InputCallback();
+    private bool _pMoveNorth;
+    private bool _pMoveSouth;
+    private bool _pMoveEast;
+    private bool _pMoveWest;
 
     private readonly Dictionary<Keys, InputCallback> _keyMap;
     private readonly List<(Keys, InputCallback, InputCallbacks)> _defaultBinds = new();
     private readonly Dictionary<InputCallback, InputCallbacks> _callbackToEnum = new();
     private readonly Dictionary<InputCallbacks, InputCallback> _enumToCallback = new();
 
-    private KeyboardState _lastState;
-    private KeyboardState _currentState;
-
     private static InputManager _instance;
-
-    private GuiManager _manager;
-
     private readonly ILogger _log;
 
-    private InputManager(in GuiManager manager)
+    private InputManager()
     {
         _log = Globals.LogFactory.CreateLogger<InputManager>();
-        _manager = manager;
         _instance = this;
         InitDefaultBindingsList();
         _keyMap = new Dictionary<Keys, InputCallback>();
@@ -40,6 +37,7 @@ public sealed class InputManager
         WriteKeyBindConf();
 
         if (!SettingsManager.TryReadConfig(ConfNames.KeyBinds, out var data)) return;
+
         _log.LogInformation("Found custom key binds, loading...");
         var keyMap = JsonSerializer.Deserialize<Dictionary<Keys, InputCallbacks>>(data);
         foreach (var bind in keyMap)
@@ -47,8 +45,11 @@ public sealed class InputManager
             _keyMap.Remove(bind.Key);
             _keyMap.Add(bind.Key, _enumToCallback[bind.Value]);
         }
+
         _log.LogInformation("Keybinds successfully loaded as \n {binds}", _keyMap);
     }
+
+    #region Default Binding Initialization
 
     private void InitBindingsMaps()
     {
@@ -70,10 +71,10 @@ public sealed class InputManager
 
     private void InitDefaultBindingsList()
     {
-        _defaultBinds.Add((Keys.W, MoveUp, InputCallbacks.MoveUp));
-        _defaultBinds.Add((Keys.S, MoveDown, InputCallbacks.MoveDown));
-        _defaultBinds.Add((Keys.A, MoveLeft, InputCallbacks.MoveLeft));
-        _defaultBinds.Add((Keys.D, MoveRight, InputCallbacks.MoveRight));
+        _defaultBinds.Add((Keys.W, MoveNorth, InputCallbacks.MoveUp));
+        _defaultBinds.Add((Keys.S, MoveSouth, InputCallbacks.MoveDown));
+        _defaultBinds.Add((Keys.A, MoveWest, InputCallbacks.MoveLeft));
+        _defaultBinds.Add((Keys.D, MoveEast, InputCallbacks.MoveRight));
         _defaultBinds.Add((Keys.Add, ZoomIn, InputCallbacks.ZoomIn));
         _defaultBinds.Add((Keys.Subtract, ZoomOut, InputCallbacks.ZoomOut));
         _defaultBinds.Add((Keys.OemPlus, ZoomRst, InputCallbacks.ZoomRst));
@@ -82,6 +83,8 @@ public sealed class InputManager
         _defaultBinds.Add((Keys.Enter, NavSelect, InputCallbacks.NavSelect));
         _defaultBinds.Add((Keys.Escape, NavEsc, InputCallbacks.NavEsc));
     }
+
+    #endregion
 
     public void SetKeyBind(in Keys key, in InputCallbacks callback)
     {
@@ -104,41 +107,39 @@ public sealed class InputManager
         SettingsManager.TryWriteConfig(ConfNames.KeyBinds, json);
     }
 
-    public static InputManager GetInputManager(in GuiManager manager)
+    public static InputManager GetInputManager()
     {
-        return _instance ??= new InputManager(manager);
+        return _instance ??= new InputManager();
     }
 
-    public void Update(in bool gameIsPaused, in GameTime gameTime)
+    public void Update()
     {
         var oldDir = _direction;
         _direction = Vector2.Zero;
-        var keyboardState = Keyboard.GetState();
 
-        var now = gameTime.TotalGameTime.TotalMilliseconds;
-        foreach (var key in keyboardState.GetPressedKeys())
-        {
-            _keyMap.TryGetValue(key, out var callback);
-            if (_lastState.IsKeyUp(key))
-            {
-                callback?.Invoke();
-            }
-        }
+        if (_pMoveNorth) _direction.Y--;
+        if (_pMoveSouth) _direction.Y++;
+        if (_pMoveWest) _direction.X--;
+        if (_pMoveEast) _direction.X++;
 
         if (_direction == oldDir) return;
         if (_direction != Vector2.Zero)
         {
             _direction.Normalize();
         }
+
         OnMoveEvent(_direction);
     }
 
-    private void HandleKeyboardEvent(in InputDriver.KeyEvent args)
+    public void HandleKeyboardEvent(in InputDriver.KeyEvent args)
     {
-        
+        if (_keyMap.TryGetValue(args.Key, out var callback))
+        {
+            callback?.Invoke(args.Action);
+        }
     }
-    
-    //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
+
+    #region Event Dispatch
 
     /// <summary>
     /// Player move event handler type.
@@ -179,22 +180,42 @@ public sealed class InputManager
         InputEvent?.Invoke(nav);
     }
 
-    #region INPUT CALLBACKS
-    private void MoveLeft() => _direction.X--;
-    private void MoveRight() => _direction.X++;
-    private void MoveUp() => _direction.Y--;
-    private void MoveDown() => _direction.Y++;
-    private void ZoomIn() => OnZoomEvent(ZoomEventType.Up);
-    private void ZoomOut() => OnZoomEvent(ZoomEventType.Down);
-    private void ZoomRst() => OnZoomEvent(ZoomEventType.Reset);
-
-    private void NavUp() => OnNavEvent(NavigationEvents.Up);
-    private void NavDown() => OnNavEvent(NavigationEvents.Down);
-    private void NavSelect() => OnNavEvent(NavigationEvents.Select);
-    private void NavEsc() => OnNavEvent(NavigationEvents.Escape);
+    public enum NavigationEvents
+    {
+        Up,
+        Down,
+        Select,
+        Escape
+    }
 
     #endregion
+
+    #region Input Callbacks
+
+    private void MoveWest(InputDriver.KeyAction action) => _pMoveWest = action == InputDriver.KeyAction.Pressed;
+    private void MoveEast(InputDriver.KeyAction action) => _pMoveEast = action == InputDriver.KeyAction.Pressed;
+    private void MoveNorth(InputDriver.KeyAction action) => _pMoveNorth = action == InputDriver.KeyAction.Pressed;
+    private void MoveSouth(InputDriver.KeyAction action) => _pMoveSouth = action == InputDriver.KeyAction.Pressed;
+    private void ZoomIn(InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnZoomEvent(ZoomEventType.Up));
+    private void ZoomOut(InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnZoomEvent(ZoomEventType.Down));
+    private void ZoomRst(InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnZoomEvent(ZoomEventType.Reset));
+    private void NavUp(InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnNavEvent(NavigationEvents.Up));
+    private void NavDown(InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnNavEvent(NavigationEvents.Down));
+    private void NavSelect(InputDriver.KeyAction action) =>
+        PressFilter(action, () => OnNavEvent(NavigationEvents.Select));
+    private void NavEsc(InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnNavEvent(NavigationEvents.Escape));
     
+    private static void PressFilter(InputDriver.KeyAction action, Action callback)
+    {
+        if (action == InputDriver.KeyAction.Pressed) callback.Invoke();
+    }
+
     public enum InputCallbacks
     {
         MoveLeft,
@@ -210,15 +231,7 @@ public sealed class InputManager
         NavEsc
     }
 
-    public enum NavigationEvents
-    {
-        Up,
-        Down,
-        Select,
-        Escape
-    }
+    #endregion
 
-    
-
-    
+    private delegate void InputCallback(InputDriver.KeyAction action);
 }
