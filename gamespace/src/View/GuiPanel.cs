@@ -58,19 +58,19 @@ public abstract class GuiPanel
     /// <summary>
     /// Handles input events fired from the InputManager to interact with menus.
     /// </summary>
-    public virtual void HandleInputEvent(InputManager.NavigationEvents nav)
+    public virtual void HandleInputEvent(in InputManager.NavigationEvents nav)
     {
         _log.LogDebug("Tried to ask non-input panel to handle input event.");
     }
 
-    protected void DrawText(Vector2 position, string message, SpriteBatch batch, bool isTitle)
+    protected void DrawText(in Vector2 position, in string message, in SpriteBatch batch, in bool isTitle)
     {
         var scalar = isTitle ? 2f : 3f;
         var scale = new Vector2((float)Math.Round(Globals.Scale / scalar));
         batch.DrawString(Globals.Font, message, position, Color.Black, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
 
-    public virtual void Draw(SpriteBatch batch)
+    public virtual void Draw(in SpriteBatch batch)
     {
         if (Shown)
         {

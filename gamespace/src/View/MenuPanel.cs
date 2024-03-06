@@ -42,7 +42,7 @@ public class MenuPanel : GuiPanel
         }
     }
 
-    public override void HandleInputEvent(InputManager.NavigationEvents nav)
+    public override void HandleInputEvent(in InputManager.NavigationEvents nav)
     {
         var oldButtonIndex = _selectedButtonIndex;
         switch (nav)
@@ -68,7 +68,7 @@ public class MenuPanel : GuiPanel
         }
     }
 
-    public override void Draw(SpriteBatch batch)
+    public override void Draw(in SpriteBatch batch)
     {
         //TODO: Make button update event based so it doesn't happen every loop.
         var buttonOffset = (int)Math.Round(DrawBox.Height / 10f);

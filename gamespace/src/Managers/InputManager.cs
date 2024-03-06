@@ -159,7 +159,7 @@ public sealed class InputManager
     /// <summary>
     /// Zoom event handler type.
     /// </summary>
-    public delegate void ZoomEventHandler(ZoomEventType zm);
+    public delegate void ZoomEventHandler(in ZoomEventType zm);
 
     /// <summary>
     /// Zoom event dispatch.
@@ -171,7 +171,7 @@ public sealed class InputManager
         ZoomEvent?.Invoke(zm);
     }
 
-    public delegate void InputEventHandler(NavigationEvents nav);
+    public delegate void InputEventHandler(in NavigationEvents nav);
 
     public event InputEventHandler InputEvent;
 

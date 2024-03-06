@@ -135,7 +135,7 @@ public class Camera
     /// <summary>
     /// Adjusts the camera zoom value based on thrown event from InputManager.
     /// </summary>
-    public void HandleZoomEvent(ZoomEventType zm)
+    public void HandleZoomEvent(in ZoomEventType zm)
     {
         switch (zm)
         {

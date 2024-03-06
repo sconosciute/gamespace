@@ -17,7 +17,7 @@ public class GuiManager
 
     private readonly SpriteBatch _guiSpriteBatch;
 
-    public GuiManager(GraphicsDevice gfx, GameManager gm, Camera camera)
+    public GuiManager(in GraphicsDevice gfx, in GameManager gm, in Camera camera)
     {
         _gfx = gfx;
         _gm = gm;
@@ -39,12 +39,12 @@ public class GuiManager
     /// Registers an entity to listen for MoveEvents from the InputManager.
     /// </summary>
     /// <param name="player">The player entity to control, will replace the current entity if one exists.</param>
-    public void RegisterControlledEntity(Player player)
+    public void RegisterControlledEntity(in Player player)
     {
         _input.MoveEvent += player.HandleMoveEvent;
     }
 
-    private void RegisterInputHandler(GuiPanel panel)
+    private void RegisterInputHandler(in GuiPanel panel)
     {
         _input.InputEvent += panel.HandleInputEvent;
     }
@@ -66,7 +66,7 @@ public class GuiManager
         _guiSpriteBatch.End();
     }
 
-    private void HandleInputEvent(InputManager.NavigationEvents nav)
+    private void HandleInputEvent(in InputManager.NavigationEvents nav)
     {
         if (nav == InputManager.NavigationEvents.Escape)
         {
@@ -74,7 +74,7 @@ public class GuiManager
         }
     }
 
-    #region Prebaked Panels
+    #region Panels
     /// <summary>
     /// Removes the specified panel from the GUI tree to allow it to be GC'd
     /// </summary>
@@ -86,7 +86,7 @@ public class GuiManager
         _panels.Remove(panel);
     }
     
-    public void OpenMainMenu()
+    private void OpenMainMenu()
     {
         var menu = Bake.MainMenu(_gfx, this);
         _input.InputEvent -= HandleInputEvent;

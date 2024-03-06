@@ -19,7 +19,7 @@ public class GuiButton : GuiPanel
         _callback = callback;
     }
 
-    public override void Draw(SpriteBatch batch)
+    public override void Draw(in SpriteBatch batch)
     {
         var color = Selected ? Color.Goldenrod : Color.Aqua;
         batch.Draw(Background, DrawBox, color);
