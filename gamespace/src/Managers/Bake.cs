@@ -22,6 +22,7 @@ public static class Bake
             IsActive = true
         };
         menu.AddButton(new GuiButton("Close", ButtonCallbacks.CloseParentMenu, menu, manager));
+        menu.AddButton(new GuiButton("Also Close", ButtonCallbacks.CloseParentMenu, menu, manager));
 
         return menu;
 

@@ -20,6 +20,7 @@ public class MenuPanel : GuiPanel
         {
             _buttons = buttons;
             _selectedButtonIndex = 0;
+            _buttons[_selectedButtonIndex].Selected = true;
         }
         else
         {
@@ -33,6 +34,7 @@ public class MenuPanel : GuiPanel
         {
             _buttons.Add(button);
             _selectedButtonIndex = 0;
+            _buttons[_selectedButtonIndex].Selected = true;
         }
         else
         {
@@ -42,15 +44,20 @@ public class MenuPanel : GuiPanel
 
     public override void HandleInputEvent(InputManager.NavigationEvents nav)
     {
+        var oldButtonIndex = _selectedButtonIndex;
         switch (nav)
         {
             case InputManager.NavigationEvents.Up: 
                 _selectedButtonIndex = _selectedButtonIndex <= 0 ? 0 : _selectedButtonIndex - 1;
+                _buttons[oldButtonIndex].Selected = false;
+                _buttons[_selectedButtonIndex].Selected = true;
                 break;
             case InputManager.NavigationEvents.Down:
             {
                 var maxIndex = _buttons.Count - 1;
                 _selectedButtonIndex = _selectedButtonIndex >= maxIndex ? maxIndex : _selectedButtonIndex + 1;
+                _buttons[oldButtonIndex].Selected = false;
+                _buttons[_selectedButtonIndex].Selected = true;
                 break;   
             }
             case InputManager.NavigationEvents.Select : _buttons[_selectedButtonIndex].OnPress();
@@ -64,17 +71,17 @@ public class MenuPanel : GuiPanel
     public override void Draw(SpriteBatch batch)
     {
         //TODO: Make button update event based so it doesn't happen every loop.
-        var buttonOffset = (int)Math.Round(DrawBox.Height / 16f);
+        var buttonOffset = (int)Math.Round(DrawBox.Height / 10f);
         for (var button = 0; button < _buttons.Count; button++)
         {
             _buttons[button].UpdateDrawBox(new Point(
-                DrawBox.X + (DrawBox.Width * (1 / 8)),
+                DrawBox.X + (int)Math.Round(DrawBox.Width * (1 / 8f)),
                 DrawBox.Y + (buttonOffset * (button + 1)))
             );
         }
         
         base.Draw(batch);
-        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch);
+        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch, true);
         foreach (var button in _buttons)
         {
             button.Draw(batch);

@@ -23,13 +23,13 @@ public class GuiButton : GuiPanel
     {
         var color = Selected ? Color.Goldenrod : Color.Aqua;
         batch.Draw(Background, DrawBox, color);
-        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch);
+        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch, true);
     }
 
     public void UpdateDrawBox(Point position)
     {
         var wAdj = 3f / 4f;
-        var hAdj = 1f / 8f;
+        var hAdj = 1f / 11f;
         var wh = new Point((int)Math.Round(Parent.DrawBox.Width * wAdj), (int)Math.Round(Parent.DrawBox.Height * hAdj));
         DrawBox = new Rectangle(position, wh);
     }

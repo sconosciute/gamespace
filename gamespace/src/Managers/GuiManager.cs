@@ -23,6 +23,7 @@ public class GuiManager
         _gm = gm;
         _input = InputManager.GetInputManager();
         _input.ZoomEvent += camera.HandleZoomEvent;
+        _input.InputEvent += HandleInputEvent;
         InputDriver.KeyboardEvent += _input.HandleKeyboardEvent;
         
         _guiSpriteBatch = new SpriteBatch(_gfx);

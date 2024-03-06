@@ -1,4 +1,5 @@
-﻿using gamespace.Managers;
+﻿using System;
+using gamespace.Managers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -62,18 +63,18 @@ public abstract class GuiPanel
         _log.LogDebug("Tried to ask non-input panel to handle input event.");
     }
 
-    protected void DrawText(Vector2 position, string message, SpriteBatch batch)
+    protected void DrawText(Vector2 position, string message, SpriteBatch batch, bool isTitle)
     {
-        //TODO: Provide difference between Title and Body text.
-        var scale = new Vector2(Globals.Scale, Globals.Scale);
-        batch.DrawString(Globals.Font, message, position, Color.Red, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        var scalar = isTitle ? 2f : 3f;
+        var scale = new Vector2((float)Math.Round(Globals.Scale / scalar));
+        batch.DrawString(Globals.Font, message, position, Color.Black, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
 
     public virtual void Draw(SpriteBatch batch)
     {
         if (Shown)
         {
-            batch.Draw(Background, DrawBox, Color.Crimson);
+            batch.Draw(Background, DrawBox, Color.White);
         }
     }
 }
