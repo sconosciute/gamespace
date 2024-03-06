@@ -94,7 +94,7 @@ public class GameManager
     public void Draw()
     {
         _camera.BeginFrame();
-        _world.DebugDrawMap();
+        // _world.DebugDrawMap();
         _camera.DrawFrame(RenderMode.Deferred);
         
         _camera.RenderFrame();

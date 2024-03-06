@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security;
-using gamespace.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Point = System.Drawing.Point;
@@ -143,20 +141,21 @@ public class World
         return true;
     }
 
-    public bool CheckTileIsFloor(int x, int y)
-    {
-        var pos = new Point(x, y);
-        return !this[pos.X, pos.Y].CanCollide;
-    }
-    
-    
     public bool CheckAdj(Point pos)
     {
+        for (var i = pos.X - 1; i <= pos.X + 1; i++)
+        {
+            for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
+            {
+                if (!this[i, j].CanCollide)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
         //TODO: ADD ANOTHER CONDITIONAL to check if any of these are out of bounds
-        return !CheckTileIsFloor(pos.X - 1, pos.Y) && !CheckTileIsFloor(pos.X + 1, pos.Y) && !CheckTileIsFloor(pos.X, pos.Y + 1) &&
-               !CheckTileIsFloor(pos.X, pos.Y - 1) && !CheckTileIsFloor(pos.X + 1, pos.Y + 1) &&
-               !CheckTileIsFloor(pos.X - 1, pos.Y - 1) && !CheckTileIsFloor(pos.X - 1, pos.Y + 1) && 
-               !CheckTileIsFloor(pos.X + 1, pos.Y - 1) && !CheckTileIsFloor(pos.X, pos.Y);
     }
     
     
