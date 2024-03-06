@@ -51,6 +51,7 @@ public class GameManager
     {
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
+        _gui.InitStatPanel();
         Guid dummy = Guid.NewGuid();
         _worldBuilder.BuildWorld();
         _robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
@@ -60,6 +61,11 @@ public class GameManager
         
         //_worldBuilder.MakeRoom();
         
+    }
+
+    public void RegisterPlayerListener(Player.PlayerStateEventHandler handler)
+    {
+        _player.PlayerStateEvent += handler;
     }
     
     #endregion
