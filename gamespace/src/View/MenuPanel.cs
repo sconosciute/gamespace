@@ -9,7 +9,7 @@ namespace gamespace.View;
 
 public class MenuPanel : GuiPanel
 {
-    private List<GuiButton> _buttons;
+    private readonly List<GuiButton> _buttons;
     private int _selectedButtonIndex;
 
     public MenuPanel(Rectangle drawBox, GuiManager manager,

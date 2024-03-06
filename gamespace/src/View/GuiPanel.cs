@@ -23,7 +23,7 @@ public abstract class GuiPanel
     /// </summary>
     public GuiPanel Parent { get; init; }
 
-    protected GuiManager Manager { get; init; }
+    public GuiManager Manager { get; init; }
     
     public Rectangle DrawBox { get; protected set; }
 

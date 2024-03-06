@@ -7,7 +7,7 @@ namespace gamespace.View;
 
 public class GuiButton : GuiPanel
 {
-    public delegate void ButtonCallback(GuiPanel parent);
+    public delegate void ButtonCallback(in GuiPanel parent, in GuiManager manager);
     
     private static readonly Rectangle DefaultBox = new();
     private ButtonCallback _callback;
@@ -36,7 +36,7 @@ public class GuiButton : GuiPanel
 
     public void OnPress()
     {
-        _callback.Invoke(Parent);
+        _callback.Invoke(Parent, Parent.Manager);
     }
     
 }

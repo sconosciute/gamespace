@@ -21,15 +21,21 @@ public static class Bake
             Shown = true,
             IsActive = true
         };
-        menu.AddButton(new GuiButton("Close", ButtonCallbacks.CloseParentMenu, menu, manager));
-        menu.AddButton(new GuiButton("Also Close", ButtonCallbacks.CloseParentMenu, menu, manager));
+        menu.AddButton(new GuiButton("Save Game", ButtonCallbacks.SaveGame, menu, manager));
+        menu.AddButton(new GuiButton("Load Game", ButtonCallbacks.LoadGame, menu, manager));
+        menu.AddButton(new GuiButton("Close Menu", ButtonCallbacks.CloseParentMenu, menu, manager));
+        menu.AddButton(new GuiButton("Exit Game", ButtonCallbacks.ExitGame, menu, manager));
 
         return menu;
 
     }
 
-    struct ButtonCallbacks
+    private struct ButtonCallbacks
     {
-        public static void CloseParentMenu(GuiPanel parent) => parent.Delete();
+        public static void CloseParentMenu(in GuiPanel parent, in GuiManager manager) => parent.Delete();
+        public static void ExitGame(in GuiPanel parent, in GuiManager manager) => manager.ExitGame();
+        public static void SaveGame(in GuiPanel parent, in GuiManager manager) => manager.SaveGame();
+        public static void LoadGame(in GuiPanel parent, in GuiManager manager) => manager.LoadGame();
+
     }
 }

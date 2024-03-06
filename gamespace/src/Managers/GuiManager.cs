@@ -74,6 +74,10 @@ public class GuiManager
         }
     }
 
+    public void ExitGame() => _gm.ExitGame();
+    public void SaveGame() => _gm.SaveGame();
+    public void LoadGame() => _gm.LoadGame();
+
     #region Panels
     /// <summary>
     /// Removes the specified panel from the GUI tree to allow it to be GC'd

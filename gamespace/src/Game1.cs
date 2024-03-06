@@ -23,7 +23,7 @@ public class Game1 : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
-        _gm = new GameManager(graphics);
+        _gm = new GameManager(graphics, this);
         _gui = _gm.InitGui();
     }
 
