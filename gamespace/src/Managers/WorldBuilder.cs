@@ -102,13 +102,14 @@ public class WorldBuilder
         
     }
     
-    public void FloodFill() //Name of method subject to change.
+    private void FloodFill() //Name of method subject to change.
     {
         FillMapWithWalls();
         // (1) Pick a random position not on a floor or wall, and that all adjacent tiles are also not walls , this is tested to work
         PickStartingTile();
         //
         // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction * 2 == a floor
+        ChooseDirection();
         // 
         //  we can do currentPos += randomDirection for traversal. 
         // (3) Once it determines it hits a dead end, go back up the recursive stack checking at each time a new direction was picked,
@@ -136,7 +137,7 @@ public class WorldBuilder
         _world.CurrentPos = new Vector2(x, y);
     }
     
-    public void FillMapWithWalls() //Name of method subject to change.
+    private void FillMapWithWalls() //Name of method subject to change.
     {
         for (var i = _world._minY; i < _world._maxY; i++)
         {
@@ -148,6 +149,11 @@ public class WorldBuilder
                 }
             }
         }
+    }
+
+    private void ChooseDirection()
+    {
+        
     }
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
