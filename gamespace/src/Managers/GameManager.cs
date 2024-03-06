@@ -22,6 +22,7 @@ public class GameManager
 
     public bool GameIsPaused => !_playing;
 
+    private WorldBuilder _worldBuilder;
     public GameManager(GraphicsDeviceManager graphics)
     {
         _gfxMan = graphics;
@@ -29,6 +30,7 @@ public class GameManager
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
+        _worldBuilder = new WorldBuilder(this, _camera, _world);
         _playing = true;
     }
 
@@ -48,26 +50,14 @@ public class GameManager
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
         Guid dummy = Guid.NewGuid();
-
+        _worldBuilder.BuildWorld();
         _robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
             layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(_robj);
         _player.EntityEvent += _robj.HandleEntityEvent;
-
-
-        _world.TryPlaceTile(new Point(5, 5), BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(5, 6), BuildTile(new Vector2(5f, 6f), Build.Props.Wall));
-
-        _world.TryPlaceTile(new Point(10, 5), BuildTile(new Vector2(10f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(11, 5), BuildTile(new Vector2(11f, 5f), Build.Props.Wall));
-
-        _world.TryPlaceTile(new Point(-5, 5), BuildTile(new Vector2(-5f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(-5, 6), BuildTile(new Vector2(-5f, 6f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(-4, 5), BuildTile(new Vector2(-4f, 5f), Build.Props.Wall));
-
-        _world.TryPlaceTile(new Point(20, 5), BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(20, 6), BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(21, 5), BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
+        
+        //_worldBuilder.MakeRoom();
+        
     }
 
     //=== GAME LOOP ===-------------------------------------------------------------------------------------------------
@@ -75,12 +65,16 @@ public class GameManager
     /// <summary>
     /// Runs physics updates on all Entities.
     /// </summary>
-    public void FixedUpdate(GameTime gameTime)
+    public void FixedUpdate()
     {
         if (_playing)
         {
             _player.FixedUpdate();
         }
+    }
+
+    public void AnimationUpdate(GameTime gameTime)
+    {
         _robj.Update(gameTime);
     }
 
@@ -92,7 +86,7 @@ public class GameManager
         _camera.BeginFrame();
         _world.DebugDrawMap();
         _camera.DrawFrame(RenderMode.Deferred);
-
+        
         _camera.RenderFrame();
         _gui.RenderGui();
     }
@@ -141,6 +135,6 @@ public class GameManager
         _camera.RegisterRenderable(renderable);
         return new Tile(prop);
     }
-
+    
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 }

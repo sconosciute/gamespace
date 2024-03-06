@@ -58,10 +58,11 @@ public class Game1 : Game
         var now = gameTime.TotalGameTime.TotalMilliseconds;
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
-            _gm.FixedUpdate(gameTime);
+            _gm.FixedUpdate();
             _lastUpTime = now;
         }
         
+        _gm.AnimationUpdate(gameTime);
         base.Update(gameTime);
     }
 

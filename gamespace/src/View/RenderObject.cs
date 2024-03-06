@@ -16,7 +16,9 @@ public class RenderObject
 
     private Vector2 _position;
 
-    private float _layerDepth;
+    private Vector2 _oldPosition;
+
+    private readonly float _layerDepth;
 
     private readonly Dictionary<AnimationAction, Animation> _animations = new();
 
@@ -74,6 +76,7 @@ public class RenderObject
 
         var action = GetAnimationAction(direction);
 
+        if (_position == _oldPosition) return;
         foreach (var animation in _animations.Values)
         {
             animation.Update(gameTime, action);
