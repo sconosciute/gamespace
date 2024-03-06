@@ -191,12 +191,16 @@ public class World
         {
             for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
             {
-                var check = Vector2.Subtract(new Vector2(i, j), currentDir);
-                if (this[(int)i, (int)j] != null && pos.X != 0 && pos.Y != 0 && check == CurrentPos)
+                if (IsInBounds((int)i, (int)j))
                 {
-                    if (!this[(int)i, (int)j].CanCollide)
+                    var check = Vector2.Subtract(new Vector2(i, j), currentDir);
+                    if (this[(int)i, (int)j] != null &&
+                        check == CurrentPos) //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
                     {
-                        return false;
+                        if (!this[(int)i, (int)j].CanCollide)
+                        {
+                            return false;
+                        }
                     }
                 }
             }
