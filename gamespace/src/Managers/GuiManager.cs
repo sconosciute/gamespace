@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using gamespace.Model;
 using gamespace.View;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Managers;
@@ -11,6 +12,8 @@ public class GuiManager
     private readonly GraphicsDevice _gfx;
     private readonly GameManager _gm;
     private readonly InputManager _input;
+
+    private StatPanel _stats;
 
     public Texture2D OpaqueBg { get; private set; }
     public Texture2D TransparentBg { get; private set; }
@@ -25,7 +28,7 @@ public class GuiManager
         _input.ZoomEvent += camera.HandleZoomEvent;
         _input.InputEvent += HandleInputEvent;
         InputDriver.KeyboardEvent += _input.HandleKeyboardEvent;
-        
+
         _guiSpriteBatch = new SpriteBatch(_gfx);
     }
 
@@ -33,6 +36,12 @@ public class GuiManager
     {
         OpaqueBg = _gm.GetTexture(Textures.OpaqueBg);
         TransparentBg = _gm.GetTexture(Textures.TransparentBg);
+    }
+
+    public void InitStatPanel()
+    {
+        _stats = BuildStatPanel();
+        _panels.Add(_stats);
     }
 
     /// <summary>
@@ -53,7 +62,7 @@ public class GuiManager
     {
         _input.Update();
     }
-    
+
     public void RenderGui()
     {
         _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend,
@@ -79,6 +88,7 @@ public class GuiManager
     public void LoadGame() => _gm.LoadGame();
 
     #region Panels
+
     /// <summary>
     /// Removes the specified panel from the GUI tree to allow it to be GC'd
     /// </summary>
@@ -89,7 +99,7 @@ public class GuiManager
         _input.InputEvent += HandleInputEvent;
         _panels.Remove(panel);
     }
-    
+
     private void OpenMainMenu()
     {
         var menu = Bake.MainMenu(_gfx, this);
@@ -97,6 +107,22 @@ public class GuiManager
         RegisterInputHandler(menu);
         _panels.Add(menu);
     }
-    
+
+    private StatPanel BuildStatPanel()
+    {
+        var sWidth = _gfx.PresentationParameters.Bounds.Width;
+        var width = sWidth / 5;
+        var height = width / 4;
+
+        var drawBox = new Rectangle(sWidth - width, 0, width, height);
+        var panel = new StatPanel(drawBox, this)
+        {
+            Shown = true
+        };
+        _gm.RegisterPlayerListener(panel.HandlePlayerStateEvent);
+
+        return panel;
+    }
+
     #endregion
 }
