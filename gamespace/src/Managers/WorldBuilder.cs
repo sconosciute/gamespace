@@ -3,6 +3,7 @@ using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 using Point = System.Drawing.Point;
+
 namespace gamespace.Managers;
 
 public class WorldBuilder
@@ -15,6 +16,15 @@ public class WorldBuilder
     private const int RoomUpperBound = 15;
     private int _currentRoomWidth = 5;
     private int _currentRoomHeight = 5;
+    private Vector2 _randomDirection = new();
+    private Vector2 _currentDirection = new();
+
+    private static readonly Vector2 MoveRight = new(1, 0);
+    private static readonly Vector2 MoveLeft = new(-1, 0);
+    private static readonly Vector2 MoveUp = new(0, -1);
+    private static readonly Vector2 MoveDown = new(0, 1);
+    private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
+
 
     private static readonly Random Rand = new();
 
@@ -86,7 +96,8 @@ public class WorldBuilder
     }
 
     public void BuildWorld()
-    {   //TODO Make this not hardcoded for min and max X, Y
+    {
+        //TODO Make this not hardcoded for min and max X, Y
         MakeRoom();
         for (var i = 0; i < World.NumberOfRooms; i++)
         {
@@ -97,11 +108,10 @@ public class WorldBuilder
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
         }
-        
+
         FloodFill();
-        
     }
-    
+
     private void FloodFill() //Name of method subject to change.
     {
         FillMapWithWalls();
@@ -120,14 +130,15 @@ public class WorldBuilder
 
     private void PickStartingTile()
     {
-        var x = -24;
-        var y = -24;
+        var x = 6; //-24;
+        var y = 4;
         while (true)
         {
             if (_world.CheckAdj(new Point(x, y)))
             {
+                var pointpos = new Point(x, y);
+                var vectorpos = new Vector2(x, y);
                 _world.TryPlaceTile(new Point(x, y), BuildTile(new Vector2(x, y), Build.Props.Floor));
-                Console.Out.Write("X: " + x + "Y: " + y);
                 break;
             }
 
@@ -136,12 +147,12 @@ public class WorldBuilder
 
         _world.CurrentPos = new Vector2(x, y);
     }
-    
+
     private void FillMapWithWalls() //Name of method subject to change.
     {
-        for (var i = _world._minY; i < _world._maxY; i++)
+        for (var i = _world._minY; i <= _world._maxY; i++)
         {
-            for (var j = _world._minX; j < _world._maxX; j++)
+            for (var j = _world._minX; j <= _world._maxX; j++)
             {
                 if (_world.CheckTileIsNull(j, i))
                 {
@@ -153,7 +164,77 @@ public class WorldBuilder
 
     private void ChooseDirection()
     {
-        
+        var terminate = 0;
+        Vector2 checkNextPos;
+        Vector2 checkPos;
+        var chanceToTurn = 0;
+        var teleport = 0;
+        Point tempPoint;
+        while (true)
+        {
+            do
+            {
+                checkPos = _world.CurrentPos;
+                checkNextPos = _world.CurrentPos;
+                _randomDirection = Directions[Rand.Next(0, 4)];
+                var temp123 = Vector2.Multiply(_randomDirection, 2);
+                checkNextPos = Vector2.Add(checkNextPos, temp123);
+                teleport++;
+                if (teleport == 100)
+                {
+                    teleport = 0;
+                    TeleportPoint();
+                    checkNextPos = _world.CurrentPos;
+                    checkNextPos = Vector2.Add(checkNextPos, temp123);
+                }
+
+                chanceToTurn = Rand.Next(10);
+                terminate++;
+                if (terminate == 100)
+                {
+                    return;
+                }
+
+                var temp = _world.CurrentPos + _randomDirection;
+                tempPoint = new Point((int)temp.X, (int)temp.Y);
+            } while (!_world.IsInBounds((int)checkNextPos.X, (int)checkNextPos.Y) ||
+                     !_world.CheckAdjWithAvoidance(checkPos, _randomDirection)
+                     || !_world.CheckAdj(new Point((int)checkNextPos.X, (int)checkNextPos.Y)) || chanceToTurn == 3);
+
+            _currentDirection = _randomDirection;
+            _world.CurrentPos += _currentDirection;
+            _world.ForcePlaceFloor(_world.CurrentPos, BuildTile(_world.CurrentPos, Build.Props.Floor));
+            chanceToTurn = Rand.Next(20);
+            terminate = 0;
+        }
+    }
+
+    private void TeleportPoint()
+    {
+        var x = Rand.Next(-23, 23);
+        var y = Rand.Next(-23, 23);
+        var counterT = 0;
+        while (true)
+        {
+            if (_world.CheckAdj(new Point(x, y)))
+            {
+                var pointpos = new Point(x, y);
+                var vectorpos = new Vector2(x, y);
+                _world.ForcePlaceFloor(vectorpos, BuildTile(new Vector2(x, y), Build.Props.Floor));
+                break;
+            }
+
+            x = Rand.Next(-23, 23);
+            y = Rand.Next(-23, 23);
+            counterT++;
+            if (counterT == 10)
+            {
+                break;
+            }
+        }
+
+        _world.CurrentPos = new Vector2(x, y);
+        Console.Out.WriteLine(_world.CurrentPos);
     }
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
