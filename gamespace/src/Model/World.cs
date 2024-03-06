@@ -152,11 +152,23 @@ public class World
     
     public bool CheckAdj(Point pos)
     {
+        for (var i = pos.X - 1; i <= pos.X + 1; i++)
+        {
+            for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
+            {
+                if (!this[i, j].CanCollide)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
         //TODO: ADD ANOTHER CONDITIONAL to check if any of these are out of bounds
-        return !CheckTileIsFloor(pos.X - 1, pos.Y) && !CheckTileIsFloor(pos.X + 1, pos.Y) && !CheckTileIsFloor(pos.X, pos.Y + 1) &&
-               !CheckTileIsFloor(pos.X, pos.Y - 1) && !CheckTileIsFloor(pos.X + 1, pos.Y + 1) &&
-               !CheckTileIsFloor(pos.X - 1, pos.Y - 1) && !CheckTileIsFloor(pos.X - 1, pos.Y + 1) && 
-               !CheckTileIsFloor(pos.X + 1, pos.Y - 1) && !CheckTileIsFloor(pos.X, pos.Y);
+        // return !CheckTileIsFloor(pos.X - 1, pos.Y) && !CheckTileIsFloor(pos.X + 1, pos.Y) && !CheckTileIsFloor(pos.X, pos.Y + 1) &&
+        //        !CheckTileIsFloor(pos.X, pos.Y - 1) && !CheckTileIsFloor(pos.X + 1, pos.Y + 1) &&
+        //        !CheckTileIsFloor(pos.X - 1, pos.Y - 1) && !CheckTileIsFloor(pos.X - 1, pos.Y + 1) && 
+        //        !CheckTileIsFloor(pos.X + 1, pos.Y - 1) && !CheckTileIsFloor(pos.X, pos.Y);
     }
     
     
