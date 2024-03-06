@@ -1,10 +1,12 @@
-﻿using System;
-using gamespace.Model;
+﻿using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Managers;
 
+/// <summary>
+/// Utility class for building Model objects.
+/// </summary>
 public static class Build
 {
     public struct Props
@@ -43,34 +45,80 @@ public static class Build
                 layerDepth: LayerDepth.Background);
             return mob;
         }
+
+        public static Mob RogueRanger(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var mob = new Mob(worldPosition, 50, 10, 10, world, "Rogue Ranger",
+                10, true, true, Mob.MobTypes.Hostile);
+            //TODO: Add a Turret Model
+            renderable = new RenderObject(
+                texture: null, //gm.GetTexture(Textures.RogueRanger), 
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return mob;
+        }
     }
 
     public struct Items
     {
         //TODO: Remove user from here, we will not know the user until after it is set, we could have a get, set that runs on pickup?
-        public static Item SmallHealthPotion(Character user)
+        public static Item SmallHealthPotion()
         {
             var smallPotion = new Item("Small health potion",
-                "This will heal small wounds", Item.ItemType.HealingItem);
-            smallPotion.UseSmallPotion(user);
+                "This will heal small wounds", false, Item.ItemType.HealingItem);
+            smallPotion.UseSmallPotion();
             // = Item.UseSmallPotion(user);
             return smallPotion;
         }
 
-        public static Item MediumHealthPotion(Character user)
+        public static Item MediumHealthPotion()
         {
             var mediumPotion = new Item("Medium health potion",
-                "This will heal Medium wounds", Item.ItemType.HealingItem);
-            mediumPotion.UseMediumPotion(user);
+                "This will heal medium wounds", false, Item.ItemType.HealingItem);
+            mediumPotion.UseMediumPotion();
             return mediumPotion;
         }
 
-        public static Item LargeHealthPotion(Character user)
+        public static Item LargeHealthPotion()
         {
-            var largePotion = new Item("large health potion",
-                "This will heal severe wounds", Item.ItemType.HealingItem);
-            largePotion.UseLargePotion(user);
+            var largePotion = new Item("Large health potion",
+                "This will heal severe wounds", false, Item.ItemType.HealingItem);
+            largePotion.UseLargePotion();
             return largePotion;
+        }
+        //Key Items
+
+        public static Item Cog()
+        {
+            var cog = new Item("Cog", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return cog;
+        }
+
+        public static Item Wires()
+        {
+            var wires = new Item("Wires", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return wires;
+        }
+
+        public static Item Lever()
+        {
+            var lever = new Item("Lever", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return lever;
+        }
+
+        public static Item ControlPanel()
+        {
+            var controlPanel = new Item("Control panel", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            return controlPanel;
+        }
+        
+        //Test item, this can be deleted upon final iteration.
+        public static Item TestItem()
+        {
+            var testItem = new Item("Test",
+                "This item should only be used for testing", false, Item.ItemType.TestingItem);
+            testItem.UseTestItem();
+            return testItem;
         }
     }
 }

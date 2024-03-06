@@ -18,16 +18,20 @@ public class GameManager
     private readonly World _world;
     private readonly Dictionary<string, Texture2D> _textures = new();
     private RenderObject _robj;
+    private bool _playing;
+
+    public bool GameIsPaused => !_playing;
 
     private WorldBuilder _worldBuilder;
     public GameManager(GraphicsDeviceManager graphics)
     {
         _gfxMan = graphics;
-        SetResolution(1920, 1080);
+        SetResolution(2160, 1440);
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
         _worldBuilder = new WorldBuilder(this, _camera, _world);
+        _playing = true;
     }
 
     //=== INITIALIZATION - CALL ONCE! ===-------------------------------------------------------------------------------
@@ -63,7 +67,10 @@ public class GameManager
     /// </summary>
     public void FixedUpdate()
     {
-        _player.FixedUpdate();
+        if (_playing)
+        {
+            _player.FixedUpdate();
+        }
     }
 
     public void AnimationUpdate(GameTime gameTime)
@@ -108,6 +115,16 @@ public class GameManager
         _gfxMan.PreferredBackBufferHeight = height;
         _gfxMan.ApplyChanges();
         Globals.UpdateScale(_gfxMan.GraphicsDevice);
+    }
+
+    public void PauseGame()
+    {
+        _playing = false;
+    }
+
+    public void ResumeGame()
+    {
+        _playing = true;
     }
 
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------

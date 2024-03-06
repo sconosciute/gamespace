@@ -1,4 +1,5 @@
 ﻿using gamespace.Managers;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,21 +16,50 @@ public abstract class GuiPanel
     /// Determines if this panel should capture input.
     /// </summary>
     public bool IsActive { get; set; } = false;
-
-    public GuiManager Manager { get; init; }
     
-    protected Rectangle DrawBox { get; private set; }
+    /// <summary>
+    /// The parent of this GuiPanel, may be null if this panel is directly controlled by the GuiManager.
+    /// </summary>
+    public GuiPanel Parent { get; init; }
+
+    protected GuiManager Manager { get; init; }
     
-    private string _title;
-    private Texture2D _background;
+    public Rectangle DrawBox { get; protected set; }
+
+    protected Texture2D Background { get; init; }
+
+    protected string Title { get; init; }
+
+    private ILogger _log;
+    
 
 
-    protected GuiPanel(string title, Rectangle drawBox, GuiManager manager, Texture2D background = null)
+    protected GuiPanel(string title, Rectangle drawBox, GuiManager manager, GuiPanel parent = null,
+        Texture2D background = null)
     {
-        _title = title;
+        Title = title;
         DrawBox = drawBox;
         Manager = manager;
-        _background = background ?? manager.OpaqueBg;
+        Parent = parent;
+        Background = background ?? manager.OpaqueBg;
+
+        _log = Globals.LogFactory.CreateLogger<GuiPanel>();
+    }
+
+    /// <summary>
+    /// Delete this panel from the UI.
+    /// </summary>
+    public void Delete()
+    {
+        Manager.Delete(this);
+    }
+
+    /// <summary>
+    /// Handles input events fired from the InputManager to interact with menus.
+    /// </summary>
+    public virtual void HandleInputEvent(InputManager.NavigationEvents nav)
+    {
+        _log.LogDebug("Tried to ask non-input panel to handle input event.");
     }
 
     protected void DrawText(Vector2 position, string message, SpriteBatch batch)
@@ -43,7 +73,7 @@ public abstract class GuiPanel
     {
         if (Shown)
         {
-            batch.Draw(_background, DrawBox, Color.White);
+            batch.Draw(Background, DrawBox, Color.Crimson);
         }
     }
 }

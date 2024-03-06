@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using gamespace.Model;
 using gamespace.View;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.Managers;
@@ -12,7 +11,6 @@ public class GuiManager
     private readonly GraphicsDevice _gfx;
     private readonly GameManager _gm;
     private readonly InputManager _input;
-    private Matrix _drawScale;
 
     public Texture2D OpaqueBg { get; private set; }
     public Texture2D TransparentBg { get; private set; }
@@ -23,9 +21,9 @@ public class GuiManager
     {
         _gfx = gfx;
         _gm = gm;
-        _input = InputManager.GetInputManager(this);
+        _input = InputManager.GetInputManager();
         _input.ZoomEvent += camera.HandleZoomEvent;
-        camera.CameraEvent += HandleCameraEvent;
+        InputDriver.KeyboardEvent += _input.HandleKeyboardEvent;
         
         _guiSpriteBatch = new SpriteBatch(_gfx);
     }
@@ -45,12 +43,16 @@ public class GuiManager
         _input.MoveEvent += player.HandleMoveEvent;
     }
 
+    private void RegisterInputHandler(GuiPanel panel)
+    {
+        _input.InputEvent += panel.HandleInputEvent;
+    }
+
     public void Update()
     {
         _input.Update();
     }
-
-    //=== GUI RENDERING ===---------------------------------------------------------------------------------------------
+    
     public void RenderGui()
     {
         _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend,
@@ -63,27 +65,33 @@ public class GuiManager
         _guiSpriteBatch.End();
     }
 
-    //=== EVENT HANDLING ===--------------------------------------------------------------------------------------------
-    private void HandleCameraEvent(Matrix scale)
+    private void HandleInputEvent(InputManager.NavigationEvents nav)
     {
-        _drawScale = scale;
+        if (nav == InputManager.NavigationEvents.Escape)
+        {
+            OpenMainMenu();
+        }
     }
 
-    //=== PRE-BAKED PANELS ===------------------------------------------------------------------------------------------
-
+    #region Prebaked Panels
+    /// <summary>
+    /// Removes the specified panel from the GUI tree to allow it to be GC'd
+    /// </summary>
+    /// <param name="panel"></param>
+    public void Delete(GuiPanel panel)
+    {
+        _input.InputEvent -= panel.HandleInputEvent;
+        _input.InputEvent += HandleInputEvent;
+        _panels.Remove(panel);
+    }
+    
     public void OpenMainMenu()
     {
-        //TODO: Refactor this to only update draw box placement after screen size update.
-        var screenSpace = _gfx.PresentationParameters.Bounds;
-        var width = (int)(screenSpace.Width * 1f / 3f);
-        var topBotBuff = (int)(screenSpace.Height * 1f / 10f);
-        var height = (int)(screenSpace.Height - (2 * topBotBuff));
-        var drawBox = new Rectangle(width, topBotBuff, width, height);
-        var mainMenu = new MenuPanel(drawBox, this)
-        {
-            Shown = true,
-            IsActive = true
-        };
-        _panels.Add(mainMenu);
+        var menu = Bake.MainMenu(_gfx, this);
+        _input.InputEvent -= HandleInputEvent;
+        RegisterInputHandler(menu);
+        _panels.Add(menu);
     }
+    
+    #endregion
 }
