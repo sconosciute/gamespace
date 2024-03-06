@@ -179,13 +179,17 @@ public class World
                         }
                     }
                 }
+                else
+                {
+                    return false;
+                }
             }
         }
 
         return true;
     }
 
-    public bool CheckAdjWithAvoidance(Vector2 pos, Vector2 currentDir)
+    public bool CheckAdjWithAvoidance(Point pos, Point lastTile)
     {
         for (var i = pos.X - 1; i <= pos.X + 1; i++)
         {
@@ -193,15 +197,18 @@ public class World
             {
                 if (IsInBounds((int)i, (int)j))
                 {
-                    var check = Vector2.Subtract(new Vector2(i, j), currentDir);
-                    if (this[(int)i, (int)j] != null &&
-                        check == CurrentPos) //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
+                    //var check = Vector2.Subtract(new Vector2(i, j), currentDir);
+                    if (this[i, j] != null && i != lastTile.X && j != lastTile.Y) //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
                     {
-                        if (!this[(int)i, (int)j].CanCollide)
+                        if (!this[i, j].CanCollide)
                         {
                             return false;
                         }
                     }
+                }
+                else
+                {
+                    return false;
                 }
             }
         }

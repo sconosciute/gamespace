@@ -18,6 +18,7 @@ public class WorldBuilder
     private int _currentRoomHeight = 5;
     private Vector2 _randomDirection = new();
     private Vector2 _currentDirection = new();
+    private Point _lastTile = new();
 
     private static readonly Vector2 MoveRight = new(1, 0);
     private static readonly Vector2 MoveLeft = new(-1, 0);
@@ -146,6 +147,7 @@ public class WorldBuilder
         }
 
         _world.CurrentPos = new Vector2(x, y);
+        _lastTile = new Point(x, y);
     }
 
     private void FillMapWithWalls() //Name of method subject to change.
@@ -165,38 +167,47 @@ public class WorldBuilder
     private void ChooseDirection()
     {
         var terminate = 0;
-        Vector2 checkNextPos;
+        var teleport = 0;
         Vector2 checkPos;
 
         while (true)
         {
-            if (_randomDirection.Equals(Vector2.Zero))
+            if (teleport >= 10)
             {
-                _randomDirection = Directions[Rand.Next(0, 4)];
+                TeleportPoint();
             }
 
+            teleport++;
+            if (_randomDirection.Equals(Vector2.Zero))
+            {
+                while (true)
+                {
+                    _randomDirection = Directions[Rand.Next(0, 4)];
+                    if (!_randomDirection.Equals(-_currentDirection))
+                    {
+                        break;
+                    }
+                }
+            }
             checkPos = Vector2.Add(_world.CurrentPos, _randomDirection);
-            var temp123 = Vector2.Multiply(_randomDirection, 2);
-            checkNextPos = Vector2.Add(_world.CurrentPos, temp123);
-
-            if (!_world.IsInBounds((int)checkNextPos.X, (int)checkNextPos.Y) ||
-                !_world.CheckAdj(new Point((int)checkNextPos.X, (int)checkNextPos.Y)) ||
-                !_world.CheckAdjWithAvoidance(checkPos,
-                    _randomDirection)) //_world.CheckAdjWithAvoidance(checkPos, _randomDirection))
+            var checkPosPoint = new Point((int)checkPos.X, (int)checkPos.Y);
+            if (!_world.CheckAdjWithAvoidance(checkPosPoint, _lastTile)) 
             {
                 terminate++;
                 if (terminate >= 100)
                 {
                     return;
                 }
-
+                
                 _randomDirection = Vector2.Zero;
             }
             else
             {
+                teleport = 0;
                 _currentDirection = _randomDirection;
                 _world.CurrentPos += _currentDirection;
                 _world.ForcePlaceFloor(_world.CurrentPos, BuildTile(_world.CurrentPos, Build.Props.Floor));
+                _lastTile = new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y);
             }
         }
     }
