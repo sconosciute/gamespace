@@ -77,6 +77,7 @@ public class RenderObject
         var action = GetAnimationAction(direction);
 
         if (_position == _oldPosition) return;
+        _oldPosition = _position;
         foreach (var animation in _animations.Values)
         {
             animation.Update(gameTime, action);
