@@ -193,8 +193,9 @@ public class WorldBuilder
             var checkPosPoint = new Point((int)checkPos.X, (int)checkPos.Y);
             if (!_world.CheckAdjWithAvoidance(checkPosPoint, _lastTile)) 
             {
+                // TODO: Discuss possible refactor with terminate variable.
                 terminate++;
-                if (terminate >= 100)
+                if (terminate >= 5000)
                 {
                     return;
                 }
@@ -221,7 +222,6 @@ public class WorldBuilder
         {
             if (_world.CheckAdj(new Point(x, y)))
             {
-                var pointpos = new Point(x, y);
                 var vectorpos = new Vector2(x, y);
                 _world.ForcePlaceFloor(vectorpos, BuildTile(new Vector2(x, y), Build.Props.Floor));
                 break;
