@@ -169,17 +169,8 @@ public class World
         {
             for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
             {
-                if (IsInBounds(i, j))
-                {
-                    if (this[i, j] != null && pos.X != 0 && pos.Y != 0)
-                    {
-                        if (!this[i, j].CanCollide)
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else
+                if (!IsInBounds(i, j) || this[i, j] == null || i == pos.X || j == pos.Y) continue;
+                if (!this[i, j].CanCollide)
                 {
                     return false;
                 }
@@ -198,12 +189,10 @@ public class World
                 if (IsInBounds((int)i, (int)j))
                 {
                     //var check = Vector2.Subtract(new Vector2(i, j), currentDir);
-                    if (this[i, j] != null && i != lastTile.X && j != lastTile.Y) //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
+                    if (this[i, j] == null || i == lastTile.X || j == lastTile.Y) continue; //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
+                    if (!this[i, j].CanCollide)
                     {
-                        if (!this[i, j].CanCollide)
-                        {
-                            return false;
-                        }
+                        return false;
                     }
                 }
                 else
