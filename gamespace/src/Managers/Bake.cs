@@ -27,7 +27,21 @@ public static class Bake
         menu.AddButton(new GuiButton("Exit Game", ButtonCallbacks.ExitGame, menu, manager));
 
         return menu;
+    }
 
+    public static StatPanel StatPanel(GraphicsDevice gfx, GuiManager manager)
+    {
+        var sWidth = gfx.PresentationParameters.Bounds.Width;
+        var width = sWidth / 5;
+        var height = width / 4;
+
+        var drawBox = new Rectangle(sWidth - width, 0, width, height);
+        var stats = new StatPanel(drawBox, manager)
+        {
+            Shown = true
+        };
+
+        return stats;
     }
 
     private struct ButtonCallbacks
@@ -36,6 +50,5 @@ public static class Bake
         public static void ExitGame(in GuiPanel parent, in GuiManager manager) => manager.ExitGame();
         public static void SaveGame(in GuiPanel parent, in GuiManager manager) => manager.SaveGame();
         public static void LoadGame(in GuiPanel parent, in GuiManager manager) => manager.LoadGame();
-
     }
 }

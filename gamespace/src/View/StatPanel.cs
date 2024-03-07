@@ -1,12 +1,12 @@
 ﻿using System;
 using gamespace.Managers;
-using gamespace.Model;
+using gamespace.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace gamespace.View;
 
-public class StatPanel : GuiPanel
+public class StatPanel : GuiPanel, IPlayerHandler
 {
     private int _health = 100;
     private int _energy = 100;
@@ -16,7 +16,7 @@ public class StatPanel : GuiPanel
     {
     }
 
-    public void HandlePlayerStateEvent(in Player.PlayerState args)
+    public void HandlePlayerStateEvent(in EventHelper.PlayerState args)
     {
         _health = args.Health;
         _energy = args.Energy;
