@@ -29,7 +29,7 @@ public class GameManager
     {
         _game = game;
         _gfxMan = graphics;
-        SetResolution(2160, 1440);
+        // SetResolution(2160, 1440);
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);

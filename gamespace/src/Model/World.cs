@@ -16,7 +16,7 @@ public class World
     private readonly List<Rectangle> _roomBounds = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
-    
+
     //TODO: Change this to use properties
     public readonly int _minX;
     public readonly int _maxX;
@@ -31,7 +31,7 @@ public class World
     private static readonly Vector2 MoveUp = new(0, -1);
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
-    
+
     //TODO: This property will likely be removed before completion
     public Vector2 CurrentPos { get; set; } = new(-4, -3);
 
@@ -114,6 +114,12 @@ public class World
         return true;
     }
 
+    public void ForcePlaceFloor(Vector2 pos, Tile tile)
+    {
+        CheckBounds((int)pos.X, (int)pos.Y);
+        this[(int)pos.X, (int)pos.Y] = tile;
+    }
+
     public bool CheckRoomOverlap(Rectangle newRoom)
     {
         foreach (var rect in _roomBounds)
@@ -127,8 +133,8 @@ public class World
         _roomBounds.Add(newRoom);
         return false;
     }
-    
-    
+
+
     //TODO: Alter how building tiles is managed, to remove the need to use this method.
     public bool CheckTileIsNull(int x, int y)
     {
@@ -141,24 +147,65 @@ public class World
         return true;
     }
 
+    public bool GetIsFloor(Vector2 pos)
+    {
+        if (!IsInBounds((int)pos.X, (int)pos.Y))
+        {
+            return true; //This is out of bounds.
+        }
+
+        var value = this[(int)pos.X, (int)pos.Y];
+        if (value == null)
+        {
+            return false;
+        }
+
+        return !value.CanCollide; //Should only be called when there's no empty tiles.
+    }
+
     public bool CheckAdj(Point pos)
     {
         for (var i = pos.X - 1; i <= pos.X + 1; i++)
         {
             for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
             {
+                if (!IsInBounds(i, j) || this[i, j] == null || i == pos.X || j == pos.Y) continue;
                 if (!this[i, j].CanCollide)
                 {
                     return false;
                 }
             }
         }
-        
+
         return true;
-        //TODO: ADD ANOTHER CONDITIONAL to check if any of these are out of bounds
     }
-    
-    
+
+    public bool CheckAdjWithAvoidance(Point pos, Point lastTile)
+    {
+        for (var i = pos.X - 1; i <= pos.X + 1; i++)
+        {
+            for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
+            {
+                if (IsInBounds((int)i, (int)j))
+                {
+                    //var check = Vector2.Subtract(new Vector2(i, j), currentDir);
+                    if (this[i, j] == null || i == lastTile.X || j == lastTile.Y) continue; //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
+                    if (!this[i, j].CanCollide)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
     public void DebugDrawMap()
     {
         var testTile = Globals.Content.Load<Texture2D>("tile");
