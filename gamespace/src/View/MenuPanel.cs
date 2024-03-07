@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Managers;
+using gamespace.Util;
 using Loyc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -42,27 +43,29 @@ public class MenuPanel : GuiPanel
         }
     }
 
-    public override void HandleInputEvent(in InputManager.NavigationEvents nav)
+    public override void HandleInputEvent(in EventHelper.NavigationEvents nav)
     {
         var oldButtonIndex = _selectedButtonIndex;
         switch (nav)
         {
-            case InputManager.NavigationEvents.Up: 
+            case EventHelper.NavigationEvents.Up:
                 _selectedButtonIndex = _selectedButtonIndex <= 0 ? 0 : _selectedButtonIndex - 1;
                 _buttons[oldButtonIndex].Selected = false;
                 _buttons[_selectedButtonIndex].Selected = true;
                 break;
-            case InputManager.NavigationEvents.Down:
+            case EventHelper.NavigationEvents.Down:
             {
                 var maxIndex = _buttons.Count - 1;
                 _selectedButtonIndex = _selectedButtonIndex >= maxIndex ? maxIndex : _selectedButtonIndex + 1;
                 _buttons[oldButtonIndex].Selected = false;
                 _buttons[_selectedButtonIndex].Selected = true;
-                break;   
-            }
-            case InputManager.NavigationEvents.Select : _buttons[_selectedButtonIndex].OnPress();
                 break;
-            case InputManager.NavigationEvents.Escape : Delete();
+            }
+            case EventHelper.NavigationEvents.Select:
+                _buttons[_selectedButtonIndex].OnPress();
+                break;
+            case EventHelper.NavigationEvents.Escape:
+                Delete();
                 break;
             default: throw new ArgumentException("Navigation event does not exist");
         }
@@ -79,7 +82,7 @@ public class MenuPanel : GuiPanel
                 DrawBox.Y + (buttonOffset * (button + 1)))
             );
         }
-        
+
         base.Draw(batch);
         DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch, true);
         foreach (var button in _buttons)

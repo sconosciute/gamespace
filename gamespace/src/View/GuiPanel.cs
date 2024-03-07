@@ -1,5 +1,6 @@
 ﻿using System;
 using gamespace.Managers;
+using gamespace.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -52,13 +53,14 @@ public abstract class GuiPanel
     /// </summary>
     public void Delete()
     {
+        Manager.ResumeGame();
         Manager.Delete(this);
     }
 
     /// <summary>
     /// Handles input events fired from the InputManager to interact with menus.
     /// </summary>
-    public virtual void HandleInputEvent(in InputManager.NavigationEvents nav)
+    public virtual void HandleInputEvent(in EventHelper.NavigationEvents nav)
     {
         _log.LogDebug("Tried to ask non-input panel to handle input event.");
     }

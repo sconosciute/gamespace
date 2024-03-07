@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -51,7 +52,7 @@ public class GameManager
     {
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
-        _gui.InitStatPanel();
+        _gui.OpenStatPanel();
         Guid dummy = Guid.NewGuid();
         _worldBuilder.BuildWorld();
         _robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
@@ -63,7 +64,7 @@ public class GameManager
         
     }
 
-    public void RegisterPlayerListener(Player.PlayerStateEventHandler handler)
+    public void RegisterPlayerListener(EventHelper.PlayerStateEventHandler handler)
     {
         _player.PlayerStateEvent += handler;
     }
@@ -94,7 +95,6 @@ public class GameManager
     public void Draw()
     {
         _camera.BeginFrame();
-        // _world.DebugDrawMap();
         _camera.DrawFrame(RenderMode.Deferred);
         
         _camera.RenderFrame();

@@ -1,5 +1,6 @@
 ﻿using System;
 using gamespace.Managers;
+using gamespace.Util;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
@@ -44,6 +45,7 @@ public class Player : Character
         _name = name;
         Inventory = new Item[InventorySize];
         KeyItemInventory = new Item[KeyInventorySize];
+        OnPlayerStateEvent();
     }
 
     public bool InventoryUse(int inventorySlot)
@@ -113,25 +115,11 @@ public class Player : Character
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
     }
 
-    public delegate void PlayerStateEventHandler(in PlayerState state);
-
-    public event PlayerStateEventHandler PlayerStateEvent;
+    public event EventHelper.PlayerStateEventHandler PlayerStateEvent;
 
     private void OnPlayerStateEvent()
     {
-        var args = new PlayerState(Health, Energy);
+        var args = new EventHelper.PlayerState(Health, Energy, Inventory);
         PlayerStateEvent?.Invoke(args);
-    }
-
-    public class PlayerState
-    {
-        public int Health { get; init; }
-        public int Energy { get; init; }
-
-        public PlayerState(int health, int energy)
-        {
-            Health = health;
-            Energy = energy;
-        }
     }
 }
