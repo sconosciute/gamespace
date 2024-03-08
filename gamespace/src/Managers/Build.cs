@@ -33,7 +33,7 @@ public static class Build
         
         public static Prop Connector(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
-            var prop = new Prop(worldPosition, 1, 1, true);
+            var prop = new Prop(worldPosition, 1, 1, false);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.RoomConnector),
                 worldPosition: worldPosition,
