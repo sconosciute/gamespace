@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -19,6 +20,7 @@ public class WorldBuilder
     private Vector2 _randomDirection;
     private Vector2 _currentDirection;
     private Point _lastTile;
+    private List<Rectangle> _leftOverRooms = new();
 
     private static readonly Vector2 MoveRight = new(1, 0);
     private static readonly Vector2 MoveLeft = new(-1, 0);
@@ -43,7 +45,7 @@ public class WorldBuilder
         {
             var width = _currentRoomWidth;
             var height = _currentRoomHeight;
-            var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width + 1, height + 1);
+            var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
             if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
@@ -101,24 +103,90 @@ public class WorldBuilder
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
         }
-
-        FloodFill();
+        FillMapWithWalls();
+        ConnectRooms();
+        //FloodFill();
     }
 
-    private void FloodFill() //Name of method subject to change.
+    private void ConnectRooms()
     {
-        FillMapWithWalls();
-        // (1) Pick a random position not on a floor or wall, and that all adjacent tiles are also not walls , this is tested to work
-        //PickStartingTile();
-        //
-        // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction * 2 == a floor
-        //ChooseDirection();
-        // 
-        //  we can do currentPos += randomDirection for traversal. 
-        // (3) Once it determines it hits a dead end, go back up the recursive stack checking at each time a new direction was picked,
-        //      if it can go any other directions. How to handle dead ends will be the most complicated part.
-        //
-        // (4) Once we go back to every turn made, and determine 
+        //Connect simple rooms first, where there's a room on both sides of a wall.
+        //  Add any rooms that do not have a simple connection into left over rooms list,
+        foreach (var rect in _world.Rooms)
+        {
+            int xPointer;
+            int yPointer;
+            int counter = 0;
+            
+            for (xPointer = rect.Left + 1; xPointer <= rect.Right; xPointer++)
+            {
+                yPointer = rect.Top - 1;
+                if (_world.GetIsFloor(new Vector2(xPointer, yPointer + 1)) &&   //If a connection is found here, set has connection bool to true,
+                    _world.GetIsFloor(new Vector2(xPointer, yPointer - 1)))     // If no connections are found, at the end of the loop,
+                {                                                                     //    Add the room into a list to be handled after all easy rooms are connected.
+                    counter++;
+                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                    if (counter == 2)
+                    {
+                        counter = 0;
+                        break; 
+                    }
+                }
+            }
+            
+            for (xPointer = rect.Left + 1; xPointer <= rect.Right; xPointer++)
+            {
+                yPointer = rect.Bottom;
+                if (_world.GetIsFloor(new Vector2(xPointer, yPointer + 1)) &&
+                    _world.GetIsFloor(new Vector2(xPointer, yPointer - 1)))
+                {
+                    counter++;
+                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                    if (counter == 2)
+                    {
+                        counter = 0;
+                        break; 
+                    } 
+                }
+            }
+
+            for (yPointer = rect.Top; yPointer < rect.Bottom; yPointer++)
+            {
+                xPointer = rect.Left;
+                if (_world.GetIsFloor(new Vector2(xPointer + 1, yPointer)) &&
+                    _world.GetIsFloor(new Vector2(xPointer - 1, yPointer)))
+                {
+                    counter++;
+                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                    if (counter == 2)
+                    {
+                        counter = 0;
+                        break; 
+                    } 
+                }
+            }
+            for (yPointer = rect.Top; yPointer < rect.Bottom; yPointer++)
+            {
+                xPointer = rect.Right + 1;
+                if (_world.GetIsFloor(new Vector2(xPointer + 1, yPointer)) &&
+                    _world.GetIsFloor(new Vector2(xPointer - 1, yPointer)))
+                {
+                    counter++;
+                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                    if (counter == 2)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+        }
+        // After all simple rooms are connected, iterate through left over room list connecting all these rooms through
+        //  a brute force tunnel, picking the shortest tunnel found between rooms.
     }
 
     private void FillMapWithWalls() //Name of method subject to change.
@@ -135,32 +203,7 @@ public class WorldBuilder
         }
     }
 
-    private void TeleportPoint()
-    {
-        var x = Rand.Next(-23, 23);
-        var y = Rand.Next(-23, 23);
-        var counterT = 0;
-        while (true)
-        {
-            if (_world.CheckAdj(new Point(x, y)))
-            {
-                var vectorpos = new Vector2(x, y);
-                _world.ForcePlaceFloor(vectorpos, BuildTile(new Vector2(x, y), Build.Props.Floor));
-                break;
-            }
-
-            x = Rand.Next(-23, 23);
-            y = Rand.Next(-23, 23);
-            counterT++;
-            if (counterT == 10)
-            {
-                break;
-            }
-        }
-
-        _world.CurrentPos = new Vector2(x, y);
-        Console.Out.WriteLine(_world.CurrentPos);
-    }
+    
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
@@ -241,5 +284,46 @@ public class WorldBuilder
 
         _world.CurrentPos = new Vector2(x, y);
         _lastTile = new Point(x, y);
+    }
+    private void TeleportPoint()
+    {
+        var x = Rand.Next(-23, 23);
+        var y = Rand.Next(-23, 23);
+        var counterT = 0;
+        while (true)
+        {
+            if (_world.CheckAdj(new Point(x, y)))
+            {
+                var vectorpos = new Vector2(x, y);
+                _world.ForcePlaceFloor(vectorpos, BuildTile(new Vector2(x, y), Build.Props.Floor));
+                break;
+            }
+
+            x = Rand.Next(-23, 23);
+            y = Rand.Next(-23, 23);
+            counterT++;
+            if (counterT == 10)
+            {
+                break;
+            }
+        }
+
+        _world.CurrentPos = new Vector2(x, y);
+        Console.Out.WriteLine(_world.CurrentPos);
+    }
+    private void FloodFill() //Name of method subject to change.
+    {
+        FillMapWithWalls();
+        // (1) Pick a random position not on a floor or wall, and that all adjacent tiles are also not walls , this is tested to work
+        //PickStartingTile();
+        //
+        // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction * 2 == a floor
+        //ChooseDirection();
+        // 
+        //  we can do currentPos += randomDirection for traversal. 
+        // (3) Once it determines it hits a dead end, go back up the recursive stack checking at each time a new direction was picked,
+        //      if it can go any other directions. How to handle dead ends will be the most complicated part.
+        //
+        // (4) Once we go back to every turn made, and determine 
     }
 }
