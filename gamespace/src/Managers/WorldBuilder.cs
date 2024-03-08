@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using gamespace.Model;
 using gamespace.View;
+using Loyc;
+using Loyc.Collections.MutableListExtensionMethods;
+using Loyc.Geometry;
 using Microsoft.Xna.Framework;
 using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace gamespace.Managers;
 
@@ -20,7 +25,8 @@ public class WorldBuilder
     private Vector2 _randomDirection;
     private Vector2 _currentDirection;
     private Point _lastTile;
-    private List<Rectangle> _leftOverRooms = new();
+    private List<Room> _leftOverRooms;
+    private List<Room> _roomsConnectedToStart = new();
 
     private static readonly Vector2 MoveRight = new(1, 0);
     private static readonly Vector2 MoveLeft = new(-1, 0);
@@ -36,6 +42,7 @@ public class WorldBuilder
         _gm = gm;
         _camera = camera;
         _world = world;
+        _leftOverRooms = _world.Rooms;
     }
 
     private void MakeRoom()
@@ -45,7 +52,8 @@ public class WorldBuilder
         {
             var width = _currentRoomWidth;
             var height = _currentRoomHeight;
-            var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
+            Rectangle roomBound = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
+            var room = new Room(roomBound);
             if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
@@ -112,81 +120,153 @@ public class WorldBuilder
     {
         //Connect simple rooms first, where there's a room on both sides of a wall.
         //  Add any rooms that do not have a simple connection into left over rooms list,
-        foreach (var rect in _world.Rooms)
-        {
-            int xPointer;
-            int yPointer;
-            int counter = 0;
-            
-            for (xPointer = rect.Left + 1; xPointer <= rect.Right; xPointer++)
+        
+        //Starting room;
+        Room startingRoom = _world.Rooms[0];
+        startingRoom.IsConnectedToStart = true;
+        
+        ConnectSingleRoom(startingRoom);
+       
+        // After all simple rooms are connected, iterate through left over room list connecting all these rooms through
+        //  a brute force tunnel, picking the shortest tunnel found between rooms.
+    }
+
+    private void ConnectSingleRoom(Room currentRoom)
+    {
+        int xPointer;
+        int yPointer;
+        int counter = 0;
+        // check along the top
+         for (xPointer = currentRoom.RoomBounds.Left + 1; xPointer <= currentRoom.RoomBounds.Right; xPointer++)
             {
-                yPointer = rect.Top - 1;
+                yPointer = currentRoom.RoomBounds.Top - 1;
+                var lastRoomTile = new Point(xPointer, yPointer + 1);
+                var nextRoomTile = new Point(xPointer, yPointer - 1);
+                
                 if (_world.GetIsFloor(new Vector2(xPointer, yPointer + 1)) &&   //If a connection is found here, set has connection bool to true,
                     _world.GetIsFloor(new Vector2(xPointer, yPointer - 1)))     // If no connections are found, at the end of the loop,
                 {                                                                     //    Add the room into a list to be handled after all easy rooms are connected.
                     counter++;
                     _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
                         BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    if (counter == 2)
+                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                    if (counter == 1)
                     {
                         counter = 0;
                         break; 
                     }
                 }
             }
-            
-            for (xPointer = rect.Left + 1; xPointer <= rect.Right; xPointer++)
+            //check along the bottom
+            for (xPointer = currentRoom.RoomBounds.Left + 1; xPointer <= currentRoom.RoomBounds.Right; xPointer++)
             {
-                yPointer = rect.Bottom;
+                yPointer = currentRoom.RoomBounds.Bottom;
+                var lastRoomTile = new Point(xPointer, yPointer - 1);
+                var nextRoomTile = new Point(xPointer, yPointer + 1);
                 if (_world.GetIsFloor(new Vector2(xPointer, yPointer + 1)) &&
                     _world.GetIsFloor(new Vector2(xPointer, yPointer - 1)))
                 {
                     counter++;
                     _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
                         BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    if (counter == 2)
+                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                    if (counter == 1)
                     {
                         counter = 0;
                         break; 
                     } 
                 }
             }
+            //Check to the left
+            for (yPointer = currentRoom.RoomBounds.Top; yPointer < currentRoom.RoomBounds.Bottom; yPointer++)
+            {
+                xPointer = currentRoom.RoomBounds.Left;
 
-            for (yPointer = rect.Top; yPointer < rect.Bottom; yPointer++)
-            {
-                xPointer = rect.Left;
+                var lastRoomTile = new Point(xPointer + 1, yPointer);
+                var nextRoomTile = new Point(xPointer - 1, yPointer);
+                
                 if (_world.GetIsFloor(new Vector2(xPointer + 1, yPointer)) &&
                     _world.GetIsFloor(new Vector2(xPointer - 1, yPointer)))
                 {
                     counter++;
                     _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
                         BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    if (counter == 2)
+                    
+                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile); //swaped shoudl be the other way
+                    if (counter == 1)
                     {
                         counter = 0;
                         break; 
                     } 
                 }
             }
-            for (yPointer = rect.Top; yPointer < rect.Bottom; yPointer++)
+            //Check along the right
+            for (yPointer = currentRoom.RoomBounds.Top; yPointer < currentRoom.RoomBounds.Bottom; yPointer++)
             {
-                xPointer = rect.Right + 1;
+                xPointer = currentRoom.RoomBounds.Right + 1;
+
+                var nextRoomTile = new Point(xPointer + 1, yPointer);
+                var lastRoomTile = new Point(xPointer - 1, yPointer);
+                
                 if (_world.GetIsFloor(new Vector2(xPointer + 1, yPointer)) &&
                     _world.GetIsFloor(new Vector2(xPointer - 1, yPointer)))
                 {
                     counter++;
                     _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
                         BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    if (counter == 2)
+                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                    if (counter == 1)
                     {
                         break;
                     }
                 }
             }
             
+    }
+
+    private void FindRoomsSurroundingTile(Point lastRoomPoint, Point currentRoomPoint)
+    {
+        var roomCounter = 0;
+        Room newRoom = new Room(new Rectangle());
+        Room currentRoom = new Room(new Rectangle());
+        foreach (Room room in _world.Rooms)
+        {
+            //room.RoomBounds.Contains(new Point(xPointer + 1, yPointer)) || 
+            if (room.RoomBounds.Contains(currentRoomPoint))
+            {
+                newRoom = room;
+                roomCounter++;
+            }
+            if (room.RoomBounds.Contains(lastRoomPoint))
+            {
+                currentRoom = room;
+                roomCounter++;
+            }
+                        
+            if (roomCounter == 2)
+            {
+                //_roomsConnectedToStart.Add(newRoom);
+                //newRoom.IsConnectedToStart = currentRoom.IsConnectedToStart;
+                if (newRoom.IsConnectedToStart || currentRoom.IsConnectedToStart)
+                {
+                    newRoom.IsConnectedToStart = true;
+                    currentRoom.IsConnectedToStart = true;
+                    if (!_roomsConnectedToStart.Contains(newRoom))
+                    {
+                        _roomsConnectedToStart.Add(newRoom);
+                        ConnectSingleRoom(newRoom);
+                    }
+                    if (!_roomsConnectedToStart.Contains(currentRoom))
+                    {
+                        _roomsConnectedToStart.Add(currentRoom);
+                    }
+                    //ConnectSingleRoom(newRoom);
+                }
+                
+            }
         }
-        // After all simple rooms are connected, iterate through left over room list connecting all these rooms through
-        //  a brute force tunnel, picking the shortest tunnel found between rooms.
+        //ConnectSingleRoom(newRoom);
+        //ConnectSingleRoom(currentRoom);
     }
 
     private void FillMapWithWalls() //Name of method subject to change.

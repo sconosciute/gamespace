@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace gamespace.Model;
 
@@ -13,7 +14,7 @@ public class World
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
 
-    public List<Rectangle> Rooms { get; } = new();
+    public List<Room> Rooms { get; } = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
 
@@ -120,11 +121,11 @@ public class World
         this[(int)pos.X, (int)pos.Y] = tile;
     }
 
-    public bool CheckRoomOverlap(Rectangle newRoom)
+    public bool CheckRoomOverlap(Room newRoom)
     {
         foreach (var rect in Rooms)
         {
-            if (!Rectangle.Intersect(rect, newRoom).IsEmpty)
+            if (!Rectangle.Intersect(rect.RoomBounds, newRoom.RoomBounds).IsEmpty)
             {
                 return true;
             }
