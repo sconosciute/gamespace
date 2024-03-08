@@ -13,7 +13,7 @@ public class World
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
 
-    private readonly List<Rectangle> _roomBounds = new();
+    public List<Rectangle> Rooms { get; } = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
 
@@ -122,7 +122,7 @@ public class World
 
     public bool CheckRoomOverlap(Rectangle newRoom)
     {
-        foreach (var rect in _roomBounds)
+        foreach (var rect in Rooms)
         {
             if (!Rectangle.Intersect(rect, newRoom).IsEmpty)
             {
@@ -130,7 +130,7 @@ public class World
             }
         }
 
-        _roomBounds.Add(newRoom);
+        Rooms.Add(newRoom);
         return false;
     }
 
