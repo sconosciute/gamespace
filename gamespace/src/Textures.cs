@@ -10,4 +10,5 @@ public struct Textures
     public const string Collider = "ColliderTile";
     public const string TransparentBg = "GUI/transparent";
     public const string OpaqueBg = "GUI/opaque";
+    public const string RoomConnector = "RoomConnectorTile";
 }

@@ -30,6 +30,16 @@ public static class Build
                 layerDepth: LayerDepth.Background);
             return prop;
         }
+        
+        public static Prop Connector(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Prop(worldPosition, 1, 1, true);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.RoomConnector),
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return prop;
+        }
     }
 
     public struct Mobs

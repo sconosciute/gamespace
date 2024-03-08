@@ -45,6 +45,7 @@ public class Game1 : Game
         _gm.AddTexture(Textures.Collider);
         _gm.AddTexture(Textures.OpaqueBg);
         _gm.AddTexture(Textures.TransparentBg);
+        _gm.AddTexture(Textures.RoomConnector);
         
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();
