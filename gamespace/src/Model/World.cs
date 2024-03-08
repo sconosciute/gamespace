@@ -8,7 +8,7 @@ namespace gamespace.Model;
 
 public class World
 {
-    public const int NumberOfRooms = 200;
+    public const int NumberOfRooms = 400;
 
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
@@ -33,7 +33,7 @@ public class World
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
 
     //TODO: This property will likely be removed before completion
-    public Vector2 CurrentPos { get; set; } = new(-4, -3);
+    public Vector2 CurrentPos { get; set; } = new(-3, -3);
 
     /// <summary>
     /// Builds a new World object with the given width and height boundary.

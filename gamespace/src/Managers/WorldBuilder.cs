@@ -11,9 +11,9 @@ public class WorldBuilder
     private readonly World _world;
     private readonly Camera _camera;
     private readonly GameManager _gm;
-    private const int AttemptsToPlaceRoom = 100;
+    private const int AttemptsToPlaceRoom = 10000;
     private const int RoomLowerBound = 5;
-    private const int RoomUpperBound = 15;
+    private const int RoomUpperBound = 11;
     private int _currentRoomWidth = 5;
     private int _currentRoomHeight = 5;
     private Vector2 _randomDirection = new();
@@ -43,7 +43,7 @@ public class WorldBuilder
         {
             var width = _currentRoomWidth;
             var height = _currentRoomHeight;
-            var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width + 2, height + 2);
+            var room = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width + 1, height + 1);
             if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
@@ -55,21 +55,21 @@ public class WorldBuilder
                 continue;
             }
 
-            for (var k = 0; k < width + 2; k++)
+            /*for (var k = 0; k < width + 2; k++)
             {
                 _world.CurrentPos += new Vector2(1, 0);
                 _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
                     BuildTile(_world.CurrentPos, Build.Props.Wall));
-            }
+            }*/
 
-            _world.CurrentPos += new Vector2(-width - 1, 1);
+            //_world.CurrentPos += new Vector2(-width - 1, 1);
             for (var i = 0; i < height; i++)
             {
-                if (i != height / 2 && i != (height / 2 - 1))
+                /*if (i != height / 2 && i != (height / 2 - 1))
                 {
                     _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
                         BuildTile(_world.CurrentPos, Build.Props.Wall));
-                }
+                }*/
 
                 for (var j = 0; j < width; j++)
                 {
@@ -78,19 +78,19 @@ public class WorldBuilder
                         BuildTile(_world.CurrentPos, Build.Props.Floor));
                 }
 
-                _world.CurrentPos += new Vector2(1, 0);
+                /*_world.CurrentPos += new Vector2(1, 0);
                 _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
-                    BuildTile(_world.CurrentPos, Build.Props.Wall));
-                _world.CurrentPos += new Vector2(-width - 1, 1);
+                    BuildTile(_world.CurrentPos, Build.Props.Wall));*/
+                _world.CurrentPos += new Vector2(-width, 1);
                 //Place one wall on right
             }
-
+            /*
             for (var k = 0; k < width + 2; k++)
             {
                 _world.TryPlaceTile(new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y),
                     BuildTile(_world.CurrentPos, Build.Props.Wall));
                 _world.CurrentPos += new Vector2(1, 0);
-            }
+            }*/
 
             break;
         }
@@ -103,9 +103,25 @@ public class WorldBuilder
         for (var i = 0; i < World.NumberOfRooms; i++)
         {
             _currentRoomWidth = Rand.Next(RoomLowerBound, RoomUpperBound);
+            if (_currentRoomWidth % 2 == 0)
+            {
+                _currentRoomWidth += 1;
+            }
             _currentRoomHeight = Rand.Next(RoomLowerBound, RoomUpperBound);
+            if (_currentRoomHeight % 2 == 0)
+            {
+                _currentRoomHeight += 1;
+            }
             var randX = Rand.Next(-24, 24 - _currentRoomWidth - 2);
+            if (randX % 2 == 0)
+            {
+                randX += 1;
+            }
             var randY = Rand.Next(-24, 24 - _currentRoomHeight - 2);
+            if (randY % 2 == 0)
+            {
+                randY += 1;
+            }
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
         }
@@ -120,7 +136,7 @@ public class WorldBuilder
         PickStartingTile();
         //
         // (2) Pick a random direction, move in this direction until either it randomly decides to change, or that direction * 2 == a floor
-        ChooseDirection();
+        //ChooseDirection();
         // 
         //  we can do currentPos += randomDirection for traversal. 
         // (3) Once it determines it hits a dead end, go back up the recursive stack checking at each time a new direction was picked,
