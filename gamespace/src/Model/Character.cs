@@ -15,7 +15,7 @@ public abstract class Character : Entity
     public int Health { get; protected set; }
     public int Energy { get; protected set; }
 
-    public Character(Vector2 worldCoordinate, int width, int height, int hp, int energy, int baseDmg, World world) :
+    public Character(Vector2 worldCoordinate, float width, float height, int hp, int energy, int baseDmg, World world) :
         base(width, height, world, worldCoordinate)
     {
         if (hp <= 0)
