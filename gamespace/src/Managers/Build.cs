@@ -23,7 +23,7 @@ public static class Build
 
         public static Prop Wall(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
-            var prop = new Prop(worldPosition, 1, 1, true);
+            var prop = new Prop(worldPosition, 0.9f, 0.9f, true);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Collider),
                 worldPosition: worldPosition,
