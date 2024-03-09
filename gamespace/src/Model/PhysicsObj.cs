@@ -19,12 +19,12 @@ public abstract class PhysicsObj
     /// <summary>
     /// World width of this object.
     /// </summary>
-    public int Width { get; }
+    public float Width { get; }
 
     /// <summary>
     /// World height of this object.
     /// </summary>
-    public int Height { get; }
+    public float Height { get; }
 
     /// <summary>
     /// True if this object can collide with others, false if objects should clip through it.
@@ -32,7 +32,7 @@ public abstract class PhysicsObj
     public bool CanCollide { get; }
 
 
-    protected PhysicsObj(Vector2 worldCoordinate, int width, int height, bool hasMovement, bool hasFriction, bool hasCollision)
+    protected PhysicsObj(Vector2 worldCoordinate, float width, float height, bool hasMovement, bool hasFriction, bool hasCollision)
     {
         WorldCoordinate = worldCoordinate;
         Width = width;

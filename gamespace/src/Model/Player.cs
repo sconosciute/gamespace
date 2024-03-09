@@ -40,7 +40,7 @@ public class Player : Character
     /// <param name="name"> The name our player should have. </param>
     /// <param name="world"> The world our player should be put into. </param>
     public Player(string name, World world)
-        : base(Vector2.Zero, 1, 1, 100, 100, 10, world)
+        : base(Vector2.Zero, 0.9f, 0.9f, 100, 100, 10, world)
     {
         _name = name;
         Inventory = new Item[InventorySize];
