@@ -12,5 +12,5 @@ public struct Textures
     public const string OpaqueBg = "GUI/opaque";
     public const string RoomConnector = "lightBrownFloor";
     public const string Chest = "chest";
-    public const string Cat = "cat";
+    public const string NormalChest = "normalChest";
 }
