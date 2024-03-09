@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using gamespace.Util;
 using Loyc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
@@ -14,8 +15,7 @@ namespace gamespace.View;
 public class Camera
 {
     private readonly GraphicsDevice _gfx;
-    private Rectangle _drawDestination;
-    
+
     private readonly Guid _playerId;
 
     private readonly List<RenderObject> _renderables = new();
@@ -23,11 +23,11 @@ public class Camera
     private readonly ILogger _log;
 
     private float _zoom = 1.2f;
-    
+
     private const float ZoomAdj = 0.01f;
 
     private Vector2 _trackedPosition = Vector2.Zero;
-    
+
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
     /// </summary>
@@ -48,17 +48,16 @@ public class Camera
 
         UpdateTranslationMatrix();
     }
-    
-    //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
-    public delegate void CameraEventHandler(Matrix scale);
 
-    public event CameraEventHandler CameraEvent;
+    //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
+
+    public event EventHelper.CameraEventHandler CameraEvent;
 
     protected virtual void OnCameraEvent(Matrix scale)
     {
         CameraEvent?.Invoke(scale);
     }
-    
+
     //=== RENDERING ===-------------------------------------------------------------------------------------------------
 
     /// <summary>
@@ -77,16 +76,17 @@ public class Camera
             RenderFrame();
         }
     }
-    
+
     /// <summary>
     /// Begins drawing a new frame. This method will take control of Graphics RenderTarget.
     /// </summary>
     public void BeginFrame()
     {
         _gfx.Clear(Color.Black);
-        Globals.SpriteBatch.Begin(transformMatrix: Translation, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+        Globals.SpriteBatch.Begin(transformMatrix: Translation, blendState: BlendState.AlphaBlend,
+            samplerState: SamplerState.PointClamp);
     }
-    
+
     /// <summary>
     /// Renders the most recently drawn frame to the graphics device and releases the Graphics RenderTarget.
     /// </summary>
@@ -97,10 +97,12 @@ public class Camera
 
     private void UpdateTranslationMatrix()
     {
-        var zm = (float) Math.Pow(2, _zoom) - 1;
+        var zm = (float)Math.Pow(2, _zoom) - 1;
         const int halfPlayerSize = 8;
-        var dx = (_gfx.PresentationParameters.Bounds.Width / 2f) - (_trackedPosition.X * Globals.TileSize + halfPlayerSize) * Globals.Scale * zm;
-        var dy = (_gfx.PresentationParameters.Bounds.Height / 2f) - (_trackedPosition.Y * Globals.TileSize  + halfPlayerSize) * Globals.Scale * zm;
+        var dx = (_gfx.PresentationParameters.Bounds.Width / 2f) -
+                 (_trackedPosition.X * Globals.TileSize + halfPlayerSize) * Globals.Scale * zm;
+        var dy = (_gfx.PresentationParameters.Bounds.Height / 2f) -
+                 (_trackedPosition.Y * Globals.TileSize + halfPlayerSize) * Globals.Scale * zm;
 
         var newTranslation = Matrix.CreateTranslation(dx, dy, 0);
         var scale = Matrix.CreateScale(Globals.Scale * zm);
@@ -116,7 +118,7 @@ public class Camera
     {
         _renderables.Add(renderObject);
     }
-    
+
     //=== EVENT HANDLING ===--------------------------------------------------------------------------------------
 
     /// <summary>
@@ -124,18 +126,18 @@ public class Camera
     /// </summary>
     /// <param name="sender">The sending entity that you wish to track.</param>
     /// <param name="args">Necessary information for this event.</param>
-    public void HandleEntityEvent(Guid sender, EntityEventArgs args)
+    public void HandleEntityEvent(in Guid sender, in EventHelper.EntityEventArgs args)
     {
         if (sender != _playerId) return;
-        if (args.EventTopic != EntityEventType.Moved) return;
+        if (args.EventTopic != EventHelper.EntityEventType.Moved) return;
         _trackedPosition = args.NewPosition;
         UpdateTranslationMatrix();
     }
-    
+
     /// <summary>
     /// Adjusts the camera zoom value based on thrown event from InputManager.
     /// </summary>
-    public void HandleZoomEvent(ZoomEventType zm)
+    public void HandleZoomEvent(in ZoomEventType zm)
     {
         switch (zm)
         {

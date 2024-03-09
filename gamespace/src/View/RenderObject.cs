@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Managers;
-using gamespace.Model;
+using gamespace.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -97,10 +97,10 @@ public class RenderObject
         }
     }
 
-    public void HandleEntityEvent(Guid sender, EntityEventArgs args)
+    public void HandleEntityEvent(in Guid sender, in EventHelper.EntityEventArgs args)
     {
         if (sender != _entityId) return;
-        if (args.EventTopic == EntityEventType.Moved)
+        if (args.EventTopic == EventHelper.EntityEventType.Moved)
         {
             _position = args.NewPosition;
             _position.X *= Globals.TileSize;

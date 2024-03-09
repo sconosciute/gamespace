@@ -1,4 +1,6 @@
-﻿using gamespace.Managers;
+﻿using System;
+using gamespace.Managers;
+using gamespace.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,7 +24,7 @@ public abstract class GuiPanel
     /// </summary>
     public GuiPanel Parent { get; init; }
 
-    protected GuiManager Manager { get; init; }
+    public GuiManager Manager { get; init; }
     
     public Rectangle DrawBox { get; protected set; }
 
@@ -51,29 +53,30 @@ public abstract class GuiPanel
     /// </summary>
     public void Delete()
     {
+        Manager.ResumeGame();
         Manager.Delete(this);
     }
 
     /// <summary>
     /// Handles input events fired from the InputManager to interact with menus.
     /// </summary>
-    public virtual void HandleInputEvent(InputManager.NavigationEvents nav)
+    public virtual void HandleInputEvent(in EventHelper.NavigationEvents nav)
     {
         _log.LogDebug("Tried to ask non-input panel to handle input event.");
     }
 
-    protected void DrawText(Vector2 position, string message, SpriteBatch batch)
+    protected void DrawText(in Vector2 position, in string message, in SpriteBatch batch, in bool isTitle)
     {
-        //TODO: Provide difference between Title and Body text.
-        var scale = new Vector2(Globals.Scale, Globals.Scale);
-        batch.DrawString(Globals.Font, message, position, Color.Red, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        var scalar = isTitle ? 2f : 3f;
+        var scale = new Vector2((float)Math.Round(Globals.Scale / scalar));
+        batch.DrawString(Globals.Font, message, position, Color.Black, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
 
-    public virtual void Draw(SpriteBatch batch)
+    public virtual void Draw(in SpriteBatch batch)
     {
         if (Shown)
         {
-            batch.Draw(Background, DrawBox, Color.Crimson);
+            batch.Draw(Background, DrawBox, Color.White);
         }
     }
 }

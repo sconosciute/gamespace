@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,7 @@ public class GameManager
 {
     private const int WorldSize = 51;
 
+    private readonly Game1 _game;
     private readonly GraphicsDeviceManager _gfxMan;
     private readonly Camera _camera;
     private GuiManager _gui;
@@ -23,8 +25,9 @@ public class GameManager
     public bool GameIsPaused => !_playing;
 
     private WorldBuilder _worldBuilder;
-    public GameManager(GraphicsDeviceManager graphics)
+    public GameManager(GraphicsDeviceManager graphics, Game1 game)
     {
+        _game = game;
         _gfxMan = graphics;
         SetResolution(1920, 1080);
         _world = new World(WorldSize, WorldSize);
@@ -34,7 +37,7 @@ public class GameManager
         _playing = true;
     }
 
-    //=== INITIALIZATION - CALL ONCE! ===-------------------------------------------------------------------------------
+    #region Init
 
     /// <summary>
     /// Initializes the GUI manager with relevant Camera information and returns that Manager.
@@ -49,6 +52,7 @@ public class GameManager
     {
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
+        _gui.OpenStatPanel();
         Guid dummy = Guid.NewGuid();
         //_worldBuilder.BuildWorld();
         _worldBuilder.BuildBasicWorld();
@@ -61,7 +65,14 @@ public class GameManager
         
     }
 
-    //=== GAME LOOP ===-------------------------------------------------------------------------------------------------
+    public void RegisterPlayerListener(EventHelper.PlayerStateEventHandler handler)
+    {
+        _player.PlayerStateEvent += handler;
+    }
+    
+    #endregion
+
+    #region Game Loop
 
     /// <summary>
     /// Runs physics updates on all Entities.
@@ -85,14 +96,15 @@ public class GameManager
     public void Draw()
     {
         _camera.BeginFrame();
-        // _world.DebugDrawMap();
         _camera.DrawFrame(RenderMode.Deferred);
         
         _camera.RenderFrame();
         _gui.RenderGui();
     }
+    
+    #endregion
 
-    //=== MANAGEMENT FUNCTIONS ===--------------------------------------------------------------------------------------
+    #region Management
 
     public Texture2D GetTexture(string assetName)
     {
@@ -128,7 +140,22 @@ public class GameManager
         _playing = true;
     }
 
-    //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
+    public void ExitGame()
+    {
+        _game.Exit();
+    }
+
+    public void SaveGame()
+    {
+        //TODO: Save!
+    }
+
+    public void LoadGame()
+    {
+        //TODO: Load!
+    }
+    
+    #endregion
 
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
     {

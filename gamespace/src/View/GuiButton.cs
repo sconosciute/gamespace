@@ -7,7 +7,7 @@ namespace gamespace.View;
 
 public class GuiButton : GuiPanel
 {
-    public delegate void ButtonCallback(GuiPanel parent);
+    public delegate void ButtonCallback(in GuiPanel parent, in GuiManager manager);
     
     private static readonly Rectangle DefaultBox = new();
     private ButtonCallback _callback;
@@ -19,24 +19,24 @@ public class GuiButton : GuiPanel
         _callback = callback;
     }
 
-    public override void Draw(SpriteBatch batch)
+    public override void Draw(in SpriteBatch batch)
     {
         var color = Selected ? Color.Goldenrod : Color.Aqua;
         batch.Draw(Background, DrawBox, color);
-        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch);
+        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch, true);
     }
 
     public void UpdateDrawBox(Point position)
     {
         var wAdj = 3f / 4f;
-        var hAdj = 1f / 8f;
+        var hAdj = 1f / 11f;
         var wh = new Point((int)Math.Round(Parent.DrawBox.Width * wAdj), (int)Math.Round(Parent.DrawBox.Height * hAdj));
         DrawBox = new Rectangle(position, wh);
     }
 
     public void OnPress()
     {
-        _callback.Invoke(Parent);
+        _callback.Invoke(Parent, Parent.Manager);
     }
     
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using gamespace.Model;
+using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,19 +13,24 @@ public class GuiManager
     private readonly GameManager _gm;
     private readonly InputManager _input;
 
+    private EventHelper.PlayerState _lastState;
+    private StatPanel _stats;
+
     public Texture2D OpaqueBg { get; private set; }
     public Texture2D TransparentBg { get; private set; }
 
     private readonly SpriteBatch _guiSpriteBatch;
 
-    public GuiManager(GraphicsDevice gfx, GameManager gm, Camera camera)
+    public GuiManager(in GraphicsDevice gfx, in GameManager gm, in Camera camera)
     {
         _gfx = gfx;
         _gm = gm;
+        _gm.RegisterPlayerListener(HandlePlayerStateEvent);
         _input = InputManager.GetInputManager();
         _input.ZoomEvent += camera.HandleZoomEvent;
+        _input.InputEvent += HandleInputEvent;
         InputDriver.KeyboardEvent += _input.HandleKeyboardEvent;
-        
+
         _guiSpriteBatch = new SpriteBatch(_gfx);
     }
 
@@ -34,29 +40,15 @@ public class GuiManager
         TransparentBg = _gm.GetTexture(Textures.TransparentBg);
     }
 
-    /// <summary>
-    /// Registers an entity to listen for MoveEvents from the InputManager.
-    /// </summary>
-    /// <param name="player">The player entity to control, will replace the current entity if one exists.</param>
-    public void RegisterControlledEntity(Player player)
-    {
-        _input.MoveEvent += player.HandleMoveEvent;
-    }
-
-    private void RegisterInputHandler(GuiPanel panel)
-    {
-        _input.InputEvent += panel.HandleInputEvent;
-    }
-
+    #region Game Loop
     public void Update()
     {
         _input.Update();
     }
-    
+
     public void RenderGui()
     {
-        _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend,
-            samplerState: SamplerState.PointClamp);
+        _guiSpriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
         foreach (var panel in _panels)
         {
             panel.Draw(_guiSpriteBatch);
@@ -64,16 +56,48 @@ public class GuiManager
 
         _guiSpriteBatch.End();
     }
+    
+    #endregion
+    
+    #region Event Handling
 
-    private void HandleInputEvent(InputManager.NavigationEvents nav)
+    public void HandlePlayerStateEvent(in EventHelper.PlayerState args)
     {
-        if (nav == InputManager.NavigationEvents.Escape)
+        _lastState = args;
+    }
+    
+    /// <summary>
+    /// Registers an entity to listen for MoveEvents from the InputManager.
+    /// </summary>
+    /// <param name="player">The player entity to control, will replace the current entity if one exists.</param>
+    public void RegisterControlledEntity(in Player player)
+    {
+        _input.MoveEvent += player.HandleMoveEvent;
+    }
+
+    private void RegisterInputHandler(in GuiPanel panel)
+    {
+        _input.InputEvent -= HandleInputEvent;
+        _input.InputEvent += panel.HandleInputEvent;
+    }
+
+    private void HandleInputEvent(in EventHelper.NavigationEvents nav)
+    {
+        if (nav == EventHelper.NavigationEvents.Escape)
         {
             OpenMainMenu();
         }
     }
 
-    #region Prebaked Panels
+    public void ExitGame() => _gm.ExitGame();
+    public void SaveGame() => _gm.SaveGame();
+    public void LoadGame() => _gm.LoadGame();
+    public void ResumeGame() => _gm.ResumeGame();
+    
+    #endregion
+
+    #region Panels
+
     /// <summary>
     /// Removes the specified panel from the GUI tree to allow it to be GC'd
     /// </summary>
@@ -84,14 +108,22 @@ public class GuiManager
         _input.InputEvent += HandleInputEvent;
         _panels.Remove(panel);
     }
-    
-    public void OpenMainMenu()
+
+    private void OpenMainMenu()
     {
         var menu = Bake.MainMenu(_gfx, this);
-        _input.InputEvent -= HandleInputEvent;
         RegisterInputHandler(menu);
         _panels.Add(menu);
+        _gm.PauseGame();
     }
-    
+
+    public void OpenStatPanel()
+    {
+        if (_stats != null) return;
+        _stats = Bake.StatPanel(_gfx, this);
+        _gm.RegisterPlayerListener(_stats.HandlePlayerStateEvent);
+        _panels.Add(_stats);
+    }
+
     #endregion
 }

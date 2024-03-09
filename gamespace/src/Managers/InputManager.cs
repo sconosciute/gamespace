@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using gamespace.Util;
 using gamespace.View;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
@@ -19,10 +20,10 @@ public sealed class InputManager
     private bool _pMoveEast;
     private bool _pMoveWest;
 
-    private readonly Dictionary<Keys, InputCallback> _keyMap;
-    private readonly List<(Keys, InputCallback, InputCallbacks)> _defaultBinds = new();
-    private readonly Dictionary<InputCallback, InputCallbacks> _callbackToEnum = new();
-    private readonly Dictionary<InputCallbacks, InputCallback> _enumToCallback = new();
+    private readonly Dictionary<Keys, EventHelper.InputCallback> _keyMap;
+    private readonly List<(Keys, EventHelper.InputCallback, EventHelper.InputCallbacks)> _defaultBinds = new();
+    private readonly Dictionary<EventHelper.InputCallback, EventHelper.InputCallbacks> _callbackToEnum = new();
+    private readonly Dictionary<EventHelper.InputCallbacks, EventHelper.InputCallback> _enumToCallback = new();
 
     private static InputManager _instance;
     private readonly ILogger _log;
@@ -32,14 +33,14 @@ public sealed class InputManager
         _log = Globals.LogFactory.CreateLogger<InputManager>();
         _instance = this;
         InitDefaultBindingsList();
-        _keyMap = new Dictionary<Keys, InputCallback>();
+        _keyMap = new Dictionary<Keys, EventHelper.InputCallback>();
         InitBindingsMaps();
         WriteKeyBindConf();
 
         if (!SettingsManager.TryReadConfig(ConfNames.KeyBinds, out var data)) return;
 
         _log.LogInformation("Found custom key binds, loading...");
-        var keyMap = JsonSerializer.Deserialize<Dictionary<Keys, InputCallbacks>>(data);
+        var keyMap = JsonSerializer.Deserialize<Dictionary<Keys, EventHelper.InputCallbacks>>(data);
         foreach (var bind in keyMap)
         {
             _keyMap.Remove(bind.Key);
@@ -71,22 +72,22 @@ public sealed class InputManager
 
     private void InitDefaultBindingsList()
     {
-        _defaultBinds.Add((Keys.W, MoveNorth, InputCallbacks.MoveUp));
-        _defaultBinds.Add((Keys.S, MoveSouth, InputCallbacks.MoveDown));
-        _defaultBinds.Add((Keys.A, MoveWest, InputCallbacks.MoveLeft));
-        _defaultBinds.Add((Keys.D, MoveEast, InputCallbacks.MoveRight));
-        _defaultBinds.Add((Keys.Add, ZoomIn, InputCallbacks.ZoomIn));
-        _defaultBinds.Add((Keys.Subtract, ZoomOut, InputCallbacks.ZoomOut));
-        _defaultBinds.Add((Keys.OemPlus, ZoomRst, InputCallbacks.ZoomRst));
-        _defaultBinds.Add((Keys.Up, NavUp, InputCallbacks.NavUp));
-        _defaultBinds.Add((Keys.Down, NavDown, InputCallbacks.NavDown));
-        _defaultBinds.Add((Keys.Enter, NavSelect, InputCallbacks.NavSelect));
-        _defaultBinds.Add((Keys.Escape, NavEsc, InputCallbacks.NavEsc));
+        _defaultBinds.Add((Keys.W, MoveNorth, EventHelper.InputCallbacks.MoveUp));
+        _defaultBinds.Add((Keys.S, MoveSouth, EventHelper.InputCallbacks.MoveDown));
+        _defaultBinds.Add((Keys.A, MoveWest, EventHelper.InputCallbacks.MoveLeft));
+        _defaultBinds.Add((Keys.D, MoveEast, EventHelper.InputCallbacks.MoveRight));
+        _defaultBinds.Add((Keys.Add, ZoomIn, EventHelper.InputCallbacks.ZoomIn));
+        _defaultBinds.Add((Keys.Subtract, ZoomOut, EventHelper.InputCallbacks.ZoomOut));
+        _defaultBinds.Add((Keys.OemPlus, ZoomRst, EventHelper.InputCallbacks.ZoomRst));
+        _defaultBinds.Add((Keys.Up, NavUp, EventHelper.InputCallbacks.NavUp));
+        _defaultBinds.Add((Keys.Down, NavDown, EventHelper.InputCallbacks.NavDown));
+        _defaultBinds.Add((Keys.Enter, NavSelect, EventHelper.InputCallbacks.NavSelect));
+        _defaultBinds.Add((Keys.Escape, NavEsc, EventHelper.InputCallbacks.NavEsc));
     }
 
     #endregion
 
-    public void SetKeyBind(in Keys key, in InputCallbacks callback)
+    public void SetKeyBind(in Keys key, in EventHelper.InputCallbacks callback)
     {
         var func = _enumToCallback[callback];
         _keyMap.Remove(key);
@@ -96,7 +97,7 @@ public sealed class InputManager
 
     private void WriteKeyBindConf()
     {
-        var bindings = new Dictionary<Keys, InputCallbacks>();
+        var bindings = new Dictionary<Keys, EventHelper.InputCallbacks>();
         foreach (var bind in _keyMap)
         {
             var name = _callbackToEnum[bind.Value];
@@ -142,14 +143,9 @@ public sealed class InputManager
     #region Event Dispatch
 
     /// <summary>
-    /// Player move event handler type.
-    /// </summary>
-    public delegate void MoveInputHandler(in Vector2 moveVec);
-
-    /// <summary>
     /// Player move event dispatch.
     /// </summary>
-    public event MoveInputHandler MoveEvent;
+    public event EventHelper.MoveInputHandler MoveEvent;
 
     private void OnMoveEvent(in Vector2 moveVec)
     {
@@ -157,81 +153,49 @@ public sealed class InputManager
     }
 
     /// <summary>
-    /// Zoom event handler type.
-    /// </summary>
-    public delegate void ZoomEventHandler(ZoomEventType zm);
-
-    /// <summary>
     /// Zoom event dispatch.
     /// </summary>
-    public event ZoomEventHandler ZoomEvent;
+    public event EventHelper.ZoomEventHandler ZoomEvent;
 
     private void OnZoomEvent(ZoomEventType zm)
     {
         ZoomEvent?.Invoke(zm);
     }
 
-    public delegate void InputEventHandler(NavigationEvents nav);
+    public event EventHelper.InputEventHandler InputEvent;
 
-    public event InputEventHandler InputEvent;
-
-    private void OnNavEvent(in NavigationEvents nav)
+    private void OnNavEvent(in EventHelper.NavigationEvents nav)
     {
         InputEvent?.Invoke(nav);
-    }
-
-    public enum NavigationEvents
-    {
-        Up,
-        Down,
-        Select,
-        Escape
     }
 
     #endregion
 
     #region Input Callbacks
 
-    private void MoveWest(InputDriver.KeyAction action) => _pMoveWest = action == InputDriver.KeyAction.Pressed;
-    private void MoveEast(InputDriver.KeyAction action) => _pMoveEast = action == InputDriver.KeyAction.Pressed;
-    private void MoveNorth(InputDriver.KeyAction action) => _pMoveNorth = action == InputDriver.KeyAction.Pressed;
-    private void MoveSouth(InputDriver.KeyAction action) => _pMoveSouth = action == InputDriver.KeyAction.Pressed;
-    private void ZoomIn(InputDriver.KeyAction action) => 
+    private void MoveWest(in InputDriver.KeyAction action) => _pMoveWest = action == InputDriver.KeyAction.Pressed;
+    private void MoveEast(in InputDriver.KeyAction action) => _pMoveEast = action == InputDriver.KeyAction.Pressed;
+    private void MoveNorth(in InputDriver.KeyAction action) => _pMoveNorth = action == InputDriver.KeyAction.Pressed;
+    private void MoveSouth(in InputDriver.KeyAction action) => _pMoveSouth = action == InputDriver.KeyAction.Pressed;
+    private void ZoomIn(in InputDriver.KeyAction action) => 
         PressFilter(action, () => OnZoomEvent(ZoomEventType.Up));
-    private void ZoomOut(InputDriver.KeyAction action) => 
+    private void ZoomOut(in InputDriver.KeyAction action) => 
         PressFilter(action, () => OnZoomEvent(ZoomEventType.Down));
-    private void ZoomRst(InputDriver.KeyAction action) => 
+    private void ZoomRst(in InputDriver.KeyAction action) => 
         PressFilter(action, () => OnZoomEvent(ZoomEventType.Reset));
-    private void NavUp(InputDriver.KeyAction action) => 
-        PressFilter(action, () => OnNavEvent(NavigationEvents.Up));
-    private void NavDown(InputDriver.KeyAction action) => 
-        PressFilter(action, () => OnNavEvent(NavigationEvents.Down));
-    private void NavSelect(InputDriver.KeyAction action) =>
-        PressFilter(action, () => OnNavEvent(NavigationEvents.Select));
-    private void NavEsc(InputDriver.KeyAction action) => 
-        PressFilter(action, () => OnNavEvent(NavigationEvents.Escape));
+    private void NavUp(in InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Up));
+    private void NavDown(in InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Down));
+    private void NavSelect(in InputDriver.KeyAction action) =>
+        PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Select));
+    private void NavEsc(in InputDriver.KeyAction action) => 
+        PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Escape));
     
     private static void PressFilter(InputDriver.KeyAction action, Action callback)
     {
         if (action == InputDriver.KeyAction.Pressed) callback.Invoke();
     }
 
-    public enum InputCallbacks
-    {
-        MoveLeft,
-        MoveRight,
-        MoveUp,
-        MoveDown,
-        ZoomIn,
-        ZoomOut,
-        ZoomRst,
-        NavUp,
-        NavDown,
-        NavSelect,
-        NavEsc
-    }
-
     #endregion
-
-    private delegate void InputCallback(InputDriver.KeyAction action);
 }
