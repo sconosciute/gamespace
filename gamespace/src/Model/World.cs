@@ -131,7 +131,7 @@ public class World
             }
         }
 
-        Rooms.Add(newRoom);
+        //Rooms.Add(newRoom); This should be handled outside of this method
         return false;
     }
 
@@ -181,10 +181,14 @@ public class World
         return true;
     }
 
-    public bool CheckAdjWithoutDiagonal(Point pos)
+    public bool CheckAdjWithoutDiagonal(Vector2 pos) //Changed this to vector
     {
-        return (!this[pos.X + 1, pos.Y].CanCollide || !this[pos.X + 1, pos.Y].CanCollide ||
-                !this[pos.X, pos.Y - 1].CanCollide || !this[pos.X, pos.Y + 1].CanCollide);
+        if (!IsInBounds((int)pos.X, (int)pos.Y) || this[(int)pos.X, (int)pos.Y] == null)
+        {
+            return false;
+        }
+        return (!this[(int)pos.X + 1, (int)pos.Y].CanCollide || !this[(int)pos.X + 1, (int)pos.Y].CanCollide ||
+                !this[(int)pos.X, (int)pos.Y - 1].CanCollide || !this[(int)pos.X, (int)pos.Y + 1].CanCollide);
     }
 
     public bool CheckAdjWithAvoidance(Point pos, Point lastTile)

@@ -111,13 +111,13 @@ public class WorldBuilder
                 _currentRoomHeight += 1;
             }
 
-            var randX = Rand.Next(-24, 24 - _currentRoomWidth - 2);
+            var randX = Rand.Next(_world._minX + 1, _world._maxX - _currentRoomWidth - 2);
             if (randX % 2 == 0)
             {
                 randX += 1;
             }
 
-            var randY = Rand.Next(-24, 24 - _currentRoomHeight - 2);
+            var randY = Rand.Next(_world._minY + 1, _world._maxY - _currentRoomHeight - 2);
             if (randY % 2 == 0)
             {
                 randY += 1;
@@ -155,7 +155,7 @@ public class WorldBuilder
         Room startingRoom = _world.Rooms[0];
         startingRoom.IsConnectedToStart = true;
 
-        //ConnectSingleRoom(startingRoom);
+        ConnectSingleRoom(startingRoom);
 
         // After all simple rooms are connected, iterate through left over room list connecting all these rooms through
         //  a brute force tunnel, picking the shortest tunnel found between rooms.
@@ -166,7 +166,7 @@ public class WorldBuilder
         //Debug print
         //LeftOverRoomsDebug();
 
-
+        //ConnectIslandRoom(startingRoom);
         
         var uhOhCounter = 0;
         var index = 0;
@@ -187,8 +187,8 @@ public class WorldBuilder
 
             foreach (var room in _world.Rooms)
             {
-                //if (!room.IsConnectedToStart)
-                if (!room.ConnectedRooms.Contains(startingRoom))
+                if (!room.IsConnectedToStart)
+                //if (!room.ConnectedRooms.Contains(startingRoom))
                 {
                     ConnectIslandRoom(room);
                     terminateCounter = 0;
@@ -454,7 +454,9 @@ public class WorldBuilder
             var leftStartingPoint = island.GetMiddleLeft();
             var topStartingPoint = island.GetMiddleTop();
             var bottomStartingPoint = island.GetMiddleBottom();
-
+            
+            
+            //Code for testing these starting points
             /*_world.ForcePlaceFloor(rightStartingPoint, BuildTile(rightStartingPoint, Build.Props.Chest)); //should be connectors, chests for test
             _world.ForcePlaceFloor(leftStartingPoint, BuildTile(leftStartingPoint, Build.Props.Chest));
             _world.ForcePlaceFloor(topStartingPoint, BuildTile(topStartingPoint, Build.Props.Chest));
@@ -516,7 +518,7 @@ public class WorldBuilder
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
                 if (_world.GetIsFloor(currentPos))
-                //if (_world.CheckAdjWithoutDiagonal(new Point((int)currentPos.X, (int)currentPos.Y))) //Need to add plus one to counter because this would stop one early.
+                //if (_world.CheckAdjWithoutDiagonal(currentPos + Direction)) //Need to add plus one to counter because this would stop one early.
                 {
                     if (counter <= 1)
                     {
@@ -539,11 +541,11 @@ public class WorldBuilder
                             currentRoom.ConnectedRooms.UnionWith(room.ConnectedRooms);
                             room.ConnectedRooms.UnionWith(currentRoom.ConnectedRooms);
                             //alreadyConnected = false;
-                            return counter; //+ 1;
+                            return counter + 1; //+ 1;
                         }
                     }
                     currentRoom.IsConnectedToStart = true;
-                    return counter; //+ 1;
+                    return counter + 1; //+ 1;
                 }
             }
             else
@@ -561,7 +563,7 @@ public class WorldBuilder
             //currentPos = Vector2.Add(currentPos, Direction);
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
-                _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Chest)); //Changed from connector to chest to clearly see
+                _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Connector)); //Changed from connector to chest to clearly see
             }
             else
             {
