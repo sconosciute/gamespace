@@ -9,7 +9,7 @@ namespace gamespace.Model;
 
 public class World
 {
-    public const int NumberOfRooms = 400;
+    public const int NumberOfRooms = 12;
 
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
