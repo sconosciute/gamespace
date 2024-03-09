@@ -130,7 +130,7 @@ public class WorldBuilder
         //StartDebugPrint();
         FillMapWithWalls();
         ConnectRooms();
-        //LootAndHazardGenerator();
+        LootAndHazardGenerator();
         debugFirstTile();
     }
 
@@ -644,11 +644,11 @@ public class WorldBuilder
             {
                 _world.ForcePlaceFloor(PlacePoint,
                     BuildTile(PlacePoint,
-                        Build.Props.Cat)); //Let walls be temp key items, connectors be temp mobs/other items
+                        Build.Props.Chest)); //Let walls be temp key items, connectors be temp mobs/other items
             }
             else
             {
-                _world.ForcePlaceFloor(PlacePoint, BuildTile(PlacePoint, Build.Props.Chest));
+                _world.ForcePlaceFloor(PlacePoint, BuildTile(PlacePoint, Build.Props.NormalChest));
             }
 
             _numberOfRoomsLeft--;
