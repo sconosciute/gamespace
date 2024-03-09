@@ -643,12 +643,13 @@ public class WorldBuilder
             if (DecideToPlaceKeyItem())
             {
                 _world.ForcePlaceFloor(PlacePoint,
-                    BuildTile(PlacePoint,
+                    BuildChest(PlacePoint, Build.Items.Cog(),
                         Build.Props.Chest)); //Let walls be temp key items, connectors be temp mobs/other items
             }
             else
             {
-                _world.ForcePlaceFloor(PlacePoint, BuildTile(PlacePoint, Build.Props.NormalChest));
+                _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
+                    Build.Props.NormalChest));
             }
 
             _numberOfRoomsLeft--;
@@ -679,7 +680,15 @@ public class WorldBuilder
         _camera.RegisterRenderable(renderable);
         return new Tile(prop);
     }
+    
+    private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback)
+    {
+        var prop = buildCallback.Invoke(_gm, worldPosition, item, out var renderable);
+        _camera.RegisterRenderable(renderable);
+        return new Tile(prop);
+    }
 
+    private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
     //=== ARCHIVE ===---------------------------------------------------------------------------------------------------

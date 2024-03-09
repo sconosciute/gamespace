@@ -12,7 +12,7 @@ public class Player : Character
     /// <summary>
     /// A constant to provide the size of our players usable inventory.
     /// </summary>
-    private const int InventorySize = 5;
+    public const int InventorySize = 5;
     
     /// <summary>
     /// A constant to provide the size of our players key item inventory.
