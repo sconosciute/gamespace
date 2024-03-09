@@ -50,7 +50,8 @@ public class GameManager
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
         Guid dummy = Guid.NewGuid();
-        _worldBuilder.BuildWorld();
+        //_worldBuilder.BuildWorld();
+        _worldBuilder.BuildBasicWorld();
         _robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
             layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(_robj);

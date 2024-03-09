@@ -34,7 +34,7 @@ public class World
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
 
     //TODO: This property will likely be removed before completion
-    public Vector2 CurrentPos { get; set; } = new(-3, -3);
+    public Vector2 CurrentPos { get; set; } = new(-24, -23); //changed -3 to 5
 
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
