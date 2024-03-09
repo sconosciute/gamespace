@@ -23,44 +23,44 @@ public class Room
 
     public Vector2 GetMiddleRight()
     {
-        if (Math.Abs(RoomBounds.X) > RoomBounds.Width)
+        /*if (Math.Abs(RoomBounds.X) > RoomBounds.Width)
         {
-            return new Vector2(RoomBounds.Right + 1, RoomBounds.Bottom + RoomBounds.Top);
-        }
+            return new Vector2(RoomBounds.Right, RoomBounds.Bottom + RoomBounds.Top);
+        }*/
 
-        return new Vector2(RoomBounds.Right + 1, RoomBounds.Top + RoomBounds.Height / 2);
+        return new Vector2(RoomBounds.Right, RoomBounds.Top + RoomBounds.Height / 2);
     }
     
     public Vector2 GetMiddleLeft()
     {
         //return new Vector2(RoomBounds.X, RoomBounds.Y);
         //return new Vector2(RoomBounds.Left, RoomBounds.Top);
-        if (Math.Abs(RoomBounds.X) > RoomBounds.Width)
+        /*if (Math.Abs(RoomBounds.X) > RoomBounds.Width)
         {
-            return new Vector2(RoomBounds.Left, RoomBounds.Bottom + RoomBounds.Top);
-        }
+            return new Vector2(RoomBounds.Left + 1, RoomBounds.Bottom + RoomBounds.Top);
+        }*/
 
-        return new Vector2(RoomBounds.Left, RoomBounds.Top + RoomBounds.Height / 2);
+        return new Vector2(RoomBounds.Left + 1, RoomBounds.Top + RoomBounds.Height / 2);
     }
 
     public Vector2 GetMiddleTop()
     {
-        if (Math.Abs(RoomBounds.Y) > RoomBounds.Height)
+        /*if (Math.Abs(RoomBounds.Y) > RoomBounds.Height)
         {
-            return new Vector2((RoomBounds.Right + RoomBounds.Left + 1), RoomBounds.Top - 1);
-        }
+            return new Vector2((RoomBounds.Right + RoomBounds.Left + 1), RoomBounds.Top);
+        }*/
         
-        return new Vector2((RoomBounds.Left + 1) + RoomBounds.Width / 2, RoomBounds.Top - 1);
+        return new Vector2((RoomBounds.Left + 1) + RoomBounds.Width / 2, RoomBounds.Top);
     }
     
     public Vector2 GetMiddleBottom()
     {
-        if (Math.Abs(RoomBounds.Y) > RoomBounds.Height)
+        /*if (Math.Abs(RoomBounds.Y) > RoomBounds.Height)
         {
-            return new Vector2((RoomBounds.Right + RoomBounds.Left + 1), RoomBounds.Bottom);
-        }
+            return new Vector2((RoomBounds.Right + RoomBounds.Left + 1), RoomBounds.Bottom - 1);
+        }*/
         
-        return new Vector2((RoomBounds.Left + 1) + RoomBounds.Width / 2, RoomBounds.Bottom);
+        return new Vector2((RoomBounds.Left + 1) + RoomBounds.Width / 2, RoomBounds.Bottom - 1);
     }
 
     public override bool Equals(object obj)

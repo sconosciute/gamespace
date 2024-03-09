@@ -9,7 +9,7 @@ namespace gamespace.Model;
 
 public class World
 {
-    public const int NumberOfRooms = 12;
+    public const int NumberOfRooms = 100;
 
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
@@ -34,7 +34,7 @@ public class World
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
 
     //TODO: This property will likely be removed before completion
-    public Vector2 CurrentPos { get; set; } = new(-24, -23); //changed -3 to 5
+    public Vector2 CurrentPos { get; set; } = new(-3, -3); //changed -3 to 5
 
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
@@ -179,6 +179,12 @@ public class World
         }
 
         return true;
+    }
+
+    public bool CheckAdjWithoutDiagonal(Point pos)
+    {
+        return (!this[pos.X + 1, pos.Y].CanCollide || !this[pos.X + 1, pos.Y].CanCollide ||
+                !this[pos.X, pos.Y - 1].CanCollide || !this[pos.X, pos.Y + 1].CanCollide);
     }
 
     public bool CheckAdjWithAvoidance(Point pos, Point lastTile)

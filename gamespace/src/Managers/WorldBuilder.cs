@@ -57,7 +57,7 @@ public class WorldBuilder
             var height = _currentRoomHeight;
             Rectangle roomBound = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
             room = new Room(roomBound);
-            /*if (_world.CheckRoomOverlap(room))
+            if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
                 if (currentAttempts == AttemptsToPlaceRoom)
@@ -69,8 +69,8 @@ public class WorldBuilder
             }
             else
             {
-                //_world.Rooms.Add(room);
-            }*/
+                _world.Rooms.Add(room);
+            }
 
             for (var i = 0; i < height; i++)
             {
@@ -92,7 +92,7 @@ public class WorldBuilder
         return room;
     }
 
-    /*public void BuildWorld()
+    public void BuildWorld()
     {
         //TODO Make this not hardcoded for min and max X, Y
         MakeRoom();
@@ -128,10 +128,11 @@ public class WorldBuilder
         }
         _leftOverRooms = _world.Rooms;
         //StartDebugPrint();
-        //FillMapWithWalls();
-        //ConnectRooms();
+        FillMapWithWalls();
+        ConnectRooms();
+        //LootAndHazardGenerator();
         debugFirstTile();
-    }*/
+    }
 
     private void StartDebugPrint()
     {
@@ -166,15 +167,15 @@ public class WorldBuilder
         //LeftOverRoomsDebug();
 
 
-        /*
+        
         var uhOhCounter = 0;
         var index = 0;
-        /*foreach (var room in _roomsConnectedToStart)
+        foreach (var room in _roomsConnectedToStart)
         {
             _leftOverRooms.Remove(room);
         }
 
-        /*foreach (var room in _leftOverRooms)
+        foreach (var room in _leftOverRooms)
         {
             ConnectSingleRoom(room);
         }
@@ -186,7 +187,8 @@ public class WorldBuilder
 
             foreach (var room in _world.Rooms)
             {
-                if (!room.IsConnectedToStart)
+                //if (!room.IsConnectedToStart)
+                if (!room.ConnectedRooms.Contains(startingRoom))
                 {
                     ConnectIslandRoom(room);
                     terminateCounter = 0;
@@ -212,27 +214,27 @@ public class WorldBuilder
                 break;
             }
 
-        /*uhOhCounter++;
+        uhOhCounter++;
         if (uhOhCounter >= 100)
         {
             break;
         }
-        foreach (var room in _roomsConnectedToStart)
+        /*foreach (var room in _roomsConnectedToStart)
         {
             //_leftOverRooms.Remove(room);
 
-        }
+        }*/
 
         /*foreach (var room in _leftOverRooms)
         {
             ConnectSingleRoom(room);
-        }
+        }*/
 
-        ConnectIslandRoom(_leftOverRooms[index]);
-        _leftOverRooms.RemoveAt(index);
+        //ConnectIslandRoom(_leftOverRooms[index]);
+        //_leftOverRooms.RemoveAt(index);
         }
         StartDebugPrint();
-        */
+        
         //LeftOverRoomsDebug();
     }
 
@@ -394,6 +396,8 @@ public class WorldBuilder
                 {
                     newRoom.IsConnectedToStart = true;
                     lastRoom.IsConnectedToStart = true;
+                    newRoom.BeenVisited = true;
+                    lastRoom.BeenVisited = true;
                     //ConnectSingleRoom(newRoom);
                     if (!_roomsConnectedToStart.Contains(newRoom))
                     {
@@ -443,7 +447,7 @@ public class WorldBuilder
         }
     }
 
-    /*private void ConnectIslandRoom(Room island)
+    private void ConnectIslandRoom(Room island)
     {   try
         {
             var rightStartingPoint = island.GetMiddleRight();
@@ -451,12 +455,12 @@ public class WorldBuilder
             var topStartingPoint = island.GetMiddleTop();
             var bottomStartingPoint = island.GetMiddleBottom();
 
-            //_world.ForcePlaceFloor(rightStartingPoint, BuildTile(rightStartingPoint, Build.Props.Connector));
-            _world.ForcePlaceFloor(leftStartingPoint, BuildTile(leftStartingPoint, Build.Props.Connector));
-            //_world.ForcePlaceFloor(topStartingPoint, BuildTile(topStartingPoint, Build.Props.Connector));
-            //_world.ForcePlaceFloor(bottomStartingPoint, BuildTile(bottomStartingPoint, Build.Props.Connector));
+            /*_world.ForcePlaceFloor(rightStartingPoint, BuildTile(rightStartingPoint, Build.Props.Chest)); //should be connectors, chests for test
+            _world.ForcePlaceFloor(leftStartingPoint, BuildTile(leftStartingPoint, Build.Props.Chest));
+            _world.ForcePlaceFloor(topStartingPoint, BuildTile(topStartingPoint, Build.Props.Chest));
+            _world.ForcePlaceFloor(bottomStartingPoint, BuildTile(bottomStartingPoint, Build.Props.Chest));*/
 
-            /*var rightDist = FindDistanceInDirection(island, MoveRight, rightStartingPoint);
+            var rightDist = FindDistanceInDirection(island, MoveRight, rightStartingPoint);
             var leftDist = FindDistanceInDirection(island, MoveLeft, leftStartingPoint);
             var topDist = FindDistanceInDirection(island, MoveUp, topStartingPoint);
             var bottomDist = FindDistanceInDirection(island, MoveDown, bottomStartingPoint);
@@ -497,14 +501,14 @@ public class WorldBuilder
         }
         catch (Exception)
         {
-
+    
         }
-    }*/
+    }
 
-    /*private int FindDistanceInDirection(Room currentRoom, Vector2 Direction, Vector2 StartingPoint)
+    private int FindDistanceInDirection(Room currentRoom, Vector2 Direction, Vector2 StartingPoint) //out bool alreadyConnected)
     {
         var counter = 0;
-        var currentPos = new Vector2(StartingPoint.X, StartingPoint.Y);
+        var currentPos = Vector2.Add(StartingPoint, Direction);
         while (true)
         {
             currentPos = Vector2.Add(currentPos, Direction);
@@ -512,23 +516,34 @@ public class WorldBuilder
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
                 if (_world.GetIsFloor(currentPos))
+                //if (_world.CheckAdjWithoutDiagonal(new Point((int)currentPos.X, (int)currentPos.Y))) //Need to add plus one to counter because this would stop one early.
                 {
                     if (counter <= 1)
                     {
+                        //alreadyConnected = true;
                         return 1000;
                     }
 
                     foreach (var room in _world.Rooms)
                     {
                         //room.RoomBounds.Contains(new Point(xPointer + 1, yPointer)) ||
-                        if (room.RoomBounds.Contains(new Point((int)currentPos.X, (int)currentPos.Y)))
+                        if (room.RoomBounds.Contains(new Point((int)currentPos.X + (int)Direction.X, (int)currentPos.Y + (int)Direction.Y)))
                         {
                             currentRoom.IsConnectedToStart = room.IsConnectedToStart;
-                            return counter;
+                            if (currentRoom.ConnectedRooms.Contains(room) || room.ConnectedRooms.Contains(currentRoom))
+                            {
+                                //alreadyConnected = true;
+                                return 1000;
+                            }
+
+                            currentRoom.ConnectedRooms.UnionWith(room.ConnectedRooms);
+                            room.ConnectedRooms.UnionWith(currentRoom.ConnectedRooms);
+                            //alreadyConnected = false;
+                            return counter; //+ 1;
                         }
                     }
                     currentRoom.IsConnectedToStart = true;
-                    return counter;
+                    return counter; //+ 1;
                 }
             }
             else
@@ -540,13 +555,13 @@ public class WorldBuilder
 
     private void BuildPathInDirection(Vector2 Direction, Vector2 StartingPoint, int numberToPlace)
     {
-        var currentPos = StartingPoint;
+        var currentPos = Vector2.Add(StartingPoint, Direction);
         for (var i = 0; i < numberToPlace; i++)
         {
             //currentPos = Vector2.Add(currentPos, Direction);
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
-                _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Connector));
+                _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Chest)); //Changed from connector to chest to clearly see
             }
             else
             {
@@ -554,7 +569,7 @@ public class WorldBuilder
             }
             currentPos = Vector2.Add(currentPos, Direction);
         }
-    }*/
+    }
 
     private void FillMapWithWalls() //Name of method subject to change.
     {
@@ -570,7 +585,7 @@ public class WorldBuilder
         }
     }
 
-    public void BuildBasicWorld()
+    /*public void BuildBasicWorld()
     {
         //Room firstRoom = null;
         _world.CurrentPos = new Vector2(_world.CurrentPos.X, _world.CurrentPos.Y);
@@ -602,7 +617,7 @@ public class WorldBuilder
         ConnectSingleRoom(firstRoom); //In our test this will simply connect everything.
         StartDebugPrint();
         LootAndHazardGenerator();
-    }
+    }*/
 
     private void LootAndHazardGenerator()
     {
