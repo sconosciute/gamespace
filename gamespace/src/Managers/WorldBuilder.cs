@@ -627,11 +627,11 @@ public class WorldBuilder
             {
                 _world.ForcePlaceFloor(PlacePoint,
                     BuildTile(PlacePoint,
-                        Build.Props.Wall)); //Let walls be temp key items, connectors be temp mobs/other items
+                        Build.Props.Cat)); //Let walls be temp key items, connectors be temp mobs/other items
             }
             else
             {
-                _world.ForcePlaceFloor(PlacePoint, BuildTile(PlacePoint, Build.Props.Connector));
+                _world.ForcePlaceFloor(PlacePoint, BuildTile(PlacePoint, Build.Props.Chest));
             }
 
             _numberOfRoomsLeft--;

@@ -40,6 +40,27 @@ public static class Build
                 layerDepth: LayerDepth.Background);
             return prop;
         }
+        
+        public static Prop Chest(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Prop(worldPosition, 1, 1, true);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.Chest),
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return prop;
+        }
+        
+        //TODO: Temp
+        public static Prop Cat(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Prop(worldPosition, 1, 1, true);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.Cat),
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return prop;
+        }
     }
 
     public struct Mobs
