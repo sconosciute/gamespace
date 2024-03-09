@@ -1,5 +1,6 @@
 ﻿using System;
 using gamespace.Managers;
+using gamespace.Util;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
@@ -22,26 +23,16 @@ public class Player : Character
     /// A string to store the name of our player.
     /// </summary>
     private string _name;
-    
-    /// <summary>
-    /// An array to store our players usable items.
-    /// </summary>
-    private Item[] _inventory;
-    
-    /// <summary>
-    /// An array to store our players key items.
-    /// </summary>
-    private Item[] _keyItemInventory;
-    
+
     /// <summary>
     /// A public property to access our players usable inventory.
     /// </summary>
-    public Item[] Inventory => _inventory;
-    
+    public Item[] Inventory { get; }
+
     /// <summary>
     /// A public property to access our players key inventory.
     /// </summary>
-    public Item[] KeyItemInventory => _keyItemInventory;
+    public Item[] KeyItemInventory { get; }
 
     /// <summary>
     /// A constructor to build our player.
@@ -52,24 +43,11 @@ public class Player : Character
         : base(Vector2.Zero, 1, 1, 100, 100, 10, world)
     {
         _name = name;
-        _inventory = new Item[InventorySize];
-        _keyItemInventory = new Item[KeyInventorySize];
+        Inventory = new Item[InventorySize];
+        KeyItemInventory = new Item[KeyInventorySize];
+        OnPlayerStateEvent();
     }
-    
-    //TODO: Add documentation for this method.
-    public new void FixedUpdate()
-    {
-        var direction = InputManager.Direction;
-        MoveSpeed = new Vector2(BaseMoveSpeed * direction.X, BaseMoveSpeed * direction.Y);
 
-        base.FixedUpdate();
-    }
-    
-    /// <summary>
-    /// Uses the item at a given index of our players usable inventory.
-    /// </summary>
-    /// <param name="inventorySlot"> The index our player wishes to use. </param>
-    /// <returns> False if the given index is out of bounds, or does not contain an item. True if the item is used</returns>
     public bool InventoryUse(int inventorySlot)
     {
         if (inventorySlot is < 0 or >= InventorySize)
@@ -77,14 +55,14 @@ public class Player : Character
             return false;
         }
 
-        var wantedItem = _inventory[inventorySlot];
+        var wantedItem = Inventory[inventorySlot];
         if (wantedItem == null)
         {
             return false;
         }
 
         var wantedItemUse = wantedItem.ItemUse;
-        _inventory[inventorySlot] = null;
+        Inventory[inventorySlot] = null;
         wantedItemUse.Invoke();
         return true;
     }
@@ -98,26 +76,26 @@ public class Player : Character
     {
         if (newItem.IsKeyItem)
         {
-            var firstEmptyIndex = Array.IndexOf(_keyItemInventory, null);
+            var firstEmptyIndex = Array.IndexOf(KeyItemInventory, null);
             if (firstEmptyIndex < 0)
             {
                 return false; //inventory is full
             }
 
             newItem.User = this;
-            _keyItemInventory[firstEmptyIndex] = newItem;
+            KeyItemInventory[firstEmptyIndex] = newItem;
             return true;
         }
         else
         {
-            var firstEmptyIndex = Array.IndexOf(_inventory, null);
+            var firstEmptyIndex = Array.IndexOf(Inventory, null);
             if (firstEmptyIndex < 0)
             {
                 return false;
             }
 
             newItem.User = this;
-            _inventory[firstEmptyIndex] = newItem;
+            Inventory[firstEmptyIndex] = newItem;
             return true;
         }
     }
@@ -131,10 +109,17 @@ public class Player : Character
         var result = base.ToString() + " Name: " + _name;
         return result;
     }
-    // === EVENT HANDLING ===-------------------------------------------------------------------------------------------
-
-    public void HandleMoveEvent(Vector2 moveVec)
+    
+    public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
+    }
+
+    public event EventHelper.PlayerStateEventHandler PlayerStateEvent;
+
+    private void OnPlayerStateEvent()
+    {
+        var args = new EventHelper.PlayerState(Health, Energy, Inventory);
+        PlayerStateEvent?.Invoke(args);
     }
 }

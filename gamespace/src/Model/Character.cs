@@ -13,6 +13,7 @@ public abstract class Character : Entity
     private List<Ability> _abilities;
 
     public int Health { get; protected set; }
+    public int Energy { get; protected set; }
 
     public Character(Vector2 worldCoordinate, int width, int height, int hp, int energy, int baseDmg, World world) :
         base(width, height, world, worldCoordinate)

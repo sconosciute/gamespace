@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using gamespace.Managers;
+using gamespace.Util;
+using Loyc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,29 +10,84 @@ namespace gamespace.View;
 
 public class MenuPanel : GuiPanel
 {
-    private const string Title = "Main Menu";
-    private const float MenuWidth = 320;
-    private const float MenuHeight = 320;
+    private readonly List<GuiButton> _buttons;
+    private int _selectedButtonIndex;
 
-    private List<GuiButton> _buttons;
-    
-    public MenuPanel(Rectangle drawBox, GuiManager manager, List<GuiButton> buttons = null) : base(Title, drawBox, manager)
+    public MenuPanel(Rectangle drawBox, GuiManager manager,
+        string title, GuiPanel parent = null, List<GuiButton> buttons = null)
+        : base(title, drawBox, manager, parent)
     {
         if (buttons != null)
         {
             _buttons = buttons;
+            _selectedButtonIndex = 0;
+            _buttons[_selectedButtonIndex].Selected = true;
         }
-        
+        else
+        {
+            _buttons = new List<GuiButton>();
+        }
     }
 
     public void AddButton(GuiButton button)
     {
-        _buttons.Add(button);
+        if (_buttons.Count <= 7)
+        {
+            _buttons.Add(button);
+            _selectedButtonIndex = 0;
+            _buttons[_selectedButtonIndex].Selected = true;
+        }
+        else
+        {
+            throw new InvalidStateException("TOO MANY BUTTON, 7 BUTTON ONLY.");
+        }
     }
 
-    public override void Draw(SpriteBatch batch)
+    public override void HandleInputEvent(in EventHelper.NavigationEvents nav)
     {
+        var oldButtonIndex = _selectedButtonIndex;
+        switch (nav)
+        {
+            case EventHelper.NavigationEvents.Up:
+                _selectedButtonIndex = _selectedButtonIndex <= 0 ? 0 : _selectedButtonIndex - 1;
+                _buttons[oldButtonIndex].Selected = false;
+                _buttons[_selectedButtonIndex].Selected = true;
+                break;
+            case EventHelper.NavigationEvents.Down:
+            {
+                var maxIndex = _buttons.Count - 1;
+                _selectedButtonIndex = _selectedButtonIndex >= maxIndex ? maxIndex : _selectedButtonIndex + 1;
+                _buttons[oldButtonIndex].Selected = false;
+                _buttons[_selectedButtonIndex].Selected = true;
+                break;
+            }
+            case EventHelper.NavigationEvents.Select:
+                _buttons[_selectedButtonIndex].OnPress();
+                break;
+            case EventHelper.NavigationEvents.Escape:
+                Delete();
+                break;
+            default: throw new ArgumentException("Navigation event does not exist");
+        }
+    }
+
+    public override void Draw(in SpriteBatch batch)
+    {
+        //TODO: Make button update event based so it doesn't happen every loop.
+        var buttonOffset = (int)Math.Round(DrawBox.Height / 10f);
+        for (var button = 0; button < _buttons.Count; button++)
+        {
+            _buttons[button].UpdateDrawBox(new Point(
+                DrawBox.X + (int)Math.Round(DrawBox.Width * (1 / 8f)),
+                DrawBox.Y + (buttonOffset * (button + 1)))
+            );
+        }
+
         base.Draw(batch);
-        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch);
+        DrawText(new Vector2(DrawBox.X, DrawBox.Y), Title, batch, true);
+        foreach (var button in _buttons)
+        {
+            button.Draw(batch);
+        }
     }
 }

@@ -13,19 +13,17 @@ public class Game1 : Game
     private readonly ILogger _log;
     private GuiManager _gui;
 
-    public SpriteFont Font;
-
     public Game1()
     {
         
         _log = Globals.LogFactory.CreateLogger<Game1>();
         
-        //TODO: Move graphics info to a WindowManager class or include in SettingsManager
+        SettingsManager.Init(_log);
         var graphics = SettingsManager.GenerateGraphics(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
 
-        _gm = new GameManager(graphics);
+        _gm = new GameManager(graphics, this);
         _gui = _gm.InitGui();
     }
 
@@ -47,6 +45,9 @@ public class Game1 : Game
         _gm.AddTexture(Textures.Collider);
         _gm.AddTexture(Textures.OpaqueBg);
         _gm.AddTexture(Textures.TransparentBg);
+        // _gm.AddTexture(Textures.RoomConnector);
+        _gm.AddTexture(Textures.Chest);
+        _gm.AddTexture(Textures.Cat);
         
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();
@@ -54,15 +55,17 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        var now = gameTime.TotalGameTime.TotalMilliseconds;
         _gui.Update();
+        InputDriver.Update();
 
+        var now = gameTime.TotalGameTime.TotalMilliseconds;
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
-            _gm.FixedUpdate(gameTime);
+            _gm.FixedUpdate();
             _lastUpTime = now;
         }
         
+        _gm.AnimationUpdate(gameTime);
         base.Update(gameTime);
     }
 

@@ -1,25 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using Loyc.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace gamespace.Model;
 
 public class World
 {
+    public const int NumberOfRooms = 12;
+
     /**Sparse list of all map tiles by x, y order  **/
-    private Dictionary<Vector2, Tile> _tiles = new();
+    private readonly Dictionary<Vector2, Tile> _tiles = new();
+
+    public List<Room> Rooms { get; } = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
-    private readonly int _mapWidth;
-    private readonly int _mapHeight;
-    private readonly int _minX;
-    private readonly int _maxX;
-    private readonly int _minY;
-    private readonly int _maxY;
+
+    //TODO: Change this to use properties
+    public readonly int _minX;
+    public readonly int _maxX;
+    public readonly int _minY;
+    public readonly int _maxY;
     private readonly int _xOffset;
     private readonly int _yOffset;
+
+    //Adding these for prototyping World Gen
+    private static readonly Vector2 MoveRight = new(1, 0);
+    private static readonly Vector2 MoveLeft = new(-1, 0);
+    private static readonly Vector2 MoveUp = new(0, -1);
+    private static readonly Vector2 MoveDown = new(0, 1);
+    private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
+
+    //TODO: This property will likely be removed before completion
+    public Vector2 CurrentPos { get; set; } = new(-24, -23); //changed -3 to 5
 
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
@@ -28,23 +43,13 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
-        if (width <= 0)
-        {
-            throw new ArithmeticException("Width cannot be zero or negative");
-        }
+        var mapWidth = width;
+        var mapHeight = height;
 
-        if (height <= 0)
-        {
-            throw new ArithmeticException("Height cannot be zero or negative");
-        }
-
-        _mapWidth = width;
-        _mapHeight = height;
-
-        _minX = -_mapWidth / 2;
-        _maxX = _xOffset = _mapWidth / 2;
-        _minY = -_mapHeight / 2;
-        _maxY = _yOffset = _mapHeight / 2;
+        _minX = -mapWidth / 2;
+        _maxX = _xOffset = mapWidth / 2;
+        _minY = -mapHeight / 2;
+        _maxY = _yOffset = mapHeight / 2;
     }
 
     /// <summary>
@@ -90,7 +95,7 @@ public class World
     /// <param name="x">World X coordinate</param>
     /// <param name="y">World Y Coordinate</param>
     /// <returns>True if the tile exists within the world boundary else false.</returns>
-    public bool IsInBounds(int x, int y) => (x > _minX && x < _maxX && y > _minY && y < _maxY);
+    public bool IsInBounds(int x, int y) => (x >= _minX && x <= _maxX && y >= _minY && y <= _maxY);
 
     /// <summary>
     /// Places a tile at the given coordinate if and only if there is no tile present already.
@@ -110,23 +115,110 @@ public class World
         return true;
     }
 
+    public void ForcePlaceFloor(Vector2 pos, Tile tile)
+    {
+        CheckBounds((int)pos.X, (int)pos.Y);
+        this[(int)pos.X, (int)pos.Y] = tile;
+    }
+
+    public bool CheckRoomOverlap(Room newRoom)
+    {
+        foreach (var rect in Rooms)
+        {
+            if (!Rectangle.Intersect(rect.RoomBounds, newRoom.RoomBounds).IsEmpty)
+            {
+                return true;
+            }
+        }
+
+        Rooms.Add(newRoom);
+        return false;
+    }
+
+
+    //TODO: Alter how building tiles is managed, to remove the need to use this method.
+    public bool CheckTileIsNull(int x, int y)
+    {
+        Point pos = new Point(x, y);
+        if (this[pos.X, pos.Y] != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool GetIsFloor(Vector2 pos)
+    {
+        if (!IsInBounds((int)pos.X, (int)pos.Y))
+        {
+            return true; //This is out of bounds.
+        }
+
+        var value = this[(int)pos.X, (int)pos.Y];
+        if (value == null)
+        {
+            return false;
+        }
+
+        return !value.CanCollide; //Should only be called when there's no empty tiles.
+    }
+
+    public bool CheckAdj(Point pos)
+    {
+        for (var i = pos.X - 1; i <= pos.X + 1; i++)
+        {
+            for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
+            {
+                if (!IsInBounds(i, j) || this[i, j] == null || i == pos.X || j == pos.Y) continue;
+                if (!this[i, j].CanCollide)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public bool CheckAdjWithAvoidance(Point pos, Point lastTile)
+    {
+        for (var i = pos.X - 1; i <= pos.X + 1; i++)
+        {
+            for (var j = pos.Y - 1; j <= pos.Y + 1; j++)
+            {
+                if (IsInBounds((int)i, (int)j))
+                {
+                    //var check = Vector2.Subtract(new Vector2(i, j), currentDir);
+                    if (this[i, j] == null || i == lastTile.X || j == lastTile.Y) continue; //pos.X != 0 && pos.Y != 0 && check != CurrentPos)
+                    if (!this[i, j].CanCollide)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
     public void DebugDrawMap()
     {
         var testTile = Globals.Content.Load<Texture2D>("tile");
         var position = new Vector2();
-        for (int worldX = _minX; worldX <= _maxX; worldX++)
+        for (var worldX = _minX; worldX <= _maxX; worldX++)
         {
-            for (int worldY = _minY; worldY <= _maxY; worldY++)
+            for (var worldY = _minY; worldY <= _maxY; worldY++)
             {
                 position.X = worldX * 16;
                 position.Y = worldY * 16;
-                Globals.SpriteBatch.Draw(testTile, position, Color.Aquamarine);
+                Globals.SpriteBatch.Draw(testTile, position, Color.DarkSlateGray);
             }
         }
-    }
-
-    public override string ToString()
-    {
-        return "Height: " + _mapHeight + " Width: " + _mapWidth;
     }
 }

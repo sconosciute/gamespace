@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,7 @@ public class GameManager
 {
     private const int WorldSize = 51;
 
+    private readonly Game1 _game;
     private readonly GraphicsDeviceManager _gfxMan;
     private readonly Camera _camera;
     private GuiManager _gui;
@@ -18,17 +20,24 @@ public class GameManager
     private readonly World _world;
     private readonly Dictionary<string, Texture2D> _textures = new();
     private RenderObject _robj;
+    private bool _playing;
 
-    public GameManager(GraphicsDeviceManager graphics)
+    public bool GameIsPaused => !_playing;
+
+    private WorldBuilder _worldBuilder;
+    public GameManager(GraphicsDeviceManager graphics, Game1 game)
     {
+        _game = game;
         _gfxMan = graphics;
         SetResolution(1920, 1080);
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
+        _worldBuilder = new WorldBuilder(this, _camera, _world);
+        _playing = true;
     }
 
-    //=== INITIALIZATION - CALL ONCE! ===-------------------------------------------------------------------------------
+    #region Init
 
     /// <summary>
     /// Initializes the GUI manager with relevant Camera information and returns that Manager.
@@ -43,38 +52,41 @@ public class GameManager
     {
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
+        _gui.OpenStatPanel();
         Guid dummy = Guid.NewGuid();
-
+        //_worldBuilder.BuildWorld();
+        _worldBuilder.BuildBasicWorld();
         _robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
             layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(_robj);
         _player.EntityEvent += _robj.HandleEntityEvent;
-
-
-        _world.TryPlaceTile(new Point(5, 5), BuildTile(new Vector2(5f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(5, 6), BuildTile(new Vector2(5f, 6f), Build.Props.Wall));
-
-        _world.TryPlaceTile(new Point(10, 5), BuildTile(new Vector2(10f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(11, 5), BuildTile(new Vector2(11f, 5f), Build.Props.Wall));
-
-        _world.TryPlaceTile(new Point(-5, 5), BuildTile(new Vector2(-5f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(-5, 6), BuildTile(new Vector2(-5f, 6f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(-4, 5), BuildTile(new Vector2(-4f, 5f), Build.Props.Wall));
-
-        _world.TryPlaceTile(new Point(20, 5), BuildTile(new Vector2(20f, 5f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(20, 6), BuildTile(new Vector2(20f, 6f), Build.Props.Wall));
-        _world.TryPlaceTile(new Point(21, 5), BuildTile(new Vector2(21f, 5f), Build.Props.Wall));
+        
+        //_worldBuilder.MakeRoom();
         
     }
 
-    //=== GAME LOOP ===-------------------------------------------------------------------------------------------------
+    public void RegisterPlayerListener(EventHelper.PlayerStateEventHandler handler)
+    {
+        _player.PlayerStateEvent += handler;
+    }
+    
+    #endregion
+
+    #region Game Loop
 
     /// <summary>
     /// Runs physics updates on all Entities.
     /// </summary>
-    public void FixedUpdate(GameTime gameTime)
+    public void FixedUpdate()
     {
-        _player.FixedUpdate();
+        if (_playing)
+        {
+            _player.FixedUpdate();
+        }
+    }
+
+    public void AnimationUpdate(GameTime gameTime)
+    {
         _robj.Update(gameTime);
     }
 
@@ -84,14 +96,15 @@ public class GameManager
     public void Draw()
     {
         _camera.BeginFrame();
-        _world.DebugDrawMap();
         _camera.DrawFrame(RenderMode.Deferred);
-
+        
         _camera.RenderFrame();
         _gui.RenderGui();
     }
+    
+    #endregion
 
-    //=== MANAGEMENT FUNCTIONS ===--------------------------------------------------------------------------------------
+    #region Management
 
     public Texture2D GetTexture(string assetName)
     {
@@ -117,7 +130,32 @@ public class GameManager
         Globals.UpdateScale(_gfxMan.GraphicsDevice);
     }
 
-    //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
+    public void PauseGame()
+    {
+        _playing = false;
+    }
+
+    public void ResumeGame()
+    {
+        _playing = true;
+    }
+
+    public void ExitGame()
+    {
+        _game.Exit();
+    }
+
+    public void SaveGame()
+    {
+        //TODO: Save!
+    }
+
+    public void LoadGame()
+    {
+        //TODO: Load!
+    }
+    
+    #endregion
 
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
     {
@@ -125,6 +163,6 @@ public class GameManager
         _camera.RegisterRenderable(renderable);
         return new Tile(prop);
     }
-
+    
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 }

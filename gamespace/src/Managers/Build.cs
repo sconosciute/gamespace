@@ -1,10 +1,12 @@
-﻿using System;
-using gamespace.Model;
+﻿using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Managers;
 
+/// <summary>
+/// Utility class for building Model objects.
+/// </summary>
 public static class Build
 {
     public struct Props
@@ -24,6 +26,37 @@ public static class Build
             var prop = new Prop(worldPosition, 1, 1, true);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Collider),
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return prop;
+        }
+        
+        public static Prop Connector(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Prop(worldPosition, 1, 1, false);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.RoomConnector),
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return prop;
+        }
+        
+        public static Prop Chest(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Prop(worldPosition, 1, 1, true);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.Chest),
+                worldPosition: worldPosition,
+                layerDepth: LayerDepth.Background);
+            return prop;
+        }
+        
+        //TODO: Temp
+        public static Prop Cat(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Prop(worldPosition, 1, 1, true);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.Cat),
                 worldPosition: worldPosition,
                 layerDepth: LayerDepth.Background);
             return prop;
