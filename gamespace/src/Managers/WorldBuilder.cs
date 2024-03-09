@@ -19,7 +19,7 @@ public class WorldBuilder
     private readonly GameManager _gm;
     private const int AttemptsToPlaceRoom = 100;
     private const int RoomLowerBound = 5;
-    private const int RoomUpperBound = 11;
+    private const int RoomUpperBound = 13;
     private int _currentRoomWidth = 5;
     private int _currentRoomHeight = 5;
     private Vector2 _randomDirection;
@@ -42,27 +42,31 @@ public class WorldBuilder
         _gm = gm;
         _camera = camera;
         _world = world;
-        _leftOverRooms = _world.Rooms;
     }
 
-    private void MakeRoom()
+    private Room MakeRoom()
     {
         var currentAttempts = 0;
+        Room room;
         while (true)
         {
             var width = _currentRoomWidth;
             var height = _currentRoomHeight;
             Rectangle roomBound = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
-            var room = new Room(roomBound);
+            room = new Room(roomBound);
             if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
                 if (currentAttempts == AttemptsToPlaceRoom)
                 {
-                    return;
+                    return null;
                 }
 
                 continue;
+            }
+            else
+            {
+                //_world.Rooms.Add(room);
             }
 
             for (var i = 0; i < height; i++)
@@ -78,14 +82,18 @@ public class WorldBuilder
                 //Place one wall on right
             }
 
+            _world.CurrentPos += new Vector2(0, -height);
             break;
         }
+
+        return room;
     }
 
-    public void BuildWorld()
+    /*public void BuildWorld()
     {
         //TODO Make this not hardcoded for min and max X, Y
         MakeRoom();
+        
         for (var i = 0; i < World.NumberOfRooms; i++)
         {
             _currentRoomWidth = Rand.Next(RoomLowerBound, RoomUpperBound);
@@ -115,12 +123,12 @@ public class WorldBuilder
             _world.CurrentPos = new Vector2(randX, randY);
             MakeRoom();
         }
-
-        StartDebugPrint();
-        FillMapWithWalls();
-        ConnectRooms();
-        //FloodFill();
-    }
+        _leftOverRooms = _world.Rooms;
+        //StartDebugPrint();
+        //FillMapWithWalls();
+        //ConnectRooms();
+        debugFirstTile();
+    }*/
 
     private void StartDebugPrint()
     {
@@ -142,45 +150,88 @@ public class WorldBuilder
         //Starting room;
         Room startingRoom = _world.Rooms[0];
         startingRoom.IsConnectedToStart = true;
-
-        ConnectSingleRoom(startingRoom);
+        
+        //ConnectSingleRoom(startingRoom);
 
         // After all simple rooms are connected, iterate through left over room list connecting all these rooms through
         //  a brute force tunnel, picking the shortest tunnel found between rooms.
-        Console.Out.WriteLine();
-        Console.Out.WriteLine();
+        ///Console.Out.WriteLine();
+       // Console.Out.WriteLine();
+        
+        
+        //Debug print
+        //LeftOverRoomsDebug();
+
+        
+        
+        /*
+        var uhOhCounter = 0;
+        var index = 0;
         /*foreach (var room in _roomsConnectedToStart)
         {
             _leftOverRooms.Remove(room);
         }
-        */
-        //Debug print
-        LeftOverRoomsDebug();
 
-        var uhOhCounter = 0;
-        var index = 0;
-        foreach (var room in _roomsConnectedToStart)
-        {
-            _leftOverRooms.Remove(room);
-        }
-
-        foreach (var room in _leftOverRooms)
+        /*foreach (var room in _leftOverRooms)
         {
             ConnectSingleRoom(room);
         }
-        while (_leftOverRooms.Any())
+        //ConnectIslandRoom(startingRoom);
+        var terminateCounter = 0;
+        //var uhOhCounter = 0;
+        while (true)
         {
-            uhOhCounter++;
-            if (uhOhCounter >= 100)
+
+            foreach (var room in _world.Rooms)
             {
-                //break;
+                if (!room.IsConnectedToStart)
+                {
+                    ConnectIslandRoom(room);
+                    terminateCounter = 0;
+                }
+                else
+                {
+                    terminateCounter++;
+                }
+
+                if (terminateCounter == _world.Rooms.Count)
+                {
+                    return;
+                }
             }
-            ConnectIslandRoom(_leftOverRooms[index]);
-            _leftOverRooms.RemoveAt(index);
-            
+
+            if (terminateCounter == _world.Rooms.Count)
+            {
+                return;
+            }
+            uhOhCounter++;
+            if (uhOhCounter >= 10000)
+            {
+                break;
+            }
+
+        /*uhOhCounter++;
+        if (uhOhCounter >= 100)
+        {
+            break;
+        }
+        foreach (var room in _roomsConnectedToStart)
+        {
+            //_leftOverRooms.Remove(room);
+
         }
 
-        LeftOverRoomsDebug();
+        /*foreach (var room in _leftOverRooms)
+        {
+            ConnectSingleRoom(room);
+        }
+
+        ConnectIslandRoom(_leftOverRooms[index]);
+        _leftOverRooms.RemoveAt(index);
+        }
+        StartDebugPrint();
+        */
+        //LeftOverRoomsDebug();
     }
 
     private void LeftOverRoomsDebug()
@@ -196,7 +247,7 @@ public class WorldBuilder
     private void ConnectSingleRoom(Room currentRoom)
     {
         Console.Out.WriteLine();
-        Console.Out.WriteLine("New room: --------" + currentRoom);
+        //Console.Out.WriteLine("New room: --------" + currentRoom);
         int xPointer;
         int yPointer;
         int counter = 0;
@@ -323,7 +374,7 @@ public class WorldBuilder
                 newRoom = room;
                 roomCounter++;
                 nextRoomDebugFind = true;
-                Console.Out.WriteLine("new room found: " + newRoom);
+                //Console.Out.WriteLine("new room found: " + newRoom);
             }
 
             if (room.RoomBounds.Contains(lastRoomPoint) ||
@@ -332,7 +383,7 @@ public class WorldBuilder
                 lastRoom = room;
                 roomCounter++;
                 lastRoomDebugFind = true;
-                Console.Out.WriteLine("last room found: " + lastRoom);
+                //Console.Out.WriteLine("last room found: " + lastRoom);
             }
 
             if (roomCounter == 2)
@@ -377,55 +428,79 @@ public class WorldBuilder
                         ConnectSingleRoom(newRoom);
                     }
                 }
+                lastRoom.ConnectedRooms.UnionWith(newRoom.ConnectedRooms);
+                newRoom.ConnectedRooms.UnionWith(lastRoom.ConnectedRooms);
             }
         }
     }
 
-    private void ConnectIslandRoom(Room island)
+    private void debugFirstTile()
     {
-        var rightStartingPoint = new Vector2(island.RoomBounds.Right + 2, (island.RoomBounds.Height + 1) / 2);
-        var leftStartingPoint = new Vector2(island.RoomBounds.Left - 1, (island.RoomBounds.Height + 1) / 2);
-        var topStartingPoint = new Vector2((island.RoomBounds.Width + 1) / 2, island.RoomBounds.Top - 2);
-        var bottomStartingPoint = new Vector2((island.RoomBounds.Width + 1) / 2, island.RoomBounds.Bottom + 1);
-
-        var rightDist = FindDistanceInDirection(MoveRight, rightStartingPoint);
-        var leftDist = FindDistanceInDirection(MoveLeft, leftStartingPoint);
-        var topDist = FindDistanceInDirection(MoveUp, topStartingPoint);
-        var bottomDist = FindDistanceInDirection(MoveDown, bottomStartingPoint);
-        var distArr = new[] { rightDist, leftDist, topDist, bottomDist };
-
-        var result = distArr.Min();
-        if (result == 1000)
+        foreach (var room in _world.Rooms)
         {
-            return;
+            //ConnectIslandRoom(room);
         }
-        if (result.Equals(rightDist))
-        {
-            BuildPathInDirection(MoveRight, rightStartingPoint, result);
-            return;
-        }
-        if (result.Equals(leftDist))
-        {
-            BuildPathInDirection(MoveLeft, leftStartingPoint, result);
-            return;
-        }
-
-        if (result.Equals(topDist))
-        {
-            BuildPathInDirection(MoveUp, topStartingPoint, result);
-            return;
-        }
-
-        if (result.Equals(bottomDist))
-        {
-            BuildPathInDirection(MoveDown, bottomStartingPoint, result);
-            return;
-        }
-
-        throw new Exception("Why are u no work");
     }
 
-    private int FindDistanceInDirection(Vector2 Direction, Vector2 StartingPoint)
+    /*private void ConnectIslandRoom(Room island)
+    {   try
+        {                                    
+            var rightStartingPoint = island.GetMiddleRight();
+            var leftStartingPoint = island.GetMiddleLeft();
+            var topStartingPoint = island.GetMiddleTop();
+            var bottomStartingPoint = island.GetMiddleBottom();
+
+            //_world.ForcePlaceFloor(rightStartingPoint, BuildTile(rightStartingPoint, Build.Props.Connector));
+            _world.ForcePlaceFloor(leftStartingPoint, BuildTile(leftStartingPoint, Build.Props.Connector));
+            //_world.ForcePlaceFloor(topStartingPoint, BuildTile(topStartingPoint, Build.Props.Connector));
+            //_world.ForcePlaceFloor(bottomStartingPoint, BuildTile(bottomStartingPoint, Build.Props.Connector));
+
+            /*var rightDist = FindDistanceInDirection(island, MoveRight, rightStartingPoint);
+            var leftDist = FindDistanceInDirection(island, MoveLeft, leftStartingPoint);
+            var topDist = FindDistanceInDirection(island, MoveUp, topStartingPoint);
+            var bottomDist = FindDistanceInDirection(island, MoveDown, bottomStartingPoint);
+            var distArr = new[] { rightDist, leftDist, topDist, bottomDist };
+
+            var result = distArr.Min();
+            if (result == 1000)
+            {
+                throw new Exception("No Rooms found");
+                return;
+            }
+
+            if (result.Equals(rightDist))
+            {
+                BuildPathInDirection(MoveRight, rightStartingPoint, result);
+                return;
+            }
+
+            if (result.Equals(leftDist))
+            {
+                BuildPathInDirection(MoveLeft, leftStartingPoint, result);
+                return;
+            }
+
+            if (result.Equals(topDist))
+            {
+                BuildPathInDirection(MoveUp, topStartingPoint, result);
+                return;
+            }
+
+            if (result.Equals(bottomDist))
+            {
+                BuildPathInDirection(MoveDown, bottomStartingPoint, result);
+                return;
+            }
+
+            throw new Exception("Why are u no work");
+        }
+        catch (Exception)
+        {
+            
+        }
+    }*/
+
+    /*private int FindDistanceInDirection(Room currentRoom, Vector2 Direction, Vector2 StartingPoint)
     {
         var counter = 0;
         var currentPos = new Vector2(StartingPoint.X, StartingPoint.Y);
@@ -441,6 +516,17 @@ public class WorldBuilder
                     {
                         return 1000;
                     }
+
+                    foreach (var room in _world.Rooms)
+                    {
+                        //room.RoomBounds.Contains(new Point(xPointer + 1, yPointer)) || 
+                        if (room.RoomBounds.Contains(new Point((int)currentPos.X, (int)currentPos.Y)))
+                        {
+                            currentRoom.IsConnectedToStart = room.IsConnectedToStart;
+                            return counter;
+                        }
+                    }
+                    currentRoom.IsConnectedToStart = true;
                     return counter;
                 }
             }
@@ -456,7 +542,7 @@ public class WorldBuilder
         var currentPos = StartingPoint;
         for (var i = 0; i < numberToPlace; i++)
         {
-            currentPos = Vector2.Add(currentPos, Direction);
+            //currentPos = Vector2.Add(currentPos, Direction);
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
                 _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Connector));
@@ -465,8 +551,9 @@ public class WorldBuilder
             {
                 throw new Exception("Waka waka");
             }
+            currentPos = Vector2.Add(currentPos, Direction);
         }
-    }
+    }*/
 
     private void FillMapWithWalls() //Name of method subject to change.
     {
@@ -482,6 +569,54 @@ public class WorldBuilder
         }
     }
 
+    public void BuildBasicWorld()
+    {
+        Room firstRoom = null;
+        for (var i = 0; i < World.NumberOfRooms; i++)
+        {
+            _currentRoomWidth = 5; // Rand.Next(RoomLowerBound, RoomUpperBound);
+
+
+            _currentRoomHeight = 5;  //Rand.Next(RoomLowerBound, RoomUpperBound);
+            
+
+            /*var randX = Rand.Next(-24, 24 - _currentRoomWidth - 2);
+            if (randX % 2 == 0)
+            {
+                randX += 1;
+            }
+
+            var randY = Rand.Next(-24, 24 - _currentRoomHeight - 2);
+            if (randY % 2 == 0)
+            {
+                randY += 1;
+            }*/
+            
+                _world.CurrentPos = new Vector2(_world.CurrentPos.X + 2, _world.CurrentPos.Y);
+                if (!_world.IsInBounds((int)_world.CurrentPos.X + 6, (int)_world.CurrentPos.Y + 6))
+                {
+                    _world.CurrentPos = new Vector2(-22, _world.CurrentPos.Y + 1);
+                }
+
+                
+                if (firstRoom == null)
+                {
+                    firstRoom = MakeRoom();
+                }
+                else
+                {
+                    MakeRoom();
+                }
+
+        }
+        _leftOverRooms = _world.Rooms;
+        firstRoom.IsConnectedToStart = true;
+        //StartDebugPrint();
+        FillMapWithWalls();
+        ConnectSingleRoom(firstRoom);
+        //debugFirstTile();
+    }
+    
 
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
@@ -495,7 +630,8 @@ public class WorldBuilder
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
     //=== ARCHIVE ===---------------------------------------------------------------------------------------------------
-    private void ChooseDirection()
+    
+    /*private void ChooseDirection()
     {
         var terminate = 0;
         var teleport = 0;
@@ -543,9 +679,9 @@ public class WorldBuilder
                 _lastTile = new Point((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y);
             }
         }
-    }
+    }*/
 
-    private void PickStartingTile()
+    /*private void PickStartingTile()
     {
         var x = -24; //-24;
         var y = -24;
@@ -564,9 +700,9 @@ public class WorldBuilder
 
         _world.CurrentPos = new Vector2(x, y);
         _lastTile = new Point(x, y);
-    }
+    }*/
 
-    private void TeleportPoint()
+    /*private void TeleportPoint()
     {
         var x = Rand.Next(-23, 23);
         var y = Rand.Next(-23, 23);
@@ -591,7 +727,7 @@ public class WorldBuilder
 
         _world.CurrentPos = new Vector2(x, y);
         Console.Out.WriteLine(_world.CurrentPos);
-    }
+    }*/
 
     private void FloodFill() //Name of method subject to change.
     {
