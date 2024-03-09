@@ -46,28 +46,24 @@ public class RenderObject
 
     private static AnimationAction GetAnimationAction(Vector2 direction)
     {
-        if (Math.Abs(direction.X) > Math.Abs(direction.Y))
+        var angle = Math.Atan2(direction.Y, direction.X) * (180 / Math.PI);
+
+        if (angle < 0)
         {
-            switch (direction.X)
-            {
-                case > 0:
-                    return AnimationAction.E;
-                case < 0:
-                    return AnimationAction.W;
-            }
-        }
-        else
-        {
-            switch (direction.Y)
-            {
-                case > 0:
-                    return AnimationAction.S;
-                case < 0:
-                    return AnimationAction.N;
-            }
+            angle += 360;
         }
 
-        return AnimationAction.S;
+        return angle switch
+        {
+            >= 22.5 and < 67.5 => AnimationAction.Se,
+            >= 67.5 and < 112.5 => AnimationAction.S,
+            >= 112.5 and < 157.5 => AnimationAction.Sw,
+            >= 157.5 and < 202.5 => AnimationAction.W,
+            >= 202.5 and < 247.5 => AnimationAction.Nw,
+            >= 247.5 and < 292.5 => AnimationAction.N,
+            >= 292.5 and < 337.5 => AnimationAction.Ne,
+            _ => AnimationAction.E
+        };
     }
 
     public void Update(GameTime gameTime)
