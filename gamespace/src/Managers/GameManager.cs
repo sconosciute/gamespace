@@ -82,6 +82,7 @@ public class GameManager
         if (_playing)
         {
             _player.FixedUpdate();
+            _worldBuilder.updateWorld(_player);
         }
     }
 

@@ -43,7 +43,7 @@ public static class Build
         
         public static Chest Chest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
         {
-            var prop = new Chest(worldPosition, 1, 1, true, _item);
+            var prop = new Chest(worldPosition, 1, 1, false, _item); //Changed col to false
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Chest),
                 worldPosition: worldPosition,
@@ -54,7 +54,7 @@ public static class Build
         //TODO: Temp
         public static Chest NormalChest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
         {
-            var prop = new Chest(worldPosition, 1, 1, true, _item);
+            var prop = new Chest(worldPosition, 1, 1, false, _item);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.NormalChest),
                 worldPosition: worldPosition,

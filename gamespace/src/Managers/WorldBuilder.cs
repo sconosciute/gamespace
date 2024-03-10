@@ -270,7 +270,7 @@ public class WorldBuilder
                 sameRoom = false;
             }
         }
-
+        
         sameRoom = false;
         //check along the bottom
         for (xPointer = currentRoom.RoomBounds.Left; xPointer <= currentRoom.RoomBounds.Right; xPointer++)
@@ -626,19 +626,21 @@ public class WorldBuilder
                 _world.Rooms[currentRoomIndex].RoomBounds.Bottom - 1);
 
             Vector2 PlacePoint = new(randX, randY);
-
+            Chest currentChest;
             if (DecideToPlaceKeyItem())
             {
                 _world.ForcePlaceFloor(PlacePoint,
                     BuildChest(PlacePoint, Build.Items.Cog(),
-                        Build.Props.Chest)); //Let walls be temp key items, connectors be temp mobs/other items
+                        Build.Props.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
+                _world.Chests.Add(PlacePoint, currentChest);
             }
             else
             {
                 _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
-                    Build.Props.NormalChest));
+                    Build.Props.NormalChest, out currentChest));
+                _world.Chests.Add(PlacePoint, currentChest);
             }
-
+            ChestDictDebug();
             _numberOfRoomsLeft--;
         }
     }
@@ -656,6 +658,28 @@ public class WorldBuilder
         }
 
         return false;
+    }
+
+    public void updateWorld(Player player)
+    {
+        var roundedPos = new Vector2((int)player.WorldCoordinate.X, (int)player.WorldCoordinate.Y);
+        if (_world.Chests.ContainsKey(roundedPos))
+        {
+            //Console.Out.WriteLine(player.Inventory);
+            foreach (var item in player.Inventory)
+            {
+                Console.Write(item + " + ");
+            }
+            Console.Out.WriteLine();
+            _world.Chests[roundedPos].PickUpItem(player);
+            foreach (var item in player.Inventory)
+            {
+                Console.Write(item + " + ");
+            }
+            _world.ForcePlaceFloor(roundedPos, BuildTile(roundedPos, Build.Props.Connector));
+            _world.Chests.Remove(roundedPos);
+            Console.Out.WriteLine();
+        }
     }
     
     // DEBUGS =========================================================================================================
@@ -683,6 +707,14 @@ public class WorldBuilder
         }
     }
 
+    private void ChestDictDebug()
+    {
+        foreach (var chest in _world.Chests)
+        {
+            Console.Out.WriteLine(chest);
+        }
+    }
+
 
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
@@ -693,11 +725,11 @@ public class WorldBuilder
         return new Tile(prop);
     }
     
-    private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback)
+    private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback, out Chest newChest)
     {
-        var prop = buildCallback.Invoke(_gm, worldPosition, item, out var renderable);
+        newChest = buildCallback.Invoke(_gm, worldPosition, item, out var renderable);
         _camera.RegisterRenderable(renderable);
-        return new Tile(prop);
+        return new Tile(newChest);
     }
 
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);

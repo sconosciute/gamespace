@@ -14,6 +14,8 @@ public class World
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
 
+    public readonly Dictionary<Vector2, Chest> Chests = new();
+
     public List<Room> Rooms { get; } = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.

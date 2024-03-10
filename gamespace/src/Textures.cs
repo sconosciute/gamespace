@@ -10,7 +10,7 @@ public struct Textures
     public const string Collider = "darkBrownWall";
     public const string TransparentBg = "GUI/transparent";
     public const string OpaqueBg = "GUI/opaque";
-    public const string RoomConnector = "lightBrownFloor";
+    public const string RoomConnector = "blueFloor"; //"lightBrownFloor";
     public const string Chest = "chest";
     public const string NormalChest = "normalChest";
 }

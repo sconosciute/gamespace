@@ -12,9 +12,14 @@ public class Chest : Prop
 
     public void PickUpItem(Player player)
     {
-        if (player.Inventory.Length != Player.InventorySize || _itemHeld.IsKeyItem)
-        {
+        //if (player.Inventory.Length != Player.InventorySize || _itemHeld.IsKeyItem)
+        //{
             player.AddToInventory(_itemHeld);
-        }
+        //}
+    }
+
+    public override string ToString()
+    {
+        return WorldCoordinate + " Contains key Item: " + _itemHeld.IsKeyItem;
     }
 }
