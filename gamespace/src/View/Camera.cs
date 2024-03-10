@@ -83,7 +83,7 @@ public class Camera
     public void BeginFrame()
     {
         _gfx.Clear(Color.Black);
-        Globals.SpriteBatch.Begin(transformMatrix: Translation, blendState: BlendState.AlphaBlend,
+        Globals.SpriteBatch.Begin(SpriteSortMode.BackToFront, transformMatrix: Translation, blendState: BlendState.AlphaBlend,
             samplerState: SamplerState.PointClamp);
     }
 

@@ -92,8 +92,8 @@ public class RenderObject
         }
         else
         {
-            // TODO: Fix problem where using LayerDepth causes issues for other textures other than player.
-            Globals.SpriteBatch.Draw(_texture, _position, Color.White);
+            Globals.SpriteBatch.Draw(_texture, _position, new Rectangle(0, 0, 16, 16), 
+                Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, _layerDepth);
         }
     }
 
@@ -122,10 +122,10 @@ public struct LayerDepth
     /// <summary>
     /// Objects in the midground will be drawn between the other two layers. Props that render over the floor but under entities are best placed here.
     /// </summary>
-    public const float Midground = 0.5f;
+    public const float Midground = 0.3f;
 
     /// <summary>
     /// Objects in the background will be drawn underneath all other objects.
     /// </summary>
-    public const float Background = 1f;
+    public const float Background = 0.5f;
 }
