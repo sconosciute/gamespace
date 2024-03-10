@@ -683,7 +683,7 @@ public class WorldBuilder
                 Console.Write(item + " + ");
             }
             Console.Out.WriteLine();
-            _world.Chests[roundedPos].PickUpItem(player);
+            _world.Chests[roundedPos].InteractWithPlayer(player);
             foreach (var item in player.Inventory)
             {
                 Console.Write(item + " + ");
@@ -692,6 +692,7 @@ public class WorldBuilder
             _world.Chests.Remove(roundedPos);
             Console.Out.WriteLine();
         }
+        //else if ()
     }
     
     // DEBUGS =========================================================================================================

@@ -2,20 +2,19 @@
 
 namespace gamespace.Model;
 
-public class Chest : Prop
+public class Chest : InteractableProp
 {
     private readonly Item _itemHeld;
-    public Chest(Vector2 worldCoordinate, float width, float height, bool hasCollision, Item itemHeld) : base(worldCoordinate, width, height, hasCollision)
+
+    public Chest(Vector2 worldCoordinate, float width, float height, bool hasCollision, Item itemHeld) : base(
+        worldCoordinate, width, height, hasCollision)
     {
         _itemHeld = itemHeld;
     }
 
-    public void PickUpItem(Player player)
+    public override void InteractWithPlayer(Player player)
     {
-        //if (player.Inventory.Length != Player.InventorySize || _itemHeld.IsKeyItem)
-        //{
-            player.AddToInventory(_itemHeld);
-        //}
+        player.AddToInventory(_itemHeld);
     }
 
     public override string ToString()
