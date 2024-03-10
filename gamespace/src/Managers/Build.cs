@@ -17,7 +17,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.TestTile),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: LayerDepth.FloorLevel);
             return prop;
         }
 
@@ -37,7 +37,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.RoomConnector),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: LayerDepth.FloorLevel);
             return prop;
         }
         

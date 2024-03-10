@@ -125,6 +125,10 @@ public struct LayerDepth
     public const float Midground = 0.3f;
 
     /// <summary>
+    /// Floor level is purely for floors/connectors so no overlapping between connectors and walls occurs.
+    /// </summary>
+    public const float FloorLevel = 0.4f;
+    /// <summary>
     /// Objects in the background will be drawn underneath all other objects.
     /// </summary>
     public const float Background = 0.5f;
