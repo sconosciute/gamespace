@@ -18,7 +18,10 @@ public class Player : Character
     /// A constant to provide the size of our players key item inventory.
     /// </summary>
     private const int KeyInventorySize = 4;
-
+    
+    
+    public int KeyItemsHeld { get; set; }
+    
     /// <summary>
     /// A string to store the name of our player.
     /// </summary>
@@ -43,6 +46,7 @@ public class Player : Character
         : base(Vector2.Zero, 0.9f, 0.9f, 100, 100, 10, world)
     {
         _name = name;
+        KeyItemsHeld = 0;
         OnPlayerStateEvent();
     }
 
@@ -82,6 +86,7 @@ public class Player : Character
 
             newItem.User = this;
             KeyItemInventory[firstEmptyIndex] = newItem;
+            KeyItemsHeld += 1;
             return true;
         }
         else
@@ -126,5 +131,15 @@ public class Player : Character
     {
         var args = new EventHelper.PlayerState(Health, Energy, Inventory, KeyItemInventory.Length);
         PlayerStateEvent?.Invoke(args);
+        if (Health <= 0)
+        {
+            Environment.Exit(0);
+        }
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        OnPlayerStateEvent();
     }
 }

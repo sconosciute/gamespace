@@ -37,7 +37,7 @@ public class WorldBuilder
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
 
-
+    private Prop trashProp;
     private static readonly Random Rand = new();
 
     public WorldBuilder(GameManager gm, Camera camera, World world)
@@ -609,9 +609,12 @@ public class WorldBuilder
 
     private void LootAndHazardGenerator()
     {
-        _numberOfRoomsLeft = _world.Rooms.Count - 1; //Subtracting 1 to remove starting room.
+        _numberOfRoomsLeft = _world.Rooms.Count - 2; //Subtracting 2 to remove starting room and final room.
 
-        for (var currentRoomIndex = 1; currentRoomIndex < _world.Rooms.Count; currentRoomIndex++)
+        int randX;
+        int randY;
+        Vector2 PlacePoint;
+        for (var currentRoomIndex = 1; currentRoomIndex < _world.Rooms.Count - 1; currentRoomIndex++)
         {
             Console.Out.WriteLine("Loot gen rooms left: " + _numberOfRoomsLeft);
             //Vector2 PlacePoint = new Vector2(_world.Rooms[currentRoomIndex].RoomBounds.X + 2,
@@ -619,19 +622,20 @@ public class WorldBuilder
             //Random point in room;
 
 
-            var randX = Rand.Next(_world.Rooms[currentRoomIndex].RoomBounds.X + 2,
+            randX = Rand.Next(_world.Rooms[currentRoomIndex].RoomBounds.X + 2,
                 _world.Rooms[currentRoomIndex].RoomBounds.Right);
 
-            var randY = Rand.Next(_world.Rooms[currentRoomIndex].RoomBounds.Y + 1,
+            randY = Rand.Next(_world.Rooms[currentRoomIndex].RoomBounds.Y + 1,
                 _world.Rooms[currentRoomIndex].RoomBounds.Bottom - 1);
 
-            Vector2 PlacePoint = new(randX, randY);
+            PlacePoint = new(randX, randY);
             Chest currentChest;
+            Spikes currentSpike;
             if (DecideToPlaceKeyItem())
             {
                 _world.ForcePlaceFloor(PlacePoint,
                     BuildChest(PlacePoint, Build.Items.Cog(),
-                        Build.Props.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
+                        Build.InteractableProps.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
                 _world.Chests.Add(PlacePoint, currentChest);
             }
             else
@@ -640,7 +644,7 @@ public class WorldBuilder
                 if (hazardOrChest == 0 || hazardOrChest == 1) //Making it a 2 in 3 chance for a chest
                 {
                     _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
-                        Build.Props.NormalChest, out currentChest));
+                        Build.InteractableProps.NormalChest, out currentChest));
                     _world.Chests.Add(PlacePoint, currentChest);
                 }
                 else
@@ -648,12 +652,23 @@ public class WorldBuilder
                     //_world.ForcePlaceFloor(PlacePoint, Build(PlacePoint, Build.Items.SmallHealthPotion(),
                         //Build.Props.NormalChest, out currentChest));
                     //_world.Chests.Add(PlacePoint, currentChest);
-                    BuildMob(PlacePoint, Build.Mobs.Turret);
+                    //BuildMob(PlacePoint, Build.Mobs.Turret);
+                    _world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
+                    _world.Spikes.Add(PlacePoint, currentSpike);
                 }
             }
             ChestDictDebug();
             _numberOfRoomsLeft--;
         }
+        randX = Rand.Next(_world.Rooms[_world.Rooms.Count - 1].RoomBounds.X + 2,
+            _world.Rooms[_world.Rooms.Count - 1].RoomBounds.Right);
+
+        randY = Rand.Next(_world.Rooms[_world.Rooms.Count - 1].RoomBounds.Y + 1,
+            _world.Rooms[_world.Rooms.Count - 1].RoomBounds.Bottom - 1);
+
+        PlacePoint = new(randX, randY);
+        _world.ForcePlaceFloor(PlacePoint, BuildAlter(PlacePoint, Build.InteractableProps.Alter, out Alter alter));
+        _world.finalTileAlter = alter;
     }
 
     private bool DecideToPlaceKeyItem()
@@ -683,7 +698,7 @@ public class WorldBuilder
                 Console.Write(item + " + ");
             }
             Console.Out.WriteLine();
-            _world.Chests[roundedPos].PickUpItem(player);
+            _world.Chests[roundedPos].InteractWithPlayer(player);
             foreach (var item in player.Inventory)
             {
                 Console.Write(item + " + ");
@@ -691,6 +706,14 @@ public class WorldBuilder
             _world.ForcePlaceFloor(roundedPos, BuildTile(roundedPos, Build.Props.Connector));
             _world.Chests.Remove(roundedPos);
             Console.Out.WriteLine();
+        }
+        else if (_world.Spikes.ContainsKey(roundedPos))
+        {
+            _world.Spikes[roundedPos].InteractWithPlayer(player);
+        }
+        else if (_world.finalTileAlter.WorldCoordinate == roundedPos)
+        {
+            _world.finalTileAlter.InteractWithPlayer(player);
         }
     }
     
@@ -737,6 +760,20 @@ public class WorldBuilder
         return new Tile(prop);
     }
     
+    private Tile BuildSpikeTile(Vector2 worldPosition, InteractablePropBuilder buildCallback, out Spikes prop)
+    {
+        prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
+        _camera.RegisterRenderable(renderable);
+        return new Tile(prop);
+    }
+    
+    private Tile BuildAlter(Vector2 worldPosition, AlterBuilder buildCallback, out Alter prop)
+    {
+        prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
+        _camera.RegisterRenderable(renderable);
+        return new Tile(prop);
+    }
+    
     private Mob BuildMob(Vector2 worldPosition, MobBuilder buildCallback)
     {
         var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
@@ -753,6 +790,9 @@ public class WorldBuilder
 
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+    private delegate Alter AlterBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+    
+    private delegate Spikes InteractablePropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
     private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable);
 

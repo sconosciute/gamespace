@@ -14,4 +14,9 @@ public struct Textures
     public const string Chest = "chest";
     public const string NormalChest = "normalChest";
     public const string Cat = "cat";
+    public const string SquareWall = "squareWall";
+    public const string DiamondWall = "diamondWall";
+    public const string Spike = "spike";
+    public const string DarkSquareWall = "darkSquareWall";
+    public const string DarkDiamondWall = "darkDiamondWall";
 }

@@ -49,6 +49,11 @@ public class Game1 : Game
         _gm.AddTexture(Textures.Chest);
         _gm.AddTexture(Textures.NormalChest);
         _gm.AddTexture(Textures.Cat);
+        _gm.AddTexture(Textures.SquareWall);
+        _gm.AddTexture(Textures.DiamondWall);
+        _gm.AddTexture(Textures.Spike);
+        _gm.AddTexture(Textures.DarkDiamondWall);
+        _gm.AddTexture(Textures.DarkSquareWall);
         
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();
