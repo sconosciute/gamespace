@@ -689,8 +689,9 @@ public class WorldBuilder
     public void updateWorld(Player player)
     {
         //TODO: Can probably clean this up with an event system, but oh god time crunch.
-        var roundedPos = new Vector2((int)player.WorldCoordinate.X, (int)player.WorldCoordinate.Y);
-        if (_world.Chests.ContainsKey(roundedPos))
+        var roundedDownPos = new Vector2((float)Math.Floor(player.WorldCoordinate.X), (float)Math.Floor(player.WorldCoordinate.Y));
+        var roundedUpPos = new Vector2((float)Math.Ceiling(player.WorldCoordinate.X), (float)Math.Ceiling(player.WorldCoordinate.Y));
+        if (_world.Chests.ContainsKey(roundedDownPos)) //|| _world.Chests.ContainsKey(roundedUpPos))
         {
             //Console.Out.WriteLine(player.Inventory);
             foreach (var item in player.Inventory)
@@ -698,20 +699,42 @@ public class WorldBuilder
                 Console.Write(item + " + ");
             }
             Console.Out.WriteLine();
-            _world.Chests[roundedPos].InteractWithPlayer(player);
+            _world.Chests[roundedDownPos].InteractWithPlayer(player);
             foreach (var item in player.Inventory)
             {
                 Console.Write(item + " + ");
             }
-            _world.ForcePlaceFloor(roundedPos, BuildTile(roundedPos, Build.Props.Connector));
-            _world.Chests.Remove(roundedPos);
+            _world.ForcePlaceFloor(roundedDownPos, BuildTile(roundedDownPos, Build.Props.Connector));
+            _world.Chests.Remove(roundedDownPos);
             Console.Out.WriteLine();
         }
-        else if (_world.Spikes.ContainsKey(roundedPos))
+        else if (_world.Chests.ContainsKey(roundedUpPos))
         {
-            _world.Spikes[roundedPos].InteractWithPlayer(player);
+            foreach (var item in player.Inventory)
+            {
+                Console.Write(item + " + ");
+            }
+            Console.Out.WriteLine();
+            _world.Chests[roundedUpPos].InteractWithPlayer(player);
+            foreach (var item in player.Inventory)
+            {
+                Console.Write(item + " + ");
+            }
+            _world.ForcePlaceFloor(roundedUpPos, BuildTile(roundedUpPos, Build.Props.Connector));
+            _world.Chests.Remove(roundedUpPos);
+            Console.Out.WriteLine();
         }
-        else if (_world.finalTileAlter.WorldCoordinate == roundedPos)
+        else if (_world.Spikes.TryGetValue(roundedDownPos, out var spike))
+        {
+           //_world.Spikes[roundedDownPos].InteractWithPlayer(player);
+           spike.InteractWithPlayer(player);
+        }
+        else if (_world.Spikes.TryGetValue(roundedUpPos, out spike))
+        {
+            spike.InteractWithPlayer(player);
+        }
+        
+        else if (_world.finalTileAlter.WorldCoordinate == roundedDownPos || _world.finalTileAlter.WorldCoordinate == roundedUpPos)
         {
             _world.finalTileAlter.InteractWithPlayer(player);
         }
