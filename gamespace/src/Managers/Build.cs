@@ -17,7 +17,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.TestTile),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Background);
             return prop;
         }
 
@@ -27,7 +27,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Collider),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Background);
             return prop;
         }
         
@@ -37,28 +37,28 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.RoomConnector),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Midground);
             return prop;
         }
         
-        public static Prop Chest(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        public static Chest Chest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
         {
-            var prop = new Prop(worldPosition, 1, 1, true);
+            var prop = new Chest(worldPosition, 1, 1, false, _item); //Changed col to false
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Chest),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Midground);
             return prop;
         }
         
         //TODO: Temp
-        public static Prop Cat(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        public static Chest NormalChest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
         {
-            var prop = new Prop(worldPosition, 1, 1, true);
+            var prop = new Chest(worldPosition, 1, 1, false, _item);
             renderable = new RenderObject(
-                texture: gm.GetTexture(Textures.Cat),
+                texture: gm.GetTexture(Textures.NormalChest),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Midground);
             return prop;
         }
     }
@@ -71,9 +71,9 @@ public static class Build
                 10, false, false, Mob.MobTypes.Hostile);
             //TODO: Add a Turret Model
             renderable = new RenderObject(
-                texture: null, //gm.GetTexture(Textures.Turret), //Something like this?
+                texture: gm.GetTexture(Textures.Cat), //Temp image for turrets.
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Midground);
             return mob;
         }
 
@@ -85,7 +85,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: null, //gm.GetTexture(Textures.RogueRanger), 
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Midground);
             return mob;
         }
     }

@@ -18,7 +18,11 @@ public class Camera
 
     private readonly Guid _playerId;
 
-    private readonly List<RenderObject> _renderables = new();
+    private readonly List<RenderObject> _foregroundRenderables = new();
+    
+    private readonly List<RenderObject> _midgroundRenderables = new();
+    
+    private readonly List<RenderObject> _backgroundRenderables = new();
 
     private readonly ILogger _log;
 
@@ -66,7 +70,15 @@ public class Camera
     /// <param name="renderMode">Render immediately or defer to a RenderFrame call. Default to immediate.</param>
     public void DrawFrame(RenderMode renderMode = RenderMode.Immediate)
     {
-        foreach (var robj in _renderables)
+        foreach (var robj in _backgroundRenderables)
+        {
+            robj.Draw();
+        }
+        foreach (var robj in _midgroundRenderables)
+        {
+            robj.Draw();
+        }
+        foreach (var robj in _foregroundRenderables)
         {
             robj.Draw();
         }
@@ -116,7 +128,20 @@ public class Camera
     /// <param name="renderObject">Object to draw on screen.</param>
     public void RegisterRenderable(RenderObject renderObject)
     {
-        _renderables.Add(renderObject);
+        switch (renderObject.Layer)
+        {
+            case Layer.Background:
+                _backgroundRenderables.Add(renderObject);
+                break;
+            case Layer.Midground:
+                _midgroundRenderables.Add(renderObject);
+                break;
+            case Layer.Foreground:
+                _foregroundRenderables.Add(renderObject);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     //=== EVENT HANDLING ===--------------------------------------------------------------------------------------

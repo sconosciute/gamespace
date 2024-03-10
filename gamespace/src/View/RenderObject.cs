@@ -18,11 +18,9 @@ public class RenderObject
 
     private Vector2 _oldPosition;
 
-    private readonly float _layerDepth;
-
     private readonly Dictionary<AnimationAction, Animation> _animations = new();
 
-    private ILogger _log;
+    public Layer Layer { get; }
 
     /// <summary>
     /// Generates a new RenderObject which will track an Entity for position updates.
@@ -31,12 +29,11 @@ public class RenderObject
     /// <param name="worldPosition">The world coordinate position of this renderable</param>
     /// <param name="layerDepth">The depth at which this texture should be drawn in scene <see cref="LayerDepth"/></param>
     /// <param name="entityId">An entity ID to listen for EntityEvents from.</param>
-    public RenderObject(Texture2D texture, Vector2 worldPosition, float layerDepth, Guid? entityId = null)
+    public RenderObject(Texture2D texture, Vector2 worldPosition, Layer layerDepth, Guid? entityId = null)
     {
-        _log = Globals.LogFactory.CreateLogger<RenderObject>();
         _texture = texture;
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
-        _layerDepth = layerDepth;
+        Layer = layerDepth;
         _entityId = entityId;
 
         if (texture.Name != Textures.Player) return;
@@ -86,13 +83,11 @@ public class RenderObject
         {
             foreach (var animation in _animations.Values)
             {
-                Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White, 0f, 
-                    Vector2.Zero, 1f, SpriteEffects.None, _layerDepth);
+                Globals.SpriteBatch.Draw(_texture, _position, animation.SourceRectangle, Color.White);
             }
         }
         else
         {
-            // TODO: Fix problem where using LayerDepth causes issues for other textures other than player.
             Globals.SpriteBatch.Draw(_texture, _position, Color.White);
         }
     }
@@ -109,23 +104,9 @@ public class RenderObject
     }
 }
 
-/// <summary>
-/// A helper to provide specific depths for SpriteBatch layers.
-/// </summary>
-public struct LayerDepth
+public enum Layer
 {
-    /// <summary>
-    /// Objects in the foreground will be drawn over everything else. Place Entities here.
-    /// </summary>
-    public const float Foreground = 0f;
-
-    /// <summary>
-    /// Objects in the midground will be drawn between the other two layers. Props that render over the floor but under entities are best placed here.
-    /// </summary>
-    public const float Midground = 0.5f;
-
-    /// <summary>
-    /// Objects in the background will be drawn underneath all other objects.
-    /// </summary>
-    public const float Background = 1f;
+    Foreground,
+    Midground,
+    Background
 }

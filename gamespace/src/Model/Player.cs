@@ -12,7 +12,7 @@ public class Player : Character
     /// <summary>
     /// A constant to provide the size of our players usable inventory.
     /// </summary>
-    private const int InventorySize = 5;
+    public const int InventorySize = 5;
     
     /// <summary>
     /// A constant to provide the size of our players key item inventory.
@@ -113,6 +113,12 @@ public class Player : Character
     public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
+    }
+
+    public void HandleItemUseEvent(in int index)
+    {
+        Console.Out.WriteLine(index);
+        InventoryUse(index);
     }
 
     public event EventHelper.PlayerStateEventHandler PlayerStateEvent;
