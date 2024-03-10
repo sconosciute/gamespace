@@ -48,6 +48,7 @@ public class Game1 : Game
         _gm.AddTexture(Textures.RoomConnector);
         _gm.AddTexture(Textures.Chest);
         _gm.AddTexture(Textures.NormalChest);
+        _gm.AddTexture(Textures.Cat);
         
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();

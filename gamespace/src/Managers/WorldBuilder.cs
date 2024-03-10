@@ -636,9 +636,20 @@ public class WorldBuilder
             }
             else
             {
-                _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
-                    Build.Props.NormalChest, out currentChest));
-                _world.Chests.Add(PlacePoint, currentChest);
+                var hazardOrChest = Rand.Next(0, 3);
+                if (hazardOrChest == 0 || hazardOrChest == 1) //Making it a 2 in 3 chance for a chest
+                {
+                    _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
+                        Build.Props.NormalChest, out currentChest));
+                    _world.Chests.Add(PlacePoint, currentChest);
+                }
+                else
+                {
+                    //_world.ForcePlaceFloor(PlacePoint, Build(PlacePoint, Build.Items.SmallHealthPotion(),
+                        //Build.Props.NormalChest, out currentChest));
+                    //_world.Chests.Add(PlacePoint, currentChest);
+                    BuildMob(PlacePoint, Build.Mobs.Turret);
+                }
             }
             ChestDictDebug();
             _numberOfRoomsLeft--;
@@ -726,6 +737,13 @@ public class WorldBuilder
         return new Tile(prop);
     }
     
+    private Mob BuildMob(Vector2 worldPosition, MobBuilder buildCallback)
+    {
+        var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
+        _camera.RegisterRenderable(renderable);
+        return newMob;
+    }
+    
     private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback, out Chest newChest)
     {
         newChest = buildCallback.Invoke(_gm, worldPosition, item, out var renderable);
@@ -735,6 +753,8 @@ public class WorldBuilder
 
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+
+    private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable);
 
     //=== ARCHIVE ===---------------------------------------------------------------------------------------------------
 

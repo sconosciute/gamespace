@@ -71,7 +71,7 @@ public static class Build
                 10, false, false, Mob.MobTypes.Hostile);
             //TODO: Add a Turret Model
             renderable = new RenderObject(
-                texture: null, //gm.GetTexture(Textures.Turret), //Something like this?
+                texture: gm.GetTexture(Textures.Cat), //Temp image for turrets.
                 worldPosition: worldPosition,
                 layerDepth: Layer.Midground);
             return mob;

@@ -13,4 +13,5 @@ public struct Textures
     public const string RoomConnector = "blueFloor"; //"lightBrownFloor";
     public const string Chest = "chest";
     public const string NormalChest = "normalChest";
+    public const string Cat = "cat";
 }
