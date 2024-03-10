@@ -102,9 +102,6 @@ public static class EventHelper
     public delegate void EntityEventHandler(in Guid sender, in EntityEventArgs args);
 
     public delegate void CameraEventHandler(in Matrix scale);
-    
-    public delegate void PlayerStateEventHandler(in EventHelper.PlayerState state);
-
     public delegate void PlayerUseItemEventHandler(in int index);
     public delegate void PlayerStateEventHandler(in PlayerState state);
 }
