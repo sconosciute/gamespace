@@ -37,7 +37,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.RoomConnector),
                 worldPosition: worldPosition,
-                layerDepth: Layer.Background);
+                layerDepth: Layer.Midground);
             return prop;
         }
         
