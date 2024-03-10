@@ -27,12 +27,12 @@ public class Player : Character
     /// <summary>
     /// A public property to access our players usable inventory.
     /// </summary>
-    public Item[] Inventory { get; }
+    public Item[] Inventory { get; } = new Item[InventorySize];
 
     /// <summary>
     /// A public property to access our players key inventory.
     /// </summary>
-    public Item[] KeyItemInventory { get; }
+    public Item[] KeyItemInventory { get; } = new Item[KeyInventorySize];
 
     /// <summary>
     /// A constructor to build our player.
@@ -43,8 +43,6 @@ public class Player : Character
         : base(Vector2.Zero, 0.9f, 0.9f, 100, 100, 10, world)
     {
         _name = name;
-        Inventory = new Item[InventorySize];
-        KeyItemInventory = new Item[KeyInventorySize];
         OnPlayerStateEvent();
     }
 
@@ -98,6 +96,7 @@ public class Player : Character
             Inventory[firstEmptyIndex] = newItem;
             return true;
         }
+        OnPlayerStateEvent();
     }
     
     /// <summary>
@@ -125,7 +124,7 @@ public class Player : Character
 
     private void OnPlayerStateEvent()
     {
-        var args = new EventHelper.PlayerState(Health, Energy, Inventory);
+        var args = new EventHelper.PlayerState(Health, Energy, Inventory, KeyItemInventory.Length);
         PlayerStateEvent?.Invoke(args);
     }
 }

@@ -69,12 +69,14 @@ public static class EventHelper
         public int Health { get; init; }
         public int Energy { get; init; }
         public Item[] Inventory { get; init; }
+        public int KeyItems { get; init; }
 
-        public PlayerState(in int health, in int energy, in Item[] inventory)
+        public PlayerState(in int health, in int energy, in Item[] inventory, in int keyCount)
         {
             Health = health;
             Energy = energy;
             Inventory = inventory;
+            KeyItems = keyCount;
         }
     }
 

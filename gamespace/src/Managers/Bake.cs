@@ -31,7 +31,7 @@ public static class Bake
     {
         var sWidth = gfx.PresentationParameters.Bounds.Width;
         var width = sWidth / 5;
-        var height = width / 4;
+        var height = width / 3;
 
         var drawBox = new Rectangle(sWidth - width, 0, width, height);
         var stats = new StatPanel(drawBox, manager)
