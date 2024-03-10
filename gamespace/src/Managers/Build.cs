@@ -74,6 +74,16 @@ public static class Build
                 layerDepth: Layer.Midground);
             return prop;
         }
+
+        public static Alter Alter(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Alter(worldPosition, 1, 1, false);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.RoomConnector),
+                worldPosition: worldPosition,
+                layerDepth: Layer.Midground);
+            return prop;
+        }
     }
 
     public struct Mobs

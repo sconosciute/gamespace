@@ -18,6 +18,8 @@ public class World
 
     public readonly Dictionary<Vector2, Spikes> Spikes = new();
 
+    public Alter finalTileAlter;
+
     public List<Room> Rooms { get; } = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
