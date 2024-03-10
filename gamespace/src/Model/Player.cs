@@ -129,7 +129,7 @@ public class Player : Character
 
     private void OnPlayerStateEvent()
     {
-        var args = new EventHelper.PlayerState(Health, Energy, Inventory, KeyItemInventory.Length);
+        var args = new EventHelper.PlayerState(Health, Energy, Inventory, KeyItemsHeld);
         PlayerStateEvent?.Invoke(args);
         if (Health <= 0)
         {
