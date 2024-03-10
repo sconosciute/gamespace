@@ -132,6 +132,10 @@ public class Player : Character
     {
         var args = new EventHelper.PlayerState(Health, Energy, Inventory);
         PlayerStateEvent?.Invoke(args);
+        if (Health <= 0)
+        {
+            Environment.Exit(0);
+        }
     }
 
     public override void FixedUpdate()
