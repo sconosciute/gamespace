@@ -5,7 +5,7 @@ namespace gamespace.Model;
 /// <summary>
 /// A callback to the items use method.
 /// </summary>
-public delegate string ItemUsedCallback(); //Made this string instead of void, for more testable code
+public delegate int ItemUsedCallback(); //Made this string instead of void, for more testable code
 
 /// <summary>
 /// A class to represent items inside of the game.
@@ -77,7 +77,7 @@ public class Item
         ItemUse = SmallHealPotionUse;
         return SmallHealPotionUse;
 
-        string SmallHealPotionUse() => User.AddHealth(25);
+        int SmallHealPotionUse() => User.AddHealth(25);
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class Item
         ItemUse = MediumHealPotionUse;
         return MediumHealPotionUse;
 
-        string MediumHealPotionUse() => User.AddHealth(50);
+        int MediumHealPotionUse() => User.AddHealth(50);
     }
 
     /// <summary>
@@ -101,19 +101,19 @@ public class Item
         ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse;
 
-        string LargeHealPotionUse() => User.AddHealth(75);
+        int LargeHealPotionUse() => User.AddHealth(75);
     }
 
     /// <summary>
     /// A callback method to be used for testing that is to be deleted before launch.
     /// </summary>
     /// <returns> returns a string to test against. </returns>
-    public string UseTestItem()
+    public int UseTestItem()
     {
         ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse();
         
-        string LargeHealPotionUse() => "Item works!";
+        int LargeHealPotionUse() => 1;
     }
 
     /// <summary>

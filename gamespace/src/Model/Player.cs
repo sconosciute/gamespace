@@ -128,4 +128,10 @@ public class Player : Character
         var args = new EventHelper.PlayerState(Health, Energy, Inventory);
         PlayerStateEvent?.Invoke(args);
     }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        OnPlayerStateEvent();
+    }
 }

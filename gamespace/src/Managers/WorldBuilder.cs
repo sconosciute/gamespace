@@ -37,7 +37,7 @@ public class WorldBuilder
     private static readonly Vector2 MoveDown = new(0, 1);
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
 
-
+    private Prop trashProp;
     private static readonly Random Rand = new();
 
     public WorldBuilder(GameManager gm, Camera camera, World world)
@@ -627,11 +627,12 @@ public class WorldBuilder
 
             Vector2 PlacePoint = new(randX, randY);
             Chest currentChest;
+            Spikes currentSpike;
             if (DecideToPlaceKeyItem())
             {
                 _world.ForcePlaceFloor(PlacePoint,
                     BuildChest(PlacePoint, Build.Items.Cog(),
-                        Build.Props.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
+                        Build.InteractableProps.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
                 _world.Chests.Add(PlacePoint, currentChest);
             }
             else
@@ -640,7 +641,7 @@ public class WorldBuilder
                 if (hazardOrChest == 0 || hazardOrChest == 1) //Making it a 2 in 3 chance for a chest
                 {
                     _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
-                        Build.Props.NormalChest, out currentChest));
+                        Build.InteractableProps.NormalChest, out currentChest));
                     _world.Chests.Add(PlacePoint, currentChest);
                 }
                 else
@@ -648,7 +649,9 @@ public class WorldBuilder
                     //_world.ForcePlaceFloor(PlacePoint, Build(PlacePoint, Build.Items.SmallHealthPotion(),
                         //Build.Props.NormalChest, out currentChest));
                     //_world.Chests.Add(PlacePoint, currentChest);
-                    BuildMob(PlacePoint, Build.Mobs.Turret);
+                    //BuildMob(PlacePoint, Build.Mobs.Turret);
+                    _world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
+                    _world.Spikes.Add(PlacePoint, currentSpike);
                 }
             }
             ChestDictDebug();
@@ -691,6 +694,10 @@ public class WorldBuilder
             _world.ForcePlaceFloor(roundedPos, BuildTile(roundedPos, Build.Props.Connector));
             _world.Chests.Remove(roundedPos);
             Console.Out.WriteLine();
+        }
+        else if (_world.Spikes.ContainsKey(roundedPos))
+        {
+            _world.Spikes[roundedPos].InteractWithPlayer(player);
         }
         //else if ()
     }
@@ -738,6 +745,13 @@ public class WorldBuilder
         return new Tile(prop);
     }
     
+    private Tile BuildSpikeTile(Vector2 worldPosition, InteractablePropBuilder buildCallback, out Spikes prop)
+    {
+        prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
+        _camera.RegisterRenderable(renderable);
+        return new Tile(prop);
+    }
+    
     private Mob BuildMob(Vector2 worldPosition, MobBuilder buildCallback)
     {
         var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
@@ -754,6 +768,8 @@ public class WorldBuilder
 
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+    
+    private delegate Spikes InteractablePropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
     private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable);
 

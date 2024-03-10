@@ -35,12 +35,15 @@ public static class Build
         {
             var prop = new Prop(worldPosition, 1, 1, false);
             renderable = new RenderObject(
-                texture: gm.GetTexture(Textures.RoomConnector),
+                texture: gm.GetTexture(Textures.TestTile),
                 worldPosition: worldPosition,
                 layerDepth: Layer.Midground);
             return prop;
         }
-        
+    }
+    
+    public struct InteractableProps
+    {
         public static Chest Chest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
         {
             var prop = new Chest(worldPosition, 1, 1, false, _item); //Changed col to false
@@ -57,6 +60,16 @@ public static class Build
             var prop = new Chest(worldPosition, 1, 1, false, _item);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.NormalChest),
+                worldPosition: worldPosition,
+                layerDepth: Layer.Midground);
+            return prop;
+        }
+
+        public static Spikes Spikes(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        {
+            var prop = new Spikes(worldPosition, 1, 1, false);
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.Spike),
                 worldPosition: worldPosition,
                 layerDepth: Layer.Midground);
             return prop;
