@@ -4,6 +4,7 @@ using System.Linq;
 using gamespace.Model;
 using gamespace.View;
 using Loyc;
+using Loyc.Collections;
 using Loyc.Collections.MutableListExtensionMethods;
 using Loyc.Geometry;
 using Microsoft.Xna.Framework;
@@ -52,11 +53,11 @@ public class WorldBuilder
         Room room;
         while (true)
         {
-            var
-                width = _currentRoomWidth; //TODO: Verify this height and width is working as expected, could be why world gen broke.
+            var width = _currentRoomWidth; //TODO: Verify this height and width is working as expected, could be why world gen broke.
             var height = _currentRoomHeight;
             Rectangle roomBound = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
             room = new Room(roomBound);
+            //_world.Rooms.Add(room);
             if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
@@ -67,10 +68,8 @@ public class WorldBuilder
 
                 continue;
             }
-            else
-            {
-                _world.Rooms.Add(room);
-            }
+            //_world.Rooms.Add(room);
+            
 
             for (var i = 0; i < height; i++)
             {
@@ -95,6 +94,7 @@ public class WorldBuilder
     public void BuildWorld()
     {
         //TODO Make this not hardcoded for min and max X, Y
+        //_world.Rooms.Add(MakeRoom());
         MakeRoom();
 
         for (var i = 0; i < World.NumberOfRooms; i++)
@@ -124,27 +124,21 @@ public class WorldBuilder
             }
 
             _world.CurrentPos = new Vector2(randX, randY);
+            //_world.Rooms.Add(MakeRoom());
             MakeRoom();
         }
         _leftOverRooms = _world.Rooms;
-        //StartDebugPrint();
+        StartDebugPrint();
+        LeftOverRoomsDebug();
         FillMapWithWalls();
         ConnectRooms();
+        StartDebugPrint();
         LootAndHazardGenerator();
-        debugFirstTile();
+        
+        //debugFirstTile();
     }
 
-    private void StartDebugPrint()
-    {
-        var debugCount = 0;
-        foreach (var room in _world.Rooms)
-        {
-            debugCount++;
-            Console.Out.WriteLine(debugCount + " " + room);
-        }
-
-        Console.Out.WriteLine();
-    }
+    
 
     private void ConnectRooms()
     {
@@ -172,7 +166,7 @@ public class WorldBuilder
         var index = 0;
         foreach (var room in _roomsConnectedToStart)
         {
-            _leftOverRooms.Remove(room);
+            //_leftOverRooms.Remove(room); //TROUBLE LINE WHY DOES THIS REMOVE FROM _WORLD.ROOMS RARRRRR
         }
 
         foreach (var room in _leftOverRooms)
@@ -200,12 +194,14 @@ public class WorldBuilder
 
                 if (terminateCounter == _world.Rooms.Count)
                 {
+                    //Could iterate through and make sure all rooms are connected instead of just dying.
                     return;
                 }
             }
 
             if (terminateCounter == _world.Rooms.Count)
             {
+                //Could iterate through and make sure all rooms are connected instead of just dying.
                 return;
             }
             uhOhCounter++;
@@ -233,20 +229,11 @@ public class WorldBuilder
         //ConnectIslandRoom(_leftOverRooms[index]);
         //_leftOverRooms.RemoveAt(index);
         }
-        StartDebugPrint();
+        //StartDebugPrint();
         
         //LeftOverRoomsDebug();
     }
-
-    private void LeftOverRoomsDebug()
-    {
-        var debugCount = 0;
-        foreach (var room in _leftOverRooms)
-        {
-            debugCount++;
-            Console.Out.WriteLine(debugCount + " " + room);
-        }
-    }
+    
 
     private void ConnectSingleRoom(Room currentRoom)
     {
@@ -363,7 +350,6 @@ public class WorldBuilder
 
     private void FindRoomsSurroundingTile(Point lastRoomPoint, Point currentRoomPoint)
     {
-        Console.Out.WriteLine();
         var roomCounter = 0;
         Room newRoom = new Room(new Rectangle());
         Room lastRoom = new Room(new Rectangle());
@@ -518,7 +504,7 @@ public class WorldBuilder
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
                 if (_world.GetIsFloor(currentPos))
-                //if (_world.CheckAdjWithoutDiagonal(currentPos + Direction)) //Need to add plus one to counter because this would stop one early.
+                //if (!_world.CheckAdjWithoutDiagonal(currentPos + Direction)) //Need to add plus one to counter because this would stop one early.
                 {
                     if (counter <= 1)
                     {
@@ -541,11 +527,11 @@ public class WorldBuilder
                             currentRoom.ConnectedRooms.UnionWith(room.ConnectedRooms);
                             room.ConnectedRooms.UnionWith(currentRoom.ConnectedRooms);
                             //alreadyConnected = false;
-                            return counter + 1; //+ 1;
+                            return counter; //+ 1;
                         }
                     }
                     currentRoom.IsConnectedToStart = true;
-                    return counter + 1; //+ 1;
+                    return counter; //+ 1;
                 }
             }
             else
@@ -627,6 +613,7 @@ public class WorldBuilder
 
         for (var currentRoomIndex = 1; currentRoomIndex < _world.Rooms.Count; currentRoomIndex++)
         {
+            Console.Out.WriteLine("Loot gen rooms left: " + _numberOfRoomsLeft);
             //Vector2 PlacePoint = new Vector2(_world.Rooms[currentRoomIndex].RoomBounds.X + 2,
             // _world.Rooms[currentRoomIndex].RoomBounds.Y + 1);
             //Random point in room;
@@ -669,6 +656,31 @@ public class WorldBuilder
         }
 
         return false;
+    }
+    
+    // DEBUGS =========================================================================================================
+    private void StartDebugPrint()
+    {
+        var debugCount = 0;
+        Console.Out.WriteLine("Total rooms");
+        foreach (var room in _world.Rooms)
+        {
+            debugCount++;
+            Console.Out.WriteLine(debugCount + " " + room);
+        }
+
+        Console.Out.WriteLine();
+    }
+    
+    private void LeftOverRoomsDebug()
+    {
+        var debugCount = 0;
+        Console.Out.WriteLine("Left over rooms: ");
+        foreach (var room in _leftOverRooms)
+        {
+            debugCount++;
+            Console.Out.WriteLine(debugCount + " " + room);
+        }
     }
 
 

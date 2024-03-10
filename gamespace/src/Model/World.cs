@@ -131,7 +131,7 @@ public class World
             }
         }
 
-        //Rooms.Add(newRoom); This should be handled outside of this method
+        Rooms.Add(newRoom); //This should be handled outside of this method
         return false;
     }
 
