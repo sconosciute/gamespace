@@ -17,7 +17,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.TestTile),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.FloorLevel);
+                layerDepth: Layer.Background);
             return prop;
         }
 
@@ -27,7 +27,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Collider),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Background);
+                layerDepth: Layer.Background);
             return prop;
         }
         
@@ -37,7 +37,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.RoomConnector),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.FloorLevel);
+                layerDepth: Layer.Background);
             return prop;
         }
         
@@ -47,7 +47,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Chest),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Midground);
+                layerDepth: Layer.Midground);
             return prop;
         }
         
@@ -58,7 +58,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.NormalChest),
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Midground);
+                layerDepth: Layer.Midground);
             return prop;
         }
     }
@@ -73,7 +73,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: null, //gm.GetTexture(Textures.Turret), //Something like this?
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Midground);
+                layerDepth: Layer.Midground);
             return mob;
         }
 
@@ -85,7 +85,7 @@ public static class Build
             renderable = new RenderObject(
                 texture: null, //gm.GetTexture(Textures.RogueRanger), 
                 worldPosition: worldPosition,
-                layerDepth: LayerDepth.Midground);
+                layerDepth: Layer.Midground);
             return mob;
         }
     }
