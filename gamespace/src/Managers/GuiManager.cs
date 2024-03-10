@@ -89,6 +89,13 @@ public class GuiManager
         }
     }
 
+    public event EventHelper.PlayerCommandHandler PlayerCommandEvent;
+
+    public void OnPlayerCommandEvent(in EventHelper.PlayerCommand cmd, in EventHelper.PlayerPayload payload)
+    {
+        PlayerCommandEvent?.Invoke(cmd, payload);
+    }
+
     public void ExitGame() => _gm.ExitGame();
     public void SaveGame() => _gm.SaveGame();
     public void LoadGame() => _gm.LoadGame();

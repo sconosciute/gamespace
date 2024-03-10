@@ -61,8 +61,8 @@ public static class EventHelper
     
     public class PlayerState
     {
-        public int Health { get; init; }
-        public int Energy { get; init; }
+        public int Health { get; }
+        public int Energy { get; }
         public Item[] Inventory { get; init; }
 
         public PlayerState(in int health, in int energy, in Item[] inventory)
@@ -72,8 +72,13 @@ public static class EventHelper
             Inventory = inventory;
         }
     }
+
+    public class PlayerPayload
+    {
+        public int ItemIndex { get; init; }
+    }
     
-    public delegate void PlayerCommandHandler();
+    public delegate void PlayerCommandHandler(in PlayerCommand cmd, in PlayerPayload payload);
 
     /// <summary>
     /// Player move event handler type.
@@ -93,5 +98,5 @@ public static class EventHelper
 
     public delegate void CameraEventHandler(in Matrix scale);
     
-    public delegate void PlayerStateEventHandler(in EventHelper.PlayerState state);
+    public delegate void PlayerStateEventHandler(in PlayerState state);
 }
