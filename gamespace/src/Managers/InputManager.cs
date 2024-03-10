@@ -19,6 +19,7 @@ public sealed class InputManager
     private bool _pMoveSouth;
     private bool _pMoveEast;
     private bool _pMoveWest;
+    
 
     private readonly Dictionary<Keys, EventHelper.InputCallback> _keyMap;
     private readonly List<(Keys, EventHelper.InputCallback, EventHelper.InputCallbacks)> _defaultBinds = new();
@@ -83,6 +84,12 @@ public sealed class InputManager
         _defaultBinds.Add((Keys.Down, NavDown, EventHelper.InputCallbacks.NavDown));
         _defaultBinds.Add((Keys.Enter, NavSelect, EventHelper.InputCallbacks.NavSelect));
         _defaultBinds.Add((Keys.Escape, NavEsc, EventHelper.InputCallbacks.NavEsc));
+        
+        _defaultBinds.Add((Keys.D1, UseSlotItem1, EventHelper.InputCallbacks.InventorySlot1));
+        _defaultBinds.Add((Keys.D2, UseSlotItem2, EventHelper.InputCallbacks.InventorySlot2));
+        _defaultBinds.Add((Keys.D3, UseSlotItem3, EventHelper.InputCallbacks.InventorySlot3));
+        _defaultBinds.Add((Keys.D4, UseSlotItem4, EventHelper.InputCallbacks.InventorySlot4));
+        _defaultBinds.Add((Keys.D5, UseSlotItem5, EventHelper.InputCallbacks.InventorySlot5));
     }
 
     #endregion
@@ -117,6 +124,7 @@ public sealed class InputManager
     {
         var oldDir = _direction;
         _direction = Vector2.Zero;
+        
 
         if (_pMoveNorth) _direction.Y--;
         if (_pMoveSouth) _direction.Y++;
@@ -169,6 +177,13 @@ public sealed class InputManager
         InputEvent?.Invoke(nav);
     }
 
+    public event EventHelper.PlayerUseItemEventHandler ItemUseEvent;
+
+    private void OnItemEvent(in int index)
+    {
+        ItemUseEvent?.Invoke(index);
+    }
+
     #endregion
 
     #region Input Callbacks
@@ -196,6 +211,13 @@ public sealed class InputManager
     {
         if (action == InputDriver.KeyAction.Pressed) callback.Invoke();
     }
+    //Adding item use here.
+    // Trying to model this off of how player movement is handled.
+    private void UseSlotItem1(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(0)); //OnItemEvent(0);
+    private void UseSlotItem2(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(1));
+    private void UseSlotItem3(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(2));
+    private void UseSlotItem4(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(3));
+    private void UseSlotItem5(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(4));
 
     #endregion
 }

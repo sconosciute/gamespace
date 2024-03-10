@@ -115,6 +115,12 @@ public class Player : Character
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
     }
 
+    public void HandleItemUseEvent(in int index)
+    {
+        Console.Out.WriteLine(index);
+        InventoryUse(index);
+    }
+
     public event EventHelper.PlayerStateEventHandler PlayerStateEvent;
 
     private void OnPlayerStateEvent()

@@ -39,6 +39,7 @@ public abstract class Character : Entity
         {
             Health = _maxHp;
         }
+        Console.Out.WriteLine("healed for: " + amount);
 
         return "Health now: " + Health;
     }

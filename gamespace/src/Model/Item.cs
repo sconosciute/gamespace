@@ -112,7 +112,7 @@ public class Item
     {
         ItemUse = LargeHealPotionUse;
         return LargeHealPotionUse();
-
+        
         string LargeHealPotionUse() => "Item works!";
     }
 

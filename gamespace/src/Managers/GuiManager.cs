@@ -73,6 +73,7 @@ public class GuiManager
     public void RegisterControlledEntity(in Player player)
     {
         _input.MoveEvent += player.HandleMoveEvent;
+        _input.ItemUseEvent += player.HandleItemUseEvent;
     }
 
     private void RegisterInputHandler(in GuiPanel panel)

@@ -662,6 +662,7 @@ public class WorldBuilder
 
     public void updateWorld(Player player)
     {
+        //TODO: Can probably clean this up with an event system, but oh god time crunch.
         var roundedPos = new Vector2((int)player.WorldCoordinate.X, (int)player.WorldCoordinate.Y);
         if (_world.Chests.ContainsKey(roundedPos))
         {

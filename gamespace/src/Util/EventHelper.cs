@@ -38,7 +38,12 @@ public static class EventHelper
         NavUp,
         NavDown,
         NavSelect,
-        NavEsc
+        NavEsc,
+        InventorySlot1,
+        InventorySlot2,
+        InventorySlot3,
+        InventorySlot4,
+        InventorySlot5
     }
     
     public class EntityEventArgs
@@ -94,4 +99,6 @@ public static class EventHelper
     public delegate void CameraEventHandler(in Matrix scale);
     
     public delegate void PlayerStateEventHandler(in EventHelper.PlayerState state);
+
+    public delegate void PlayerUseItemEventHandler(in int index);
 }
