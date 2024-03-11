@@ -8,6 +8,7 @@ namespace gamespace.Util;
 
 public static class EventHelper
 {
+    #region enums
     public enum PlayerCommand
     {
         Use
@@ -49,6 +50,9 @@ public static class EventHelper
         ShootBullet
     }
     
+    #endregion
+    
+    #region Helper Classes
     public class EntityEventArgs
     {
         /// <summary>
@@ -88,6 +92,9 @@ public static class EventHelper
         public int ItemIndex { get; init; }
     }
     
+    #endregion
+    
+    #region delegates
     public delegate void PlayerCommandHandler(in PlayerCommand cmd, in PlayerPayload payload);
 
     /// <summary>
@@ -118,4 +125,6 @@ public static class EventHelper
     public delegate void SendMobToWorldBuilder(in Mob mobstate);
 
     public delegate void PlayerShootBullets();
+    
+    #endregion
 }
