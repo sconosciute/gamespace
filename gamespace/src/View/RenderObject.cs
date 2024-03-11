@@ -12,7 +12,7 @@ public class RenderObject
 {
     private readonly Texture2D _texture;
 
-    private readonly Guid? _entityId;
+    public Guid? EntityId { get; init; }
 
     private Vector2 _position;
 
@@ -34,7 +34,7 @@ public class RenderObject
         _texture = texture;
         _position = new Vector2(worldPosition.X * 16, worldPosition.Y * 16);
         Layer = layerDepth;
-        _entityId = entityId;
+        EntityId = entityId;
 
         if (texture.Name != Textures.Player) return;
         _animations[GetAnimationAction(worldPosition)] =
@@ -94,13 +94,18 @@ public class RenderObject
 
     public void HandleEntityEvent(in Guid sender, in EventHelper.EntityEventArgs args)
     {
-        if (sender != _entityId) return;
+        if (sender != EntityId) return;
         if (args.EventTopic == EventHelper.EntityEventType.Moved)
         {
             _position = args.NewPosition;
             _position.X *= Globals.TileSize;
             _position.Y *= Globals.TileSize;
         }
+    }
+    public event EventHelper.EntityUnregisterHandler Handle;
+    public void SendUnrender(in Guid sender)
+    {
+        Handle?.Invoke(this);
     }
 }
 
