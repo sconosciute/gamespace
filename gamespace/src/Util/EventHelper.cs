@@ -43,7 +43,8 @@ public static class EventHelper
         InventorySlot2,
         InventorySlot3,
         InventorySlot4,
-        InventorySlot5
+        InventorySlot5,
+        ShootBullet
     }
     
     public class EntityEventArgs
@@ -106,4 +107,10 @@ public static class EventHelper
     public delegate void CameraEventHandler(in Matrix scale);
     public delegate void PlayerUseItemEventHandler(in int index);
     public delegate void PlayerStateEventHandler(in PlayerState state);
+
+    public delegate void EntityUnregisterHandler(RenderObject robj);
+
+    public delegate void SendEntityToUnrender(in Guid sender);
+
+    public delegate void PlayerShootBullets();
 }

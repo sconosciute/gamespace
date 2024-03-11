@@ -137,6 +137,13 @@ public class Player : Character
         }
     }
 
+    public event EventHelper.PlayerShootBullets shotRecieved;
+    public void OnPlayerShootSender()
+    {
+        //Build.Projectiles.Bullet()
+        shotRecieved?.Invoke();
+    }
+
     public override void FixedUpdate()
     {
         base.FixedUpdate();

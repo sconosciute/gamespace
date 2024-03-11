@@ -41,6 +41,11 @@ public abstract class Character : Entity
         }
         Console.Out.WriteLine("healed for: " + amount);
 
+        if (Health <= 0)
+        {
+            OnDeath();
+        }
+
         return Health;
     }
 

@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
 
-public abstract class PhysicsObj
+public abstract class PhysicsObj : IDisposable
 {
     private bool _hasMovement;
     private bool _hasFriction;
@@ -43,4 +44,9 @@ public abstract class PhysicsObj
     }
 
     public abstract void FixedUpdate();
+
+    public void Dispose()
+    {
+        // TODO release managed resources here
+    }
 }

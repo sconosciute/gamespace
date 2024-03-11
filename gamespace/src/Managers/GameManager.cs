@@ -11,7 +11,6 @@ namespace gamespace.Managers;
 public class GameManager
 {
     private const int WorldSize = 51;
-
     private readonly Game1 _game;
     private readonly GraphicsDeviceManager _gfxMan;
     private readonly Camera _camera;
@@ -34,6 +33,7 @@ public class GameManager
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
         _worldBuilder = new WorldBuilder(this, _camera, _world);
+        _world.Entites.Add(_player);
         _playing = true;
     }
 
@@ -82,8 +82,23 @@ public class GameManager
         if (_playing)
         {
             _player.FixedUpdate();
-            _worldBuilder.updateWorld(_player);
+            _worldBuilder.UpdateWorld(_player);
         }
+    }
+    
+    public void PlayerShootHandler()
+    {
+        var Bullet = Build.Projectiles.Bullet(this, _world, _player.WorldCoordinate, _player.MoveSpeed, _player.EntityId, out RenderObject robj); //_player.WorldCoordinate
+        _camera.RegisterRenderable(robj);
+        Bullet.EntityEvent += robj.HandleEntityEvent;
+        
+        Bullet.SendObjToRenderObj += robj.SendUnrender;
+        robj.Handle += _camera.HandleUnrenderEvent;
+
+        Bullet.SendObjToWorldBuilder += _worldBuilder.HandleBulletDeregister;
+        _worldBuilder.livingBullets.Add(Bullet);
+        _worldBuilder.SizeToIterate++;
+        //Bullet.FixedUpdate();
     }
 
     public void AnimationUpdate(GameTime gameTime)

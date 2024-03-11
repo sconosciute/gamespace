@@ -9,7 +9,7 @@ namespace gamespace.Model
     {
         private const float DefaultEntSpeed = 0.15f;
 
-        private readonly World _world;
+        protected readonly World _world;
         private float _baseMoveSpeed = DefaultEntSpeed;
         private Vector2 _moveSpeed;
         private ILogger _log;
@@ -20,6 +20,7 @@ namespace gamespace.Model
         {
             EntityEvent?.Invoke(EntityId, args);
         }
+        
 
         /// <summary>
         /// The 0-2 fraction of a tile this entity can move in one update.
@@ -33,7 +34,7 @@ namespace gamespace.Model
 
         public Guid EntityId { get; init; }
 
-        protected Vector2 MoveSpeed
+        public Vector2 MoveSpeed //prot to pub
         {
             get => _moveSpeed;
             set => _moveSpeed = value;
@@ -69,8 +70,17 @@ namespace gamespace.Model
             };
             OnEntityEvent(args);
         }
+        
+        public event EventHelper.SendEntityToUnrender SendObjToRenderObj;
+        public event EventHelper.SendEntityToUnrender SendObjToWorldBuilder;
 
-        private void Translate(Vector2 translation, ref Vector2 curPos)
+        protected void OnDeath() 
+        {
+            SendObjToRenderObj?.Invoke(EntityId);
+            SendObjToWorldBuilder?.Invoke(EntityId);
+        }
+
+        protected virtual void Translate(Vector2 translation, ref Vector2 curPos)     //Making this protected and virtual wafor projectiles to work
         {
             var newPos = new Vector2(curPos.X + translation.X, curPos.Y + translation.Y);
             var bbx1 = (int)Math.Floor(Math.Min(newPos.X, curPos.X));
@@ -96,7 +106,7 @@ namespace gamespace.Model
             curPos.Y += translation.Y;
         }
 
-        private void CheckCollision(in PhysicsObj other, ref Vector2 translation, in Vector2 curPos)
+        protected bool CheckCollision(in PhysicsObj other, ref Vector2 translation, in Vector2 curPos) //Changed it so it returns if theres a colision.
         {
             var othCenter = other.WorldCoordinate;
             var colVector = new Vector2(othCenter.X - curPos.X, othCenter.Y - curPos.Y);
@@ -119,6 +129,11 @@ namespace gamespace.Model
                     other.WorldCoordinate,
                     oldMove,
                     translation);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -134,6 +149,8 @@ namespace gamespace.Model
             return absMove > (absCol - Math.Abs(boundAdjust)) ? collisionMagnitude - (boundAdjust) : moveMagnitude;
 
         }
+        
+        
     }
 
     

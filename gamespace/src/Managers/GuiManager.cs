@@ -74,6 +74,8 @@ public class GuiManager
     {
         _input.MoveEvent += player.HandleMoveEvent;
         _input.ItemUseEvent += player.HandleItemUseEvent;
+        _input.PlayerShootEvent += player.OnPlayerShootSender;
+        player.shotRecieved += _gm.PlayerShootHandler;
     }
 
     private void RegisterInputHandler(in GuiPanel panel)

@@ -18,6 +18,8 @@ public class World
 
     public readonly Dictionary<Vector2, Spikes> Spikes = new();
 
+    //public readonly Dictionary<Vector2, Character> Entities = new();
+    public List<Character> Entites = new();
     public Alter finalTileAlter;
 
     public List<Room> Rooms { get; } = new();
