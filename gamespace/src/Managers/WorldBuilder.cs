@@ -196,6 +196,7 @@ public class WorldBuilder
                 }
                 else
                 {
+                    //ConnectIslandRoom(room);
                     terminateCounter++;
                 }
 
@@ -237,10 +238,10 @@ public class WorldBuilder
         //_leftOverRooms.RemoveAt(index);
         }
 
-        foreach (var room in _world.Rooms)
+        /*foreach (var room in _world.Rooms)
         {
             ConnectIslandRoom(room); //Temp fix, add better logic but this makes sure there is no island rooms.
-        }
+        }*/
     }
     
 
@@ -515,7 +516,7 @@ public class WorldBuilder
                 if (_world.GetIsFloor(currentPos))
                 //if (!_world.CheckAdjWithoutDiagonal(currentPos + Direction)) //Need to add plus one to counter because this would stop one early.
                 {
-                    if (counter <= 1)
+                    if (counter <= 2)
                     {
                         //alreadyConnected = true;
                         return 1000;

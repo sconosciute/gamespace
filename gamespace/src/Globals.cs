@@ -6,7 +6,7 @@ namespace gamespace;
 
 public static class Globals
 {
-    private const bool DebugForceScale = false;
+    private const bool DebugForceScale = true;
 
     public static void Init(ContentManager content, SpriteBatch spriteBatch, SpriteFont font)
     {
