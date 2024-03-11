@@ -23,7 +23,8 @@ public static class EventHelper
         Up,
         Down,
         Select,
-        Escape
+        Escape,
+        Debug
     }
 
     public enum InputCallbacks
@@ -39,6 +40,7 @@ public static class EventHelper
         NavDown,
         NavSelect,
         NavEsc,
+        NavTilde,
         InventorySlot1,
         InventorySlot2,
         InventorySlot3,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json;
 using gamespace.Util;
 using gamespace.View;
@@ -84,6 +85,7 @@ public sealed class InputManager
         _defaultBinds.Add((Keys.Down, NavDown, EventHelper.InputCallbacks.NavDown));
         _defaultBinds.Add((Keys.Enter, NavSelect, EventHelper.InputCallbacks.NavSelect));
         _defaultBinds.Add((Keys.Escape, NavEsc, EventHelper.InputCallbacks.NavEsc));
+        _defaultBinds.Add((Keys.OemTilde, NavTilde, EventHelper.InputCallbacks.NavTilde ));
         
         _defaultBinds.Add((Keys.D1, UseSlotItem1, EventHelper.InputCallbacks.InventorySlot1));
         _defaultBinds.Add((Keys.D2, UseSlotItem2, EventHelper.InputCallbacks.InventorySlot2));
@@ -215,6 +217,9 @@ public sealed class InputManager
         PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Select));
     private void NavEsc(in InputDriver.KeyAction action) => 
         PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Escape));
+
+    private void NavTilde(in InputDriver.KeyAction action) =>
+        PressFilter(action, () => OnNavEvent(EventHelper.NavigationEvents.Debug));
     
     private static void PressFilter(InputDriver.KeyAction action, Action callback)
     {

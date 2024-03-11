@@ -62,5 +62,11 @@ public static class InputDriver
         }
     }
 
+    public static void DummyEquals()
+    {
+        var args = new KeyEvent(Keys.OemPlus, KeyAction.Pressed);
+        OnKeyboardEvent(args);
+    }
+
 }
 

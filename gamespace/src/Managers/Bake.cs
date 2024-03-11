@@ -27,6 +27,20 @@ public static class Bake
         return menu;
     }
 
+    public static GuiPanel DebugMenu(GraphicsDevice gfx, GuiManager manager)
+    {
+        var drawBox = GetStandardMenuBox(gfx);
+        var menu = new MenuPanel(drawBox, manager, "Debug Menu")
+        {
+            Shown = true,
+            IsActive = true
+        };
+        menu.AddButton(new GuiButton("Force Scale", ButtonCallbacks.ToggleForceScale, menu, manager));
+        menu.AddButton(new GuiButton("Close Menu", ButtonCallbacks.CloseParentMenu, menu, manager));
+
+        return menu;
+    }
+
     public static StatPanel StatPanel(GraphicsDevice gfx, GuiManager manager)
     {
         var sWidth = gfx.PresentationParameters.Bounds.Width;
@@ -72,6 +86,8 @@ public static class Bake
         public static void ExitGame(in GuiPanel parent, in GuiManager manager) => manager.ExitGame();
         public static void SaveGame(in GuiPanel parent, in GuiManager manager) => manager.SaveGame();
         public static void LoadGame(in GuiPanel parent, in GuiManager manager) => manager.LoadGame();
+        public static void ToggleForceScale(in GuiPanel parent, in GuiManager manager) => manager.ForceScale();
+            
         public static void FirePlayerCommand(in EventHelper.PlayerCommand cmd, in EventHelper.PlayerPayload payload,
             in GuiManager manager) => manager.OnPlayerCommandEvent(cmd, payload);
     }

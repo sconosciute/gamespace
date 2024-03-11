@@ -92,6 +92,9 @@ public class GuiManager
         if (nav == EventHelper.NavigationEvents.Escape)
         {
             OpenMainMenu();
+        } else if (nav == EventHelper.NavigationEvents.Debug)
+        {
+            OpenDebugMenu();
         }
     }
 
@@ -129,6 +132,14 @@ public class GuiManager
         _panels.Add(menu);
         _gm.PauseGame();
     }
+    
+    private void OpenDebugMenu()
+    {
+        var menu = Bake.DebugMenu(_gfx, this);
+        RegisterInputHandler(menu);
+        _panels.Add(menu);
+        _gm.PauseGame();
+    }
 
     public void OpenPersistentElements()
     {
@@ -142,4 +153,11 @@ public class GuiManager
     }
 
     #endregion
+
+    public void ForceScale()
+    {
+        Globals.DebugForceScale = !Globals.DebugForceScale;
+        Globals.UpdateScale(_gfx);
+        InputDriver.DummyEquals();
+    }
 }

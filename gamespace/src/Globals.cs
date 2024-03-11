@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using gamespace.View;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,7 +7,7 @@ namespace gamespace;
 
 public static class Globals
 {
-    private const bool DebugForceScale = false;
+    public static bool DebugForceScale = false;
 
     public static void Init(ContentManager content, SpriteBatch spriteBatch, SpriteFont font)
     {
@@ -40,9 +41,16 @@ public static class Globals
 
     public static void UpdateScale(GraphicsDevice gfx)
     {
-        if (DebugForceScale) return;
-        var windowScale = gfx.PresentationParameters.Bounds.Width / 640;
-        Scale = windowScale;
+        if (DebugForceScale)
+        {
+            Scale = 1f;
+        }
+        else
+        {
+            var windowScale = gfx.PresentationParameters.Bounds.Width / 640;
+            Scale = windowScale;
+        } 
+        
     }
 
     /// <summary>
