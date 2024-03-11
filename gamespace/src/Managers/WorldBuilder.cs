@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using gamespace.Model;
+using gamespace.Util;
 using gamespace.View;
 using Loyc;
 using Loyc.Collections;
@@ -34,8 +35,9 @@ public class WorldBuilder
     private int _numberOfRoomsLeft;
     public List<Projectile> livingBullets = new List<Projectile>();
 
-    public int SizeToIterate { get; set; } = 0;//= livingBullets.Count;
-
+    public int NumberOfBulletsToIterate { get; set; } = 0;//= livingBullets.Count;
+    public int NumberOfMobsToIterate { get; set; }
+    
     private static readonly Vector2 MoveRight = new(1, 0);
     private static readonly Vector2 MoveLeft = new(-1, 0);
     private static readonly Vector2 MoveUp = new(0, -1);
@@ -708,18 +710,24 @@ public class WorldBuilder
             if (livingBullets[i].EntityId.Equals(id))
             {
                 livingBullets.RemoveAt(i);
-                SizeToIterate--;
+                NumberOfBulletsToIterate--;
             }
         }
     }
     public void UpdateWorld(Player player)
     {
         //TODO: Can probably clean this up with an event system, but oh god time crunch.
-        for (var i = 0; i < SizeToIterate; i++)
+        for (var i = 0; i < NumberOfBulletsToIterate; i++)
         {
             //VARIABLE.FixedUpdate();
             livingBullets[i].FixedUpdate();
         }
+
+        for (var i = 0; i < NumberOfMobsToIterate; i++)
+        {
+            _world.Mobs[i].FixedUpdate();
+        }
+        
         //livingBullets[0].FixedUpdate();
         var roundedDownPos = new Vector2((float)Math.Floor(player.WorldCoordinate.X), (float)Math.Floor(player.WorldCoordinate.Y));
         var roundedUpPos = new Vector2((float)Math.Ceiling(player.WorldCoordinate.X), (float)Math.Ceiling(player.WorldCoordinate.Y));
@@ -771,6 +779,15 @@ public class WorldBuilder
             _world.finalTileAlter.InteractWithPlayer(player);
         }
     }
+
+    public event EventHelper.SendMobToWorldBuilder MobShooting;
+
+    public void SendMobToGameManager(in Mob newmob)
+    {
+        MobShooting?.Invoke(newmob);
+    }
+    
+    
     
     // DEBUGS =========================================================================================================
     private void StartDebugPrint()
@@ -837,7 +854,11 @@ public class WorldBuilder
         newMob.EntityEvent += renderable.HandleEntityEvent;
         newMob.SendObjToRenderObj += renderable.SendUnrender;
         renderable.Handle += _camera.HandleUnrenderEvent;
+
+        newMob.MobShootEvent += SendMobToGameManager;
         _world.Entites.Add(newMob);
+        _world.Mobs.Add(newMob);
+        NumberOfMobsToIterate++;
         
         return newMob;
     }

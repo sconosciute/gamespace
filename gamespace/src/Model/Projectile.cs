@@ -54,9 +54,8 @@ public class Projectile : Entity
                     if (CheckCollision(checkTile.Prop, ref translation, curPos))
                     {
                         //Need to kill object and unrender it
-                        OnDeath();
+                        OnDeath(); //If you replace onDeath with this they bounce!!! MoveSpeed = MoveSpeed * -1;
                         
-                        //GC.Collect();
                         //BulletDamage = 0;
                     }
                 }   //Adding in logic to see if the bullet hits any players

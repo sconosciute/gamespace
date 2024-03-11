@@ -112,5 +112,8 @@ public static class EventHelper
 
     public delegate void SendEntityToUnrender(in Guid sender);
 
+    //public delegate void MobShootBullets();
+    public delegate void SendMobToWorldBuilder(in Mob mobstate);
+
     public delegate void PlayerShootBullets();
 }

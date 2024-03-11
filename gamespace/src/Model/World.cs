@@ -20,6 +20,8 @@ public class World
 
     //public readonly Dictionary<Vector2, Character> Entities = new();
     public List<Character> Entites = new();
+    public List<Mob> Mobs = new(); //List of just mobs, no players or anythign else
+    
     public Alter finalTileAlter;
 
     public List<Room> Rooms { get; } = new();
