@@ -13,6 +13,7 @@ namespace gamespace.Model
         private float _baseMoveSpeed = DefaultEntSpeed;
         private Vector2 _moveSpeed;
         private ILogger _log;
+        public Vector2 LastMovingDirection { get; protected set; }
 
         public event EventHelper.EntityEventHandler EntityEvent;
 
@@ -52,6 +53,10 @@ namespace gamespace.Model
         public override void FixedUpdate()
         {
             var oldPos = WorldCoordinate;
+            /*if (oldPos != Vector2.Zero)
+            {
+                
+            }*/
             var newPos = WorldCoordinate;
 
             var xTranslation = new Vector2(_moveSpeed.X, 0f);
@@ -60,6 +65,10 @@ namespace gamespace.Model
             Translate(yTranslation, ref newPos);
 
             WorldCoordinate = newPos;
+            /*if (newPos != Vector2.Zero)
+            {
+                LastMovingDirection = newPos;
+            }*/
 
             if (oldPos == newPos) return;
             var args = new EventHelper.EntityEventArgs()

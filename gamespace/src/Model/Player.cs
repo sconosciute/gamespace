@@ -117,6 +117,10 @@ public class Player : Character
     public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
+        if (MoveSpeed != Vector2.Zero)
+        {
+            LastMovingDirection = MoveSpeed;
+        }
     }
 
     public void HandleItemUseEvent(in int index)

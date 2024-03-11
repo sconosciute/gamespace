@@ -89,7 +89,7 @@ public class GameManager
     
     public void PlayerShootHandler()
     {
-        var Bullet = Build.Projectiles.Bullet(this, _world, _player.WorldCoordinate, _player.MoveSpeed, _player.EntityId, out RenderObject robj); //_player.WorldCoordinate
+        var Bullet = Build.Projectiles.Bullet(this, _world, _player.WorldCoordinate, _player.LastMovingDirection, _player.EntityId, out RenderObject robj); //_player.WorldCoordinate
         _camera.RegisterRenderable(robj);
         Bullet.EntityEvent += robj.HandleEntityEvent;
         
