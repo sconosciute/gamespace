@@ -196,6 +196,7 @@ public class WorldBuilder
                 }
                 else
                 {
+                    //ConnectIslandRoom(room);
                     terminateCounter++;
                 }
 
@@ -230,15 +231,17 @@ public class WorldBuilder
 
         /*foreach (var room in _leftOverRooms)
         {
-            ConnectSingleRoom(room);
+            ConnectSingleRoom(room); 
         }*/
 
         //ConnectIslandRoom(_leftOverRooms[index]);
         //_leftOverRooms.RemoveAt(index);
         }
-        //StartDebugPrint();
-        
-        //LeftOverRoomsDebug();
+
+        /*foreach (var room in _world.Rooms)
+        {
+            ConnectIslandRoom(room); //Temp fix, add better logic but this makes sure there is no island rooms.
+        }*/
     }
     
 
@@ -513,7 +516,7 @@ public class WorldBuilder
                 if (_world.GetIsFloor(currentPos))
                 //if (!_world.CheckAdjWithoutDiagonal(currentPos + Direction)) //Need to add plus one to counter because this would stop one early.
                 {
-                    if (counter <= 1)
+                    if (counter <= 2)
                     {
                         //alreadyConnected = true;
                         return 1000;
@@ -648,11 +651,16 @@ public class WorldBuilder
             else
             {
                 var hazardOrChest = Rand.Next(0, 3);
-                if (hazardOrChest == 0 || hazardOrChest == 1) //Making it a 2 in 3 chance for a chest
+                if (hazardOrChest == 0) //Making it a 2 in 3 chance for a chest
                 {
                     _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
                         Build.InteractableProps.NormalChest, out currentChest));
                     _world.Chests.Add(PlacePoint, currentChest);
+                }
+                else if (hazardOrChest == 1)
+                {
+                    _world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
+                    _world.Spikes.Add(PlacePoint, currentSpike);
                 }
                 else
                 {
