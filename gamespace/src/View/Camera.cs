@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using gamespace.Model;
 using gamespace.Util;
 using Loyc;
@@ -60,6 +61,14 @@ public class Camera
     protected virtual void OnCameraEvent(Matrix scale)
     {
         CameraEvent?.Invoke(scale);
+    }
+    
+    //public event EventHelper.EntityUnregisterHandler handle;
+
+    public void HandleUnrenderEvent(RenderObject robj)
+    {
+        UnregisterRenderable(robj);
+        //handle.Invoke(robj);
     }
 
     //=== RENDERING ===-------------------------------------------------------------------------------------------------
@@ -143,6 +152,45 @@ public class Camera
                 throw new ArgumentOutOfRangeException();
         }
     }
+    
+    
+    public void UnregisterRenderable(RenderObject renderObject)
+    {
+        switch (renderObject.Layer)
+        {
+            case Layer.Background:
+                for (var i = 0; i < _backgroundRenderables.Count; i++)
+                {
+                    if (_backgroundRenderables[i].EntityId.Equals(renderObject.EntityId))
+                    {
+                        _backgroundRenderables.RemoveAt(i);
+                    }
+                }
+                break;
+            case Layer.Midground:
+                //_midgroundRenderables.Add(renderObject);
+                for (var i = 0; i < _midgroundRenderables.Count; i++)
+                {
+                    if (_midgroundRenderables[i].EntityId.Equals(renderObject.EntityId))
+                    {
+                        _midgroundRenderables.RemoveAt(i);
+                    }
+                }
+                break;
+            case Layer.Foreground:
+                //_foregroundRenderables.Add(renderObject);
+                for (var i = 0; i < _midgroundRenderables.Count; i++)
+                {
+                    if (_midgroundRenderables[i].EntityId.Equals(renderObject.EntityId))
+                    {
+                        _midgroundRenderables.RemoveAt(i);
+                    }
+                }
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 
     //=== EVENT HANDLING ===--------------------------------------------------------------------------------------
 
@@ -153,7 +201,7 @@ public class Camera
     /// <param name="args">Necessary information for this event.</param>
     public void HandleEntityEvent(in Guid sender, in EventHelper.EntityEventArgs args)
     {
-        if (sender != _playerId) return;
+        if (sender != _playerId) return;             //Uncommented now that other mobs besides player can move.
         if (args.EventTopic != EventHelper.EntityEventType.Moved) return;
         _trackedPosition = args.NewPosition;
         UpdateTranslationMatrix();

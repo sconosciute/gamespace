@@ -42,24 +42,21 @@ public static class Bake
         return stats;
     }
 
-    public static MenuPanel InventoryPanel(GraphicsDevice gfx, GuiManager manager, Item[] inventory)
+    public static InventoryPanel Inventory(GraphicsDevice gfx, GuiManager manager, Item[] inventory = null)
     {
-        var drawBox = GetStandardMenuBox(gfx);
-        var inv = new MenuPanel(drawBox, manager, "Inventory")
+        var playerInvSlots = 5;
+        var sHeight = gfx.PresentationParameters.Bounds.Height;
+        var height = sHeight / 10;
+        var width = height * playerInvSlots;
+        var sWidth = gfx.PresentationParameters.Bounds.Width;
+
+        var drawBox = new Rectangle(sWidth - width, sHeight - height, width, height);
+        var inv = new InventoryPanel(drawBox, manager, inventory: inventory)
         {
             Shown = true
         };
-        for (int item = 0; item < inventory.Length; item++)
-        {
-            var payload = new EventHelper.PlayerPayload()
-            {
-                ItemIndex = item
-            };
-        }
-
         return inv;
     }
-
     private static Rectangle GetStandardMenuBox(GraphicsDevice gfx)
     {
         var screenSpace = gfx.PresentationParameters.Bounds;

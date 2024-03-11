@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using gamespace.Model;
+using gamespace.Util;
 using gamespace.View;
 using Loyc;
 using Loyc.Collections;
@@ -18,6 +19,8 @@ public class WorldBuilder
     private readonly World _world;
     private readonly Camera _camera;
     private readonly GameManager _gm;
+    private Projectile Bullet;
+    private RenderObject robj;
     private const int AttemptsToPlaceRoom = 100;
     private const int RoomLowerBound = 5;
     private const int RoomUpperBound = 13;
@@ -30,7 +33,11 @@ public class WorldBuilder
     private List<Room> _roomsConnectedToStart = new();
     private int _numberOfKeyItemsLeft = 4;
     private int _numberOfRoomsLeft;
+    public List<Projectile> livingBullets = new List<Projectile>();
 
+    public int NumberOfBulletsToIterate { get; set; } = 0;//= livingBullets.Count;
+    public int NumberOfMobsToIterate { get; set; }
+    
     private static readonly Vector2 MoveRight = new(1, 0);
     private static readonly Vector2 MoveLeft = new(-1, 0);
     private static readonly Vector2 MoveUp = new(0, -1);
@@ -160,7 +167,7 @@ public class WorldBuilder
         //Debug print
         //LeftOverRoomsDebug();
 
-        //ConnectIslandRoom(startingRoom);
+        ConnectIslandRoom(startingRoom);
         
         var uhOhCounter = 0;
         var index = 0;
@@ -636,7 +643,7 @@ public class WorldBuilder
                 _world.ForcePlaceFloor(PlacePoint,
                     BuildChest(PlacePoint, Build.Items.Cog(),
                         Build.InteractableProps.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
-                _world.Chests.Add(PlacePoint, currentChest);
+                _world.Chests.Add(PlacePoint, currentChest); //Change out to being just handled in 
             }
             else
             {
@@ -652,9 +659,10 @@ public class WorldBuilder
                     //_world.ForcePlaceFloor(PlacePoint, Build(PlacePoint, Build.Items.SmallHealthPotion(),
                         //Build.Props.NormalChest, out currentChest));
                     //_world.Chests.Add(PlacePoint, currentChest);
-                    //BuildMob(PlacePoint, Build.Mobs.Turret);
-                    _world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
-                    _world.Spikes.Add(PlacePoint, currentSpike);
+                    BuildMob(PlacePoint, Build.Mobs.Turret);
+                    //_world.Entites.Add(mob); //Moved to build
+                    //_world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
+                    //_world.Spikes.Add(PlacePoint, currentSpike);
                 }
             }
             ChestDictDebug();
@@ -669,6 +677,15 @@ public class WorldBuilder
         PlacePoint = new(randX, randY);
         _world.ForcePlaceFloor(PlacePoint, BuildAlter(PlacePoint, Build.InteractableProps.Alter, out Alter alter));
         _world.finalTileAlter = alter;
+
+        /*Bullet = BuildBullet(new Vector2(-2, -2), out robj);
+        _camera.RegisterRenderable(robj);
+        Bullet.EntityEvent += robj.HandleEntityEvent;*/
+        
+        //Bullet.SendObjToUnregister += robj.SendUnrender;
+        //robj.Handle += _camera.HandleUnrenderEvent;
+        //Bullet.sendObjToUnregister += robj.SendUnrender;
+        
     }
 
     private bool DecideToPlaceKeyItem()
@@ -685,10 +702,33 @@ public class WorldBuilder
 
         return false;
     }
-
-    public void updateWorld(Player player)
+    
+    public void HandleBulletDeregister(in Guid id)
+    {
+        for(var i = 0; i < livingBullets.Count; i++)
+        {
+            if (livingBullets[i].EntityId.Equals(id))
+            {
+                livingBullets.RemoveAt(i);
+                NumberOfBulletsToIterate--;
+            }
+        }
+    }
+    public void UpdateWorld(Player player)
     {
         //TODO: Can probably clean this up with an event system, but oh god time crunch.
+        for (var i = 0; i < NumberOfBulletsToIterate; i++)
+        {
+            //VARIABLE.FixedUpdate();
+            livingBullets[i].FixedUpdate();
+        }
+
+        for (var i = 0; i < NumberOfMobsToIterate; i++)
+        {
+            _world.Mobs[i].FixedUpdate();
+        }
+        
+        //livingBullets[0].FixedUpdate();
         var roundedDownPos = new Vector2((float)Math.Floor(player.WorldCoordinate.X), (float)Math.Floor(player.WorldCoordinate.Y));
         var roundedUpPos = new Vector2((float)Math.Ceiling(player.WorldCoordinate.X), (float)Math.Ceiling(player.WorldCoordinate.Y));
         if (_world.Chests.ContainsKey(roundedDownPos)) //|| _world.Chests.ContainsKey(roundedUpPos))
@@ -739,6 +779,15 @@ public class WorldBuilder
             _world.finalTileAlter.InteractWithPlayer(player);
         }
     }
+
+    public event EventHelper.SendMobToWorldBuilder MobShooting;
+
+    public void SendMobToGameManager(in Mob newmob)
+    {
+        MobShooting?.Invoke(newmob);
+    }
+    
+    
     
     // DEBUGS =========================================================================================================
     private void StartDebugPrint()
@@ -801,8 +850,27 @@ public class WorldBuilder
     {
         var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
         _camera.RegisterRenderable(renderable);
+
+        newMob.EntityEvent += renderable.HandleEntityEvent;
+        newMob.SendObjToRenderObj += renderable.SendUnrender;
+        renderable.Handle += _camera.HandleUnrenderEvent;
+
+        newMob.MobShootEvent += SendMobToGameManager;
+        _world.Entites.Add(newMob);
+        _world.Mobs.Add(newMob);
+        NumberOfMobsToIterate++;
+        
         return newMob;
     }
+    
+    /*private Projectile BuildBullet(Vector2 worldPosition, out RenderObject renderable)
+    {
+        //var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
+        var newMob = Build.Projectiles.Bullet(_gm, _world, worldPosition, Vector2.Zero,  out renderable);
+        //_camera.RegisterRenderable(renderable);
+        //newMob.EntityEvent += renderable.HandleEntityEvent;
+        return newMob;
+    }*/
     
     private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback, out Chest newChest)
     {
@@ -817,7 +885,7 @@ public class WorldBuilder
     
     private delegate Spikes InteractablePropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
-    private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable);
+    private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPositiona, out RenderObject renderable);
 
     //=== ARCHIVE ===---------------------------------------------------------------------------------------------------
 

@@ -90,6 +90,8 @@ public sealed class InputManager
         _defaultBinds.Add((Keys.D3, UseSlotItem3, EventHelper.InputCallbacks.InventorySlot3));
         _defaultBinds.Add((Keys.D4, UseSlotItem4, EventHelper.InputCallbacks.InventorySlot4));
         _defaultBinds.Add((Keys.D5, UseSlotItem5, EventHelper.InputCallbacks.InventorySlot5));
+        
+        _defaultBinds.Add((Keys.Space, ShootBullet, EventHelper.InputCallbacks.ShootBullet));
     }
 
     #endregion
@@ -184,6 +186,13 @@ public sealed class InputManager
         ItemUseEvent?.Invoke(index);
     }
 
+    public event EventHelper.PlayerShootBullets PlayerShootEvent;
+
+    private void OnPlayerShootEvent()
+    {
+        PlayerShootEvent?.Invoke();
+    }
+
     #endregion
 
     #region Input Callbacks
@@ -218,6 +227,8 @@ public sealed class InputManager
     private void UseSlotItem3(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(2));
     private void UseSlotItem4(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(3));
     private void UseSlotItem5(in InputDriver.KeyAction action) => PressFilter(action, () => OnItemEvent(4));
+
+    private void ShootBullet(in InputDriver.KeyAction action) => PressFilter(action, () => OnPlayerShootEvent());
 
     #endregion
 }

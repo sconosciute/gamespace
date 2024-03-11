@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using gamespace.Util;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
@@ -54,6 +55,8 @@ public class Mob : Character
     /// A public property to access our mobs inventory.
     /// </summary>
     public Item[] Inventory => _inventory;
+
+    private int _counter = 0; //Changes how often it shoots, will change var name tomorrow
     
     /// <summary>
     /// An enum to store different types of mobs.
@@ -161,5 +164,27 @@ public class Mob : Character
         var result = base.ToString() + " Name: " + _name + " Type: " + _type + " HP: " + _hp + " DMG: " + _damage +
                      " can use items: " + _canUseItems + " can move: " + _canMove;
         return result;
+    }
+
+    public event EventHelper.SendMobToWorldBuilder MobShootEvent;
+
+    private void OnMobShootEvent()
+    {
+        MobShootEvent?.Invoke(this);
+    }
+
+    public override void FixedUpdate()
+    {
+        //This is a temp fix to make turrets stop sending out bullets and quit updating. Should look at a cleaner way to fully remove them.
+        if (Health > 0)
+        {
+            base.FixedUpdate();
+            _counter++;
+            if (_counter == 25) //Changes how often it shoots. change to 25
+            {
+                _counter = 0;
+                OnMobShootEvent();
+            }
+        }
     }
 }

@@ -11,7 +11,6 @@ namespace gamespace.Managers;
 public class GameManager
 {
     private const int WorldSize = 51;
-
     private readonly Game1 _game;
     private readonly GraphicsDeviceManager _gfxMan;
     private readonly Camera _camera;
@@ -34,6 +33,7 @@ public class GameManager
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
         _worldBuilder = new WorldBuilder(this, _camera, _world);
+        _world.Entites.Add(_player);
         _playing = true;
     }
 
@@ -52,7 +52,7 @@ public class GameManager
     {
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
-        _gui.OpenStatPanel();
+        _gui.OpenPersistentElements();
         Guid dummy = Guid.NewGuid();
         _worldBuilder.BuildWorld();
         //_worldBuilder.BuildBasicWorld();
@@ -60,9 +60,10 @@ public class GameManager
             layerDepth: Layer.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(_robj);
         _player.EntityEvent += _robj.HandleEntityEvent;
-        
+
+        _worldBuilder.MobShooting += MobShootHandler;
         //_worldBuilder.MakeRoom();
-        
+
     }
 
     public void RegisterPlayerListener(EventHelper.PlayerStateEventHandler handler)
@@ -82,10 +83,46 @@ public class GameManager
         if (_playing)
         {
             _player.FixedUpdate();
-            _worldBuilder.updateWorld(_player);
+            _worldBuilder.UpdateWorld(_player);
         }
     }
+    
+    public void PlayerShootHandler()
+    {
+        var Bullet = Build.Projectiles.Bullet(this, _world, _player.WorldCoordinate, _player.LastMovingDirection, _player.EntityId, out RenderObject robj); //_player.WorldCoordinate
+        _camera.RegisterRenderable(robj);
+        Bullet.EntityEvent += robj.HandleEntityEvent;
+        
+        Bullet.SendObjToRenderObj += robj.SendUnrender;
+        robj.Handle += _camera.HandleUnrenderEvent;
 
+        Bullet.SendObjToWorldBuilder += _worldBuilder.HandleBulletDeregister;
+        _worldBuilder.livingBullets.Add(Bullet);
+        _worldBuilder.NumberOfBulletsToIterate++;
+        //Bullet.FixedUpdate();
+    }
+
+    private void MobShootHandler(in Mob newMob)
+    {
+        //var dx = _player.WorldCoordinate.X * 0.1f; THIS NEEDS TO BE IN RELATION TO THE MOB RARRRRRR
+        //var dy = _player.WorldCoordinate.Y * 0.1f;
+        var dx = (_player.WorldCoordinate.X - newMob.WorldCoordinate.X) * 0.015f; //May need to adjust speed of these bullets.
+        var dy = (_player.WorldCoordinate.Y - newMob.WorldCoordinate.Y) * 0.015f;
+        //var dx = Vector2.Add(_player.)
+        Vector2 direction = new Vector2(dx, dy);
+        
+        var Bullet = Build.Projectiles.Bullet(this, _world, newMob.WorldCoordinate, direction, newMob.EntityId, out RenderObject robj); //_player.WorldCoordinate
+        _camera.RegisterRenderable(robj);
+        Bullet.EntityEvent += robj.HandleEntityEvent;
+        
+        Bullet.SendObjToRenderObj += robj.SendUnrender;
+        robj.Handle += _camera.HandleUnrenderEvent;
+
+        Bullet.SendObjToWorldBuilder += _worldBuilder.HandleBulletDeregister;
+        _worldBuilder.livingBullets.Add(Bullet);
+        _worldBuilder.NumberOfBulletsToIterate++;
+        
+    }
     public void AnimationUpdate(GameTime gameTime)
     {
         _robj.Update(gameTime);

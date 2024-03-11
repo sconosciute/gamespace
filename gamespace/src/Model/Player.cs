@@ -117,6 +117,10 @@ public class Player : Character
     public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
+        if (MoveSpeed != Vector2.Zero)
+        {
+            LastMovingDirection = MoveSpeed;
+        }
     }
 
     public void HandleItemUseEvent(in int index)
@@ -135,6 +139,13 @@ public class Player : Character
         {
             Environment.Exit(0);
         }
+    }
+
+    public event EventHelper.PlayerShootBullets shotRecieved;
+    public void OnPlayerShootSender()
+    {
+        //Build.Projectiles.Bullet()
+        shotRecieved?.Invoke();
     }
 
     public override void FixedUpdate()

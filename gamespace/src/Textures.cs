@@ -19,4 +19,6 @@ public struct Textures
     public const string Spike = "spike";
     public const string DarkSquareWall = "darkSquareWall";
     public const string DarkDiamondWall = "darkDiamondWall";
+    public const string PotLarge = "mediumPotion";
+    public const string Bullet = "bullet";
 }

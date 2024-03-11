@@ -1,4 +1,5 @@
-﻿using gamespace.Model;
+﻿using System;
+using gamespace.Model;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
@@ -96,11 +97,13 @@ public static class Build
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Cat), //Temp image for turrets.
                 worldPosition: worldPosition,
-                layerDepth: Layer.Midground);
+                layerDepth: Layer.Midground,
+                entityId: mob.EntityId);
+            
             return mob;
         }
 
-        public static Mob RogueRanger(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
+        public static Mob RogueRanger(GameManager gm, World world, Vector2 worldPosition, Guid id, out RenderObject renderable)
         {
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Rogue Ranger",
                 10, true, true, Mob.MobTypes.Hostile);
@@ -108,8 +111,23 @@ public static class Build
             renderable = new RenderObject(
                 texture: null, //gm.GetTexture(Textures.RogueRanger), 
                 worldPosition: worldPosition,
-                layerDepth: Layer.Midground);
+                layerDepth: Layer.Midground,
+                entityId: id);
             return mob;
+        }
+    }
+
+    public struct Projectiles
+    {
+        public static Projectile Bullet(GameManager gm, World world, Vector2 worldPosition, Vector2 direction, Guid sender, out RenderObject renderable)
+        {
+            var bullet = new Projectile(0.25f, 0.25f, world, worldPosition, direction, sender); //tryna change height and width to 0.25f to fix hit reg
+            renderable = new RenderObject(
+                texture: gm.GetTexture(Textures.Bullet),
+                worldPosition: worldPosition,
+                layerDepth: Layer.Midground,
+                entityId: bullet.EntityId);
+            return bullet;
         }
     }
 
@@ -121,7 +139,6 @@ public static class Build
             var smallPotion = new Item("Small health potion",
                 "This will heal small wounds", false, Item.ItemType.HealingItem);
             smallPotion.UseSmallPotion();
-            // = Item.UseSmallPotion(user);
             return smallPotion;
         }
 
