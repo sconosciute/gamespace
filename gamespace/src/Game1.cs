@@ -54,6 +54,7 @@ public class Game1 : Game
         _gm.AddTexture(Textures.Spike);
         _gm.AddTexture(Textures.DarkDiamondWall);
         _gm.AddTexture(Textures.DarkSquareWall);
+        _gm.AddTexture(Textures.PotLarge);
         
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();

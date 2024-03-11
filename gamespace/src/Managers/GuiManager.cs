@@ -18,6 +18,8 @@ public class GuiManager
 
     public Texture2D OpaqueBg { get; private set; }
     public Texture2D TransparentBg { get; private set; }
+    
+    public Texture2D PotionImg { get; private set; }
 
     private readonly SpriteBatch _guiSpriteBatch;
 
@@ -38,6 +40,7 @@ public class GuiManager
     {
         OpaqueBg = _gm.GetTexture(Textures.OpaqueBg);
         TransparentBg = _gm.GetTexture(Textures.TransparentBg);
+        PotionImg = _gm.GetTexture(Textures.PotLarge);
     }
 
     #region Game Loop
@@ -125,12 +128,15 @@ public class GuiManager
         _gm.PauseGame();
     }
 
-    public void OpenStatPanel()
+    public void OpenPersistentElements()
     {
         if (_stats != null) return;
         _stats = Bake.StatPanel(_gfx, this);
+        var inv = Bake.Inventory(_gfx, this);
         _gm.RegisterPlayerListener(_stats.HandlePlayerStateEvent);
+        _gm.RegisterPlayerListener(inv.HandlePlayerStateEvent);
         _panels.Add(_stats);
+        _panels.Add(inv);
     }
 
     #endregion

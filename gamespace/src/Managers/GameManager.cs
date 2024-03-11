@@ -52,7 +52,7 @@ public class GameManager
     {
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
-        _gui.OpenStatPanel();
+        _gui.OpenPersistentElements();
         Guid dummy = Guid.NewGuid();
         _worldBuilder.BuildWorld();
         //_worldBuilder.BuildBasicWorld();
