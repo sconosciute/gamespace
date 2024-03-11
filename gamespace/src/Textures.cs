@@ -19,5 +19,5 @@ public struct Textures
     public const string Spike = "spike";
     public const string DarkSquareWall = "darkSquareWall";
     public const string DarkDiamondWall = "darkDiamondWall";
-    public const string Bullet = "RedCircle16";
+    public const string Bullet = "bullet";
 }

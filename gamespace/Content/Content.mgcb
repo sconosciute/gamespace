@@ -176,7 +176,7 @@
 /processorParam:TextureFormat=Color
 /build:normalChest.png
 
-#begin RedCircle16.png
+#begin bullet.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -186,7 +186,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:RedCircle16.png
+/build:bullet.png
 
 #begin RoomConnectorTile.png
 /importer:TextureImporter
