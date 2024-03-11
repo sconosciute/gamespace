@@ -19,18 +19,9 @@ public class Projectile : Entity
         //var positionToSpawn = Vector2.Add(worldCoordinate, Vector2.Multiply(direction, new Vector2(12, 12)) );
         //WorldCoordinate = positionToSpawn;
 
-        MoveSpeed = direction; //* 0.1f; //* 0.1f; //* 0.1f;
+        MoveSpeed = direction * 1.5f; 
         _sender = sender;
     }
-    //TODO: Change this up to entity level, idk how inheritance works with events I'm lost, please send help.
-    /*public event EventHelper.SendEntityToUnrender SendObjToRenderObj;
-    public event EventHelper.SendEntityToUnrender SendObjToWorldBuilder;
-
-    private void OnDeath() 
-    {
-        SendObjToRenderObj?.Invoke(EntityId);
-        SendObjToWorldBuilder?.Invoke(EntityId);
-    }*/
     
     
     protected override void Translate(Vector2 translation, ref Vector2 curPos)
