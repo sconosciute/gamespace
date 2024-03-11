@@ -104,9 +104,13 @@ public class GameManager
 
     private void MobShootHandler(in Mob newMob)
     {
-        var dx = _player.WorldCoordinate.X * 0.1f;
-        var dy = _player.WorldCoordinate.Y * 0.1f;
+        //var dx = _player.WorldCoordinate.X * 0.1f; THIS NEEDS TO BE IN RELATION TO THE MOB RARRRRRR
+        //var dy = _player.WorldCoordinate.Y * 0.1f;
+        var dx = (_player.WorldCoordinate.X - newMob.WorldCoordinate.X) * 0.02f; //May need to adjust speed of these bullets.
+        var dy = (_player.WorldCoordinate.Y - newMob.WorldCoordinate.Y) * 0.02f;
+        //var dx = Vector2.Add(_player.)
         Vector2 direction = new Vector2(dx, dy);
+        
         var Bullet = Build.Projectiles.Bullet(this, _world, newMob.WorldCoordinate, direction, newMob.EntityId, out RenderObject robj); //_player.WorldCoordinate
         _camera.RegisterRenderable(robj);
         Bullet.EntityEvent += robj.HandleEntityEvent;

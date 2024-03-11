@@ -17,7 +17,6 @@ public class Projectile : Entity
             direction = new Vector2(0.12f, 0.12f);
         }
         //var positionToSpawn = Vector2.Add(worldCoordinate, Vector2.Multiply(direction, new Vector2(12, 12)) );
-
         //WorldCoordinate = positionToSpawn;
 
         MoveSpeed = direction; //* 0.1f; //* 0.1f; //* 0.1f;
