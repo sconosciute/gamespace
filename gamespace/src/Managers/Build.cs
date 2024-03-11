@@ -121,7 +121,7 @@ public static class Build
     {
         public static Projectile Bullet(GameManager gm, World world, Vector2 worldPosition, Vector2 direction, Guid sender, out RenderObject renderable)
         {
-            var bullet = new Projectile(1, 1, world, worldPosition, direction, sender);
+            var bullet = new Projectile(0.25f, 0.25f, world, worldPosition, direction, sender); //tryna change height and width to 0.25f to fix hit reg
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Bullet),
                 worldPosition: worldPosition,
@@ -139,7 +139,6 @@ public static class Build
             var smallPotion = new Item("Small health potion",
                 "This will heal small wounds", false, Item.ItemType.HealingItem);
             smallPotion.UseSmallPotion();
-            // = Item.UseSmallPotion(user);
             return smallPotion;
         }
 

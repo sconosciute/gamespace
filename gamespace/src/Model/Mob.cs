@@ -180,7 +180,7 @@ public class Mob : Character
         {
             base.FixedUpdate();
             _counter++;
-            if (_counter == 20) //Changes how often it shoots.
+            if (_counter == 25) //Changes how often it shoots. change to 25
             {
                 _counter = 0;
                 OnMobShootEvent();
