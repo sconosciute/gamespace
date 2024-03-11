@@ -14,15 +14,7 @@ namespace gamespace.Model
         private Vector2 _moveSpeed;
         private ILogger _log;
         public Vector2 LastMovingDirection { get; protected set; }
-
-        public event EventHelper.EntityEventHandler EntityEvent;
-
-        protected virtual void OnEntityEvent(EventHelper.EntityEventArgs args)
-        {
-            EntityEvent?.Invoke(EntityId, args);
-        }
         
-
         /// <summary>
         /// The 0-2 fraction of a tile this entity can move in one update.
         /// Clamps between 0-2 without raising exception if out of bounds.
@@ -40,6 +32,14 @@ namespace gamespace.Model
             get => _moveSpeed;
             set => _moveSpeed = value;
         }
+
+        public event EventHelper.EntityEventHandler EntityEvent;
+
+        protected virtual void OnEntityEvent(EventHelper.EntityEventArgs args)
+        {
+            EntityEvent?.Invoke(EntityId, args);
+        }
+        
 
         protected Entity(float width, float height, World world, Vector2 worldCoordinate)
             : base(worldCoordinate, width, height, true, true, true)
