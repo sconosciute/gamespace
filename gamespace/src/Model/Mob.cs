@@ -79,7 +79,7 @@ public class Mob : Character
     /// <param name="type"> What type our mob should be, hostile or passive. </param>
     public Mob(Vector2 worldCoordinate, int hp, int energy, int baseDmg, World world,
         string name, int damage, bool canMove, bool canUseItems, MobTypes type) :
-        base(worldCoordinate, 1, 1, hp, energy, baseDmg, world)
+        base(worldCoordinate, 1f, 1f, hp, energy, baseDmg, world)
     {
         _name = name;
         _hp = hp;

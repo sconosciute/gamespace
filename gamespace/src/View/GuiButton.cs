@@ -1,5 +1,6 @@
 ﻿using System;
 using gamespace.Managers;
+using gamespace.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,12 +9,12 @@ namespace gamespace.View;
 public class GuiButton : GuiPanel
 {
     public delegate void ButtonCallback(in GuiPanel parent, in GuiManager manager);
-    
+
     private static readonly Rectangle DefaultBox = new();
     private ButtonCallback _callback;
     public bool Selected { get; set; }
 
-    public GuiButton(string title, ButtonCallback callback, GuiPanel parent, GuiManager manager) 
+    public GuiButton(string title, ButtonCallback callback, GuiPanel parent, GuiManager manager)
         : base(title, DefaultBox, manager, parent, manager.TransparentBg)
     {
         _callback = callback;
@@ -38,5 +39,4 @@ public class GuiButton : GuiPanel
     {
         _callback.Invoke(Parent, Parent.Manager);
     }
-    
 }

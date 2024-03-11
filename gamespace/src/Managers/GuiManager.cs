@@ -73,6 +73,7 @@ public class GuiManager
     public void RegisterControlledEntity(in Player player)
     {
         _input.MoveEvent += player.HandleMoveEvent;
+        _input.ItemUseEvent += player.HandleItemUseEvent;
     }
 
     private void RegisterInputHandler(in GuiPanel panel)
@@ -87,6 +88,13 @@ public class GuiManager
         {
             OpenMainMenu();
         }
+    }
+
+    public event EventHelper.PlayerCommandHandler PlayerCommandEvent;
+
+    public void OnPlayerCommandEvent(in EventHelper.PlayerCommand cmd, in EventHelper.PlayerPayload payload)
+    {
+        PlayerCommandEvent?.Invoke(cmd, payload);
     }
 
     public void ExitGame() => _gm.ExitGame();

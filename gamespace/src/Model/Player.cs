@@ -12,13 +12,16 @@ public class Player : Character
     /// <summary>
     /// A constant to provide the size of our players usable inventory.
     /// </summary>
-    private const int InventorySize = 5;
+    public const int InventorySize = 5;
     
     /// <summary>
     /// A constant to provide the size of our players key item inventory.
     /// </summary>
     private const int KeyInventorySize = 4;
-
+    
+    
+    public int KeyItemsHeld { get; set; }
+    
     /// <summary>
     /// A string to store the name of our player.
     /// </summary>
@@ -27,12 +30,12 @@ public class Player : Character
     /// <summary>
     /// A public property to access our players usable inventory.
     /// </summary>
-    public Item[] Inventory { get; }
+    public Item[] Inventory { get; } = new Item[InventorySize];
 
     /// <summary>
     /// A public property to access our players key inventory.
     /// </summary>
-    public Item[] KeyItemInventory { get; }
+    public Item[] KeyItemInventory { get; } = new Item[KeyInventorySize];
 
     /// <summary>
     /// A constructor to build our player.
@@ -40,11 +43,10 @@ public class Player : Character
     /// <param name="name"> The name our player should have. </param>
     /// <param name="world"> The world our player should be put into. </param>
     public Player(string name, World world)
-        : base(Vector2.Zero, 1, 1, 100, 100, 10, world)
+        : base(Vector2.Zero, 0.9f, 0.9f, 100, 100, 10, world)
     {
         _name = name;
-        Inventory = new Item[InventorySize];
-        KeyItemInventory = new Item[KeyInventorySize];
+        KeyItemsHeld = 0;
         OnPlayerStateEvent();
     }
 
@@ -84,6 +86,7 @@ public class Player : Character
 
             newItem.User = this;
             KeyItemInventory[firstEmptyIndex] = newItem;
+            KeyItemsHeld += 1;
             return true;
         }
         else
@@ -98,6 +101,7 @@ public class Player : Character
             Inventory[firstEmptyIndex] = newItem;
             return true;
         }
+        OnPlayerStateEvent();
     }
     
     /// <summary>
@@ -115,11 +119,27 @@ public class Player : Character
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
     }
 
+    public void HandleItemUseEvent(in int index)
+    {
+        Console.Out.WriteLine(index);
+        InventoryUse(index);
+    }
+
     public event EventHelper.PlayerStateEventHandler PlayerStateEvent;
 
     private void OnPlayerStateEvent()
     {
-        var args = new EventHelper.PlayerState(Health, Energy, Inventory);
+        var args = new EventHelper.PlayerState(Health, Energy, Inventory, KeyItemsHeld);
         PlayerStateEvent?.Invoke(args);
+        if (Health <= 0)
+        {
+            Environment.Exit(0);
+        }
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        OnPlayerStateEvent();
     }
 }

@@ -3,17 +3,24 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace gamespace.Model;
 
 public class World
 {
-    public const int NumberOfRooms = 200;
+    public const int NumberOfRooms = 100;
 
     /**Sparse list of all map tiles by x, y order  **/
     private readonly Dictionary<Vector2, Tile> _tiles = new();
 
-    private readonly List<Rectangle> _roomBounds = new();
+    public readonly Dictionary<Vector2, Chest> Chests = new();
+
+    public readonly Dictionary<Vector2, Spikes> Spikes = new();
+
+    public Alter finalTileAlter;
+
+    public List<Room> Rooms { get; } = new();
 
     //Mins, maxes, and offsets need to be accessed repeatedly, caching rather than calculating.
 
@@ -33,7 +40,7 @@ public class World
     private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
 
     //TODO: This property will likely be removed before completion
-    public Vector2 CurrentPos { get; set; } = new(-4, -3);
+    public Vector2 CurrentPos { get; set; } = new(-3, -3); //changed -3 to 5
 
     /// <summary>
     /// Builds a new World object with the given width and height boundary.
@@ -120,17 +127,17 @@ public class World
         this[(int)pos.X, (int)pos.Y] = tile;
     }
 
-    public bool CheckRoomOverlap(Rectangle newRoom)
+    public bool CheckRoomOverlap(Room newRoom)
     {
-        foreach (var rect in _roomBounds)
+        foreach (var rect in Rooms)
         {
-            if (!Rectangle.Intersect(rect, newRoom).IsEmpty)
+            if (!Rectangle.Intersect(rect.RoomBounds, newRoom.RoomBounds).IsEmpty)
             {
                 return true;
             }
         }
 
-        _roomBounds.Add(newRoom);
+        Rooms.Add(newRoom); //This should be handled outside of this method
         return false;
     }
 
@@ -178,6 +185,16 @@ public class World
         }
 
         return true;
+    }
+
+    public bool CheckAdjWithoutDiagonal(Vector2 pos) //Changed this to vector
+    {
+        if (!IsInBounds((int)pos.X, (int)pos.Y) || this[(int)pos.X, (int)pos.Y] == null)
+        {
+            return false;
+        }
+        return (!this[(int)pos.X + 1, (int)pos.Y].CanCollide || !this[(int)pos.X + 1, (int)pos.Y].CanCollide ||
+                !this[(int)pos.X, (int)pos.Y - 1].CanCollide || !this[(int)pos.X, (int)pos.Y + 1].CanCollide);
     }
 
     public bool CheckAdjWithAvoidance(Point pos, Point lastTile)

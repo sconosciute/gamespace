@@ -29,7 +29,7 @@ public class GameManager
     {
         _game = game;
         _gfxMan = graphics;
-        // SetResolution(2160, 1440);
+        SetResolution(1920, 1080);
         _world = new World(WorldSize, WorldSize);
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
@@ -55,8 +55,9 @@ public class GameManager
         _gui.OpenStatPanel();
         Guid dummy = Guid.NewGuid();
         _worldBuilder.BuildWorld();
+        //_worldBuilder.BuildBasicWorld();
         _robj = new RenderObject(texture: GetTexture(Textures.Player), worldPosition: _player.WorldCoordinate,
-            layerDepth: LayerDepth.Foreground, entityId: _player.EntityId);
+            layerDepth: Layer.Foreground, entityId: _player.EntityId);
         _camera.RegisterRenderable(_robj);
         _player.EntityEvent += _robj.HandleEntityEvent;
         
@@ -81,6 +82,7 @@ public class GameManager
         if (_playing)
         {
             _player.FixedUpdate();
+            _worldBuilder.updateWorld(_player);
         }
     }
 

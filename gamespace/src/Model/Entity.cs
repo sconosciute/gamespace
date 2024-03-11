@@ -7,7 +7,7 @@ namespace gamespace.Model
 {
     public abstract class Entity : PhysicsObj
     {
-        private const float DefaultEntSpeed = 0.1f;
+        private const float DefaultEntSpeed = 0.15f;
 
         private readonly World _world;
         private float _baseMoveSpeed = DefaultEntSpeed;
@@ -39,7 +39,7 @@ namespace gamespace.Model
             set => _moveSpeed = value;
         }
 
-        protected Entity(int width, int height, World world, Vector2 worldCoordinate)
+        protected Entity(float width, float height, World world, Vector2 worldCoordinate)
             : base(worldCoordinate, width, height, true, true, true)
         {
             _log = Globals.LogFactory.CreateLogger<Entity>();

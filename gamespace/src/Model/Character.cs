@@ -15,7 +15,7 @@ public abstract class Character : Entity
     public int Health { get; protected set; }
     public int Energy { get; protected set; }
 
-    public Character(Vector2 worldCoordinate, int width, int height, int hp, int energy, int baseDmg, World world) :
+    public Character(Vector2 worldCoordinate, float width, float height, int hp, int energy, int baseDmg, World world) :
         base(width, height, world, worldCoordinate)
     {
         if (hp <= 0)
@@ -29,7 +29,7 @@ public abstract class Character : Entity
     }
 
     //Made this for health potion
-    public string AddHealth(int amount)
+    public int AddHealth(int amount) //new heatlh
     {
         if (Health + amount <= _maxHp)
         {
@@ -39,8 +39,9 @@ public abstract class Character : Entity
         {
             Health = _maxHp;
         }
+        Console.Out.WriteLine("healed for: " + amount);
 
-        return "Health now: " + Health;
+        return Health;
     }
 
     public override string ToString()

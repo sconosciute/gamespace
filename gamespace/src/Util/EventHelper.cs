@@ -38,7 +38,12 @@ public static class EventHelper
         NavUp,
         NavDown,
         NavSelect,
-        NavEsc
+        NavEsc,
+        InventorySlot1,
+        InventorySlot2,
+        InventorySlot3,
+        InventorySlot4,
+        InventorySlot5
     }
     
     public class EntityEventArgs
@@ -64,16 +69,23 @@ public static class EventHelper
         public int Health { get; init; }
         public int Energy { get; init; }
         public Item[] Inventory { get; init; }
+        public int KeyItems { get; init; }
 
-        public PlayerState(in int health, in int energy, in Item[] inventory)
+        public PlayerState(in int health, in int energy, in Item[] inventory, in int keyCount)
         {
             Health = health;
             Energy = energy;
             Inventory = inventory;
+            KeyItems = keyCount;
         }
     }
+
+    public class PlayerPayload
+    {
+        public int ItemIndex { get; init; }
+    }
     
-    public delegate void PlayerCommandHandler();
+    public delegate void PlayerCommandHandler(in PlayerCommand cmd, in PlayerPayload payload);
 
     /// <summary>
     /// Player move event handler type.
@@ -92,6 +104,6 @@ public static class EventHelper
     public delegate void EntityEventHandler(in Guid sender, in EntityEventArgs args);
 
     public delegate void CameraEventHandler(in Matrix scale);
-    
-    public delegate void PlayerStateEventHandler(in EventHelper.PlayerState state);
+    public delegate void PlayerUseItemEventHandler(in int index);
+    public delegate void PlayerStateEventHandler(in PlayerState state);
 }
