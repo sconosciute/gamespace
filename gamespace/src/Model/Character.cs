@@ -43,7 +43,7 @@ public abstract class Character : Entity
 
         if (Health <= 0)
         {
-            OnDeath();
+            OnDeath(); //Make this called in fixed update instead?
         }
 
         return Health;

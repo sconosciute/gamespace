@@ -167,7 +167,7 @@ public class WorldBuilder
         //Debug print
         //LeftOverRoomsDebug();
 
-        //ConnectIslandRoom(startingRoom);
+        ConnectIslandRoom(startingRoom);
         
         var uhOhCounter = 0;
         var index = 0;

@@ -56,7 +56,7 @@ public class Mob : Character
     /// </summary>
     public Item[] Inventory => _inventory;
 
-    private int _counter = 0;
+    private int _counter = 0; //Changes how often it shoots, will change var name tomorrow
     
     /// <summary>
     /// An enum to store different types of mobs.
@@ -175,12 +175,16 @@ public class Mob : Character
 
     public override void FixedUpdate()
     {
-        base.FixedUpdate();
-        _counter++;
-        if (_counter == 5)
+        //This is a temp fix to make turrets stop sending out bullets and quit updating. Should look at a cleaner way to fully remove them.
+        if (Health > 0)
         {
-            _counter = 0;
-            OnMobShootEvent();
+            base.FixedUpdate();
+            _counter++;
+            if (_counter == 20) //Changes how often it shoots.
+            {
+                _counter = 0;
+                OnMobShootEvent();
+            }
         }
     }
 }

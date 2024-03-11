@@ -106,8 +106,8 @@ public class GameManager
     {
         //var dx = _player.WorldCoordinate.X * 0.1f; THIS NEEDS TO BE IN RELATION TO THE MOB RARRRRRR
         //var dy = _player.WorldCoordinate.Y * 0.1f;
-        var dx = (_player.WorldCoordinate.X - newMob.WorldCoordinate.X) * 0.02f; //May need to adjust speed of these bullets.
-        var dy = (_player.WorldCoordinate.Y - newMob.WorldCoordinate.Y) * 0.02f;
+        var dx = (_player.WorldCoordinate.X - newMob.WorldCoordinate.X) * 0.015f; //May need to adjust speed of these bullets.
+        var dy = (_player.WorldCoordinate.Y - newMob.WorldCoordinate.Y) * 0.015f;
         //var dx = Vector2.Add(_player.)
         Vector2 direction = new Vector2(dx, dy);
         
