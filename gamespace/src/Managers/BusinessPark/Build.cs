@@ -76,9 +76,9 @@ public static class Build
             return prop;
         }
 
-        public static Alter Alter(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
+        public static Altar Alter(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
-            var prop = new Alter(worldPosition, 1, 1, false);
+            var prop = new Altar(worldPosition, 1, 1, false);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.RoomConnector),
                 worldPosition: worldPosition,

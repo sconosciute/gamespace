@@ -683,8 +683,8 @@ public class WorldBuilder
             _world.Rooms[_world.Rooms.Count - 1].RoomBounds.Bottom - 1);
 
         PlacePoint = new(randX, randY);
-        _world.ForcePlaceFloor(PlacePoint, BuildAlter(PlacePoint, Build.InteractableProps.Alter, out Alter alter));
-        _world.finalTileAlter = alter;
+        _world.ForcePlaceFloor(PlacePoint, BuildAlter(PlacePoint, Build.InteractableProps.Alter, out Altar alter));
+        _world.FinalTileAltar = alter;
 
         /*Bullet = BuildBullet(new Vector2(-2, -2), out robj);
         _camera.RegisterRenderable(robj);
@@ -782,9 +782,9 @@ public class WorldBuilder
             spike.InteractWithPlayer(player);
         }
         
-        else if (_world.finalTileAlter.WorldCoordinate == roundedDownPos || _world.finalTileAlter.WorldCoordinate == roundedUpPos)
+        else if (_world.FinalTileAltar.WorldCoordinate == roundedDownPos || _world.FinalTileAltar.WorldCoordinate == roundedUpPos)
         {
-            _world.finalTileAlter.InteractWithPlayer(player);
+            _world.FinalTileAltar.InteractWithPlayer(player);
         }
     }
 
@@ -847,7 +847,7 @@ public class WorldBuilder
         return new Tile(prop);
     }
     
-    private Tile BuildAlter(Vector2 worldPosition, AlterBuilder buildCallback, out Alter prop)
+    private Tile BuildAlter(Vector2 worldPosition, AlterBuilder buildCallback, out Altar prop)
     {
         prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
         _camera.RegisterRenderable(renderable);
@@ -889,7 +889,7 @@ public class WorldBuilder
 
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
-    private delegate Alter AlterBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+    private delegate Altar AlterBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
     
     private delegate Spikes InteractablePropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 

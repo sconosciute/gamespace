@@ -4,9 +4,9 @@ using System;
 namespace gamespace.Model;
 
 //End the game tile
-public class Alter : InteractableProp
+public class Altar : InteractableProp
 {
-    public Alter(Vector2 worldCoordinate, float width, float height, bool hasCollision) : base(worldCoordinate, width, height, hasCollision)
+    public Altar(Vector2 worldCoordinate, float width, float height, bool hasCollision) : base(worldCoordinate, width, height, hasCollision)
     {
     }
 
