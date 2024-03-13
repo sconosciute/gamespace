@@ -22,7 +22,7 @@ public class World
     public List<Character> Entites = new();
     public List<Mob> Mobs = new(); //List of just mobs, no players or anythign else
     
-    public Alter finalTileAlter;
+    public Altar FinalTileAltar;
 
     public List<Room> Rooms { get; } = new();
 
