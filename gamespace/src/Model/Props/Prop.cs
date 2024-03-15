@@ -13,4 +13,12 @@ public class Prop : PhysicsObj
     {
         //TODO: Does Prop ever need to actually update?
     }
+
+    public override string ToString()
+    {
+        var result = "World Coordinate: " + WorldCoordinate + " Width: " + Width + " Height: " + Height +
+                     " Has movement: False" +
+                     " Has friction: False" + " Has collision: " + CanCollide;
+        return result;
+    }
 }

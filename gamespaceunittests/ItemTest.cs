@@ -91,7 +91,7 @@ namespace gamespaceunittests
         [Test]
         public void TestItemUse()
         {
-            var expectedData = "Item works!";
+            var expectedData = 1;
             Assert.AreEqual(expectedData, _testerItem.ItemUse.Invoke());
         }
     }

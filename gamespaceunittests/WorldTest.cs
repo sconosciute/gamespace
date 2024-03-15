@@ -7,8 +7,8 @@ public class WorldTest
     [Test]
     public void WorldConstructorTest()
     {
-        var testerWorld = new World(1, 1);
-        var expectedData = "Height: " + "1" + " Width: " + "1";
+        var testerWorld = new World(3, 3);
+        var expectedData = "Min X: " + "-1" + " Min Y: " + "-1" + " Max X: " + "1" + " Max Y: " + "1";
         Assert.That(testerWorld.ToString(), Is.EqualTo(expectedData));
     }
 

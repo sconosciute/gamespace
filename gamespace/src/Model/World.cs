@@ -53,6 +53,10 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
+        if (width <= 0 || height <= 0)
+        {
+            throw new ArithmeticException("Width and height must be a positive non-zero value");
+        }
         var mapWidth = width;
         var mapHeight = height;
 
@@ -173,6 +177,14 @@ public class World
 
         return !value.CanCollide; //Should only be called when there's no empty tiles.
     }
+
+    public override string ToString()
+    {
+        return "Min X: " + _minX + " Min Y: " + _minY + " Max X: " + _maxX + " Max Y: " + _maxY;
+    }
+
+
+    // Look to delete later ---------------------------------------------------------
 
     public bool CheckAdj(Point pos)
     {
