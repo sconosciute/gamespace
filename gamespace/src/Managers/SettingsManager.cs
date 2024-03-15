@@ -9,17 +9,44 @@ namespace gamespace.Managers;
 
 public static class SettingsManager
 {
+    /// <summary>
+    /// Default resolution height.
+    /// </summary>
     private const int DefaultResHeight = 1080;
+    
+    /// <summary>
+    /// Default resolution width.
+    /// </summary>
     private const int DefaultResWidth = 1920;
+    
+    /// <summary>
+    /// Variable that determines if the application should be full screened or not.
+    /// </summary>
     private const bool FullScreen = false;
+    
+    /// <summary>
+    /// Dynamic resolution to fit to the users monitor.
+    /// </summary>
     private const bool DynamicRes = false;
+    
+    /// <summary>
+    /// Debug log.
+    /// </summary>
     private static ILogger _log;
 
+    /// <summary>
+    /// Initializes log debugger.
+    /// </summary>
+    /// <param name="logger">The debug log.</param>
     public static void Init(in ILogger logger)
     {
         _log ??= logger;
     }
 
+    /// <summary>
+    /// Generates all graphics for the game.
+    /// </summary>
+    /// <param name="game">The game to generate graphics in.</param>
     public static GraphicsDeviceManager GenerateGraphics(in Game1 game)
     {
         var graphics = new GraphicsDeviceManager(game);
@@ -46,6 +73,10 @@ public static class SettingsManager
         return graphics;
     }
 
+    /// <summary>
+    /// Loads the launch settings.
+    /// </summary>
+    /// <param name="fileName">The file name to read.</param>
     private static LaunchSettings LoadLaunchSettings(in string fileName)
     {
         if (TryReadConfig(fileName, out var data))
