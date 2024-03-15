@@ -19,6 +19,7 @@ public class Chest : InteractableProp
 
     public override string ToString()
     {
-        return WorldCoordinate + " Contains key Item: " + _itemHeld.IsKeyItem;
+        var result = base.ToString() + " Item held: " + _itemHeld;
+        return result;
     }
 }
