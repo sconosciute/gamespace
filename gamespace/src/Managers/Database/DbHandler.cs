@@ -56,4 +56,13 @@ public static class DbHandler
         db.Execute(query, value, statName.ToString());
         db.Close();
     }
+
+    public static int GetStat(Statistic.Stats statName)
+    {
+        if (!TryOpen(out var db)) return 0;
+        var res = db.Table<Statistic>().First(t => t.StatName == statName.ToString());
+        db.Close();
+        return res.Value;
+
+    }
 }
