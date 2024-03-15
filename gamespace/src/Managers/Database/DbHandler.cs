@@ -13,6 +13,19 @@ public static class DbHandler
     private const string FilePath = "stats.db";
     private static readonly ILogger Log = Globals.LogFactory.CreateLogger<Game1>();
 
+    public static void InitDatabase()
+    {
+        if (TryOpen(out var db))
+        {
+            var query = "INSERT OR IGNORE INTO Statistic (statName, value) VALUES (?, ?)";
+            foreach (var stat in Enum.GetValues(typeof(Statistic.Stats)))
+            {
+                db.Execute(query, stat.ToString(), 0);
+            }
+            Log.LogInformation("Initialized Database");
+        }
+    }
+    
     private static bool TryOpen(out SQLiteConnection db)
     {
         try
@@ -39,7 +52,8 @@ public static class DbHandler
             Value = value
         };
 
-        db.Update(stat);
+        var query = "UPDATE Statistic SET value = value + ? WHERE statName = ?";
+        db.Execute(query, value, statName.ToString());
         db.Close();
     }
 }

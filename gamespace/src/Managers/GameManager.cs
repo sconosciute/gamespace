@@ -52,6 +52,7 @@ public class GameManager
 
     public void TempInitPlayerWorld()
     {
+        DbHandler.InitDatabase();
         _player.EntityEvent += _camera.HandleEntityEvent;
         _gui.RegisterControlledEntity(_player);
         _gui.OpenPersistentElements();
