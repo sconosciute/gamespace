@@ -29,8 +29,13 @@ public abstract class Character : Entity
     }
 
     //Made this for health potion
-    public int AddHealth(int amount) //new heatlh
+    public int AddHealth(int amount) 
     {
+        if (Health <= 0)
+        {
+            return 0;
+        }
+
         if (Health + amount <= _maxHp)
         {
             Health += amount;
@@ -39,11 +44,12 @@ public abstract class Character : Entity
         {
             Health = _maxHp;
         }
+
         Console.Out.WriteLine("healed for: " + amount);
 
         if (Health <= 0)
         {
-            OnDeath(); //Make this called in fixed update instead?
+            OnDeath(); 
         }
 
         return Health;

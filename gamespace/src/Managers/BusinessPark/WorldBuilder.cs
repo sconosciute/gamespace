@@ -681,7 +681,6 @@ public class WorldBuilder
 
         randY = Rand.Next(_world.Rooms[_world.Rooms.Count - 1].RoomBounds.Y + 1,
             _world.Rooms[_world.Rooms.Count - 1].RoomBounds.Bottom - 1);
-
         PlacePoint = new(randX, randY);
         _world.ForcePlaceFloor(PlacePoint, BuildAlter(PlacePoint, Build.InteractableProps.Alter, out Altar alter));
         _world.FinalTileAltar = alter;
@@ -851,6 +850,7 @@ public class WorldBuilder
     {
         prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
         _camera.RegisterRenderable(renderable);
+        prop.Win += _gm.WinGame;
         return new Tile(prop);
     }
     

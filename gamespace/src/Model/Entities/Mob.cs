@@ -45,19 +45,19 @@ public class Mob : Character
     /// A field to store what type our mob is.
     /// </summary>
     private MobTypes _type;
-    
+
     /// <summary>
     /// An item array to store usable items for our mob.
     /// </summary>
     private readonly Item[] _inventory;
-    
+
     /// <summary>
     /// A public property to access our mobs inventory.
     /// </summary>
     public Item[] Inventory => _inventory;
 
     private int _counter = 0; //Changes how often it shoots, will change var name tomorrow
-    
+
     /// <summary>
     /// An enum to store different types of mobs.
     /// </summary>
@@ -92,7 +92,7 @@ public class Mob : Character
         _type = type;
         _inventory = new Item[InventorySize];
     }
-    
+
     /// <summary>
     /// Checks if our mob can use items, and if so uses the first item in the mobs inventory.
     /// </summary>
@@ -121,7 +121,7 @@ public class Mob : Character
         wantedItemUse.Invoke();
         return true;
     }
-    
+
     /// <summary>
     /// Adds a new item to the mobs inventory, if it is a useble Item and not a key item.
     /// </summary>
@@ -144,7 +144,7 @@ public class Mob : Character
         _inventory[firstEmptyIndex] = newItem;
         return true;
     }
-    
+
     /// <summary>
     /// A helper method for our use item to find the first item type in a given array.
     /// </summary>
@@ -154,7 +154,7 @@ public class Mob : Character
     {
         return values.FirstOrDefault(item => item != null);
     }
-    
+
     /// <summary>
     /// Provides a string representation of our mob.
     /// </summary>
@@ -176,7 +176,7 @@ public class Mob : Character
     protected override void OnDeath()
     {
         base.OnDeath();
-        Player.MobsKilled++;
+        Player.MobsKilledCounter++;
     }
 
     public override void FixedUpdate()

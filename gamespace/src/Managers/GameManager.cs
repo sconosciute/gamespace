@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using gamespace.Managers.Database;
 using gamespace.Model;
 using gamespace.Util;
 using gamespace.View;
@@ -69,6 +70,7 @@ public class GameManager
     public void RegisterPlayerListener(EventHelper.PlayerStateEventHandler handler)
     {
         _player.PlayerStateEvent += handler;
+        _player.PlayerDeadHandler += LoseGame;
     }
     
     #endregion
@@ -191,6 +193,26 @@ public class GameManager
     public void LoadGame()
     {
         //TODO: Load!
+    }
+    
+    public void WinGame()
+    {
+        //Save stats
+        DbHandler.WriteStat(Statistic.Stats.ItemsFound, Player.ItemsPickedUpCounter);
+        DbHandler.WriteStat(Statistic.Stats.MobKillCount, Player.MobsKilledCounter); 
+        DbHandler.WriteStat(Statistic.Stats.TimeInDungeon, Game1.SecondsInDungeon); 
+        DbHandler.WriteStat(Statistic.Stats.WinCount, 1); 
+        ExitGame();
+    }
+
+    private void LoseGame()
+    {
+        //Save stats
+        DbHandler.WriteStat(Statistic.Stats.ItemsFound, Player.ItemsPickedUpCounter);
+        DbHandler.WriteStat(Statistic.Stats.MobKillCount, Player.MobsKilledCounter); 
+        DbHandler.WriteStat(Statistic.Stats.TimeInDungeon, Game1.SecondsInDungeon); 
+        DbHandler.WriteStat(Statistic.Stats.DeathCount, 1); 
+        ExitGame();
     }
     
     #endregion

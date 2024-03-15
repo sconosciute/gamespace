@@ -8,7 +8,6 @@ namespace gamespace;
 public static class Globals
 {
     public static bool DebugForceScale = false;
-
     public static void Init(ContentManager content, SpriteBatch spriteBatch, SpriteFont font)
     {
         Content ??= content;

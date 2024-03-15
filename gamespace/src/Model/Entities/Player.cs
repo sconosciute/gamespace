@@ -4,26 +4,29 @@ using gamespace.Util;
 using Microsoft.Xna.Framework;
 
 namespace gamespace.Model;
+
 /// <summary>
 /// A class to generate and store our player.
 /// </summary>
 public class Player : Character
 {
-    public static int MobsKilled = 0;
-    
+    public static int MobsKilledCounter = 0;
+
+    public static int ItemsPickedUpCounter = 0;
+
     /// <summary>
     /// A constant to provide the size of our players usable inventory.
     /// </summary>
     public const int InventorySize = 5;
-    
+
     /// <summary>
     /// A constant to provide the size of our players key item inventory.
     /// </summary>
     private const int KeyInventorySize = 4;
-    
-    
+
+
     public int KeyItemsHeld { get; set; }
-    
+
     /// <summary>
     /// A string to store the name of our player.
     /// </summary>
@@ -70,7 +73,7 @@ public class Player : Character
         wantedItemUse.Invoke();
         return true;
     }
-    
+
     /// <summary>
     /// Adds an item to the first open slot of Key inventory if it is a key item, or to the first slot of usable inventory.
     /// </summary>
@@ -78,6 +81,7 @@ public class Player : Character
     /// <returns> Returns false if the players inventory is full, true if there is an open slot. </returns>
     public bool AddToInventory(Item newItem)
     {
+        ItemsPickedUpCounter++;
         if (newItem.IsKeyItem)
         {
             var firstEmptyIndex = Array.IndexOf(KeyItemInventory, null);
@@ -103,9 +107,10 @@ public class Player : Character
             Inventory[firstEmptyIndex] = newItem;
             return true;
         }
+
         OnPlayerStateEvent();
     }
-    
+
     /// <summary>
     /// Provides a string representation of our player.
     /// </summary>
@@ -115,7 +120,7 @@ public class Player : Character
         var result = base.ToString() + " Name: " + _name;
         return result;
     }
-    
+
     public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
@@ -143,7 +148,16 @@ public class Player : Character
         }
     }
 
+    public event EventHelper.LoseGameHandler PlayerDeadHandler;
+
+    protected override void OnDeath()
+    {
+        base.OnDeath();
+        PlayerDeadHandler?.Invoke();
+    }
+
     public event EventHelper.PlayerShootBullets shotRecieved;
+
     public void OnPlayerShootSender()
     {
         //Build.Projectiles.Bullet()

@@ -9,16 +9,17 @@ namespace gamespace.Util;
 public static class EventHelper
 {
     #region enums
+
     public enum PlayerCommand
     {
         Use
     }
-    
+
     public enum EntityEventType
     {
         Moved
     }
-    
+
     public enum NavigationEvents
     {
         Up,
@@ -49,10 +50,11 @@ public static class EventHelper
         InventorySlot5,
         ShootBullet
     }
-    
+
     #endregion
-    
+
     #region Helper Classes
+
     public class EntityEventArgs
     {
         /// <summary>
@@ -70,7 +72,7 @@ public static class EventHelper
         /// </summary>
         public Vector2 NewPosition { get; init; }
     }
-    
+
     public class PlayerState
     {
         public int Health { get; init; }
@@ -91,10 +93,11 @@ public static class EventHelper
     {
         public int ItemIndex { get; init; }
     }
-    
+
     #endregion
-    
+
     #region delegates
+
     public delegate void PlayerCommandHandler(in PlayerCommand cmd, in PlayerPayload payload);
 
     /// <summary>
@@ -114,17 +117,23 @@ public static class EventHelper
     public delegate void EntityEventHandler(in Guid sender, in EntityEventArgs args);
 
     public delegate void CameraEventHandler(in Matrix scale);
+
     public delegate void PlayerUseItemEventHandler(in int index);
+
     public delegate void PlayerStateEventHandler(in PlayerState state);
 
     public delegate void EntityUnregisterHandler(RenderObject robj);
 
     public delegate void SendEntityToUnrender(in Guid sender);
 
-    //public delegate void MobShootBullets();
+    
     public delegate void SendMobToWorldBuilder(in Mob mobstate);
 
     public delegate void PlayerShootBullets();
-    
+
+    public delegate void WinGameHandler();
+
+    public delegate void LoseGameHandler();
+
     #endregion
 }

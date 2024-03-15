@@ -12,12 +12,12 @@ public class Game1 : Game
     private readonly GameManager _gm;
     private readonly ILogger _log;
     private GuiManager _gui;
+    public static int SecondsInDungeon { get; private set; }
 
     public Game1()
     {
-        
         _log = Globals.LogFactory.CreateLogger<Game1>();
-        
+
         SettingsManager.Init(_log);
         var graphics = SettingsManager.GenerateGraphics(this);
         Content.RootDirectory = "Content";
@@ -32,7 +32,7 @@ public class Game1 : Game
         _log.LogInformation("Initializing Game");
         var font = Content.Load<SpriteFont>("font");
         Globals.Init(content: Content, spriteBatch: new SpriteBatch(GraphicsDevice), font);
-        
+
         base.Initialize();
     }
 
@@ -56,7 +56,7 @@ public class Game1 : Game
         _gm.AddTexture(Textures.DarkSquareWall);
         _gm.AddTexture(Textures.PotLarge);
         _gm.AddTexture(Textures.Bullet);
-        
+
         _gui.InitBgTextures();
         _gm.TempInitPlayerWorld();
     }
@@ -65,14 +65,14 @@ public class Game1 : Game
     {
         _gui.Update();
         InputDriver.Update();
-
+        SecondsInDungeon = gameTime.TotalGameTime.Seconds;
         var now = gameTime.TotalGameTime.TotalMilliseconds;
         if (_lastUpTime == 0 || now - _lastUpTime >= UpdateTimeDelta)
         {
             _gm.FixedUpdate();
             _lastUpTime = now;
         }
-        
+
         _gm.AnimationUpdate(gameTime);
         base.Update(gameTime);
     }
