@@ -12,30 +12,113 @@ namespace gamespace.Managers.BusinessPark;
 
 public class WorldBuilder
 {
+    /// <summary>
+    /// The world object to build on.
+    /// </summary>
     private readonly World _world;
+    
+    /// <summary>
+    /// The camera object to render everything built.
+    /// </summary>
     private readonly Camera _camera;
+    
+    /// <summary>
+    /// The game manager of the current game.
+    /// </summary>
     private readonly GameManager _gm;
+    
+    /// <summary>
+    /// Attempts to place a room before moving onto the next room.
+    /// </summary>
     private const int AttemptsToPlaceRoom = 100;
+    
+    /// <summary>
+    /// The lowest amount of rooms that could be generated.
+    /// </summary>
     private const int RoomLowerBound = 5;
+    
+    /// <summary>
+    /// The highest amount of rooms that could be generated.
+    /// </summary>
     private const int RoomUpperBound = 13;
+    
+    /// <summary>
+    /// Starting room width.
+    /// </summary>
     private int _currentRoomWidth = 5;
+    
+    /// <summary>
+    /// Starting room height.
+    /// </summary>
     private int _currentRoomHeight = 5;
+    
+    /// <summary>
+    /// List of remaining rooms to be connected.
+    /// </summary>
     private List<Room> _leftOverRooms;
+    
+    /// <summary>
+    /// List of rooms that are connected to the starting room.
+    /// </summary>
     private readonly List<Room> _roomsConnectedToStart = new();
+    
+    /// <summary>
+    /// The number of key item chests to generate.
+    /// </summary>
     private int _numberOfKeyItemsLeft = 4;
+    
+    /// <summary>
+    /// The number of rooms left to be connected.
+    /// </summary>
     private int _numberOfRoomsLeft;
+    
+    /// <summary>
+    /// List of all current bullets being displayed in the world.
+    /// </summary>
     public readonly List<Projectile> LivingBullets = new();
 
+    /// <summary>
+    /// Property of how many bullets needed to iterate through.
+    /// </summary>
     public int NumberOfBulletsToIterate { get; set; }
+    
+    /// <summary>
+    /// Property that gives the number of mobs to iterate through.
+    /// </summary>
     private int NumberOfMobsToIterate { get; set; }
 
+    /// <summary>
+    /// The vector for moving right.
+    /// </summary>
     private static readonly Vector2 MoveRight = new(1, 0);
+    
+    /// <summary>
+    /// The vector for moving left.
+    /// </summary>
     private static readonly Vector2 MoveLeft = new(-1, 0);
+    
+    /// <summary>
+    /// The vector for moving up.
+    /// </summary>
     private static readonly Vector2 MoveUp = new(0, -1);
+    
+    /// <summary>
+    /// The vector for moving down.
+    /// </summary>
     private static readonly Vector2 MoveDown = new(0, 1);
 
+    
+    /// <summary>
+    /// Random variable.
+    /// </summary>
     private static readonly Random Rand = new();
 
+    /// <summary>
+    /// The main menu that will contain save, load, close, and exit buttons.
+    /// </summary>
+    /// <param name="gm">The current game.</param>
+    /// <param name="camera">The camera to render what is build on the world.</param>
+    /// <param name="world">The world to build on.</param>
     public WorldBuilder(GameManager gm, Camera camera, World world)
     {
         _gm = gm;
@@ -43,6 +126,9 @@ public class WorldBuilder
         _world = world;
     }
 
+    /// <summary>
+    /// Creates a single room.
+    /// </summary>
     private Room MakeRoom()
     {
         var currentAttempts = 0;
@@ -84,6 +170,9 @@ public class WorldBuilder
         return room;
     }
 
+    /// <summary>
+    /// Generates the world.
+    /// </summary>
     public void BuildWorld()
     {
         //TODO Make this not hardcoded for min and max X, Y
@@ -128,7 +217,9 @@ public class WorldBuilder
         LootAndHazardGenerator();
     }
 
-
+    /// <summary>
+    /// Starts the process of connecting all rooms.
+    /// </summary>
     private void ConnectRooms()
     {
         var startingRoom = _world.Rooms[0];
@@ -186,6 +277,10 @@ public class WorldBuilder
     }
 
 
+    /// <summary>
+    /// Connects a single room to the nearest room.
+    /// </summary>
+    /// <param name="currentRoom">The room to be connected.</param>
     private void ConnectSingleRoom(Room currentRoom)
     {
         Console.Out.WriteLine();
@@ -283,6 +378,11 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Branches out from a room and connects them if it runs into a tile that is in another room.
+    /// </summary>
+    /// <param name="lastRoomPoint">The tile that is within the last room.</param>
+    /// <param name="currentRoomPoint">The tile that is within the current room.</param>
     private void FindRoomsSurroundingTile(Point lastRoomPoint, Point currentRoomPoint)
     {
         var roomCounter = 0;
@@ -343,14 +443,10 @@ public class WorldBuilder
         }
     }
 
-    private void debugFirstTile()
-    {
-        foreach (var room in _world.Rooms)
-        {
-            //ConnectIslandRoom(room);
-        }
-    }
-
+    /// <summary>
+    /// Connects any rooms that did not connect in the main algorithm.
+    /// </summary>
+    /// <param name="island">The targeted island room.</param>
     private void ConnectIslandRoom(Room island)
     {
         try
@@ -399,6 +495,12 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Finds the distance between rooms in each direction.
+    /// </summary>
+    /// <param name="currentRoom">The current room.</param>
+    /// <param name="direction">The direction to check in.</param>
+    /// <param name="startingPoint">The starting point of the current room.</param>
     private int FindDistanceInDirection(Room currentRoom, Vector2 direction, Vector2 startingPoint)
     {
         var counter = 0;
@@ -440,6 +542,12 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Builds a path given the direction.
+    /// </summary>
+    /// <param name="direction">The direction to build.</param>
+    /// <param name="startingPoint">The starting point of a room.</param>
+    /// <param name="numberToPlace">The number of connector tiles to place.</param>
     private void BuildPathInDirection(Vector2 direction, Vector2 startingPoint, int numberToPlace)
     {
         var currentPos = Vector2.Add(startingPoint, direction);
@@ -458,6 +566,9 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Fills up the map with walls that act as the background.
+    /// </summary>
     private void FillMapWithWalls()
     {
         for (var i = _world._minY; i <= _world._maxY; i++)
@@ -472,6 +583,9 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Generates all items or hazards that can generate in rooms.
+    /// </summary>
     private void LootAndHazardGenerator()
     {
         _numberOfRoomsLeft = _world.Rooms.Count - 2;
@@ -533,17 +647,23 @@ public class WorldBuilder
         _world.FinalTileAltar = alter;
     }
 
+    /// <summary>
+    /// Generates the correct amount of key items on the map.
+    /// </summary>
     private bool DecideToPlaceKeyItem()
     {
         var percentToPlace = Rand.Next(100);
 
-        var percentForKey = _numberOfKeyItemsLeft / (double)_numberOfRoomsLeft * 100; //TODO: Review this math.
+        var percentForKey = _numberOfKeyItemsLeft / (double)_numberOfRoomsLeft * 100;
 
         if (!(percentForKey >= percentToPlace)) return false;
         _numberOfKeyItemsLeft--;
         return true;
     }
 
+    /// <summary>
+    /// Unregisters bullets.
+    /// </summary>
     public void HandleBulletDeregister(in Guid id)
     {
         for (var i = 0; i < LivingBullets.Count; i++)
@@ -554,6 +674,10 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Updates the world when the player hit box collides with an interactive item.
+    /// </summary>
+    /// <param name="player">The main player that interacts with props.</param>
     public void UpdateWorld(Player player)
     {
         for (var i = 0; i < NumberOfBulletsToIterate; i++)
@@ -622,15 +746,26 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Sends an event when the mob is shooting.
+    /// </summary>
     public event EventHelper.SendMobToWorldBuilder MobShooting;
 
-    private void SendMobToGameManager(in Mob newmob)
+    /// <summary>
+    /// Invokes the event and sends it to game manager.
+    /// </summary>
+    /// <param name="newMob">The targeted mob.</param>
+    private void SendMobToGameManager(in Mob newMob)
     {
-        MobShooting?.Invoke(newmob);
+        MobShooting?.Invoke(newMob);
     }
 
 
     // DEBUGS =========================================================================================================
+    
+    /// <summary>
+    /// Debug method to print out the total amount of rooms.
+    /// </summary>
     private void StartDebugPrint()
     {
         var debugCount = 0;
@@ -644,6 +779,9 @@ public class WorldBuilder
         Console.Out.WriteLine();
     }
 
+    /// <summary>
+    /// Debug method that prints out the leftover rooms.
+    /// </summary>
     private void LeftOverRoomsDebug()
     {
         var debugCount = 0;
@@ -655,6 +793,9 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Debug method for checking chests.
+    /// </summary>
     private void ChestDictDebug()
     {
         foreach (var chest in _world.Chests)
@@ -666,6 +807,11 @@ public class WorldBuilder
 
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Builds a tile at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The prop builder event.</param>
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
     {
         var prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
@@ -673,6 +819,12 @@ public class WorldBuilder
         return new Tile(prop);
     }
 
+    /// <summary>
+    /// Builds a spike at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The interactive prop builder event.</param>
+    /// <param name="prop">The built spike tile.</param>
     private Tile BuildSpikeTile(Vector2 worldPosition, InteractablePropBuilder buildCallback, out Spikes prop)
     {
         prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
@@ -680,6 +832,12 @@ public class WorldBuilder
         return new Tile(prop);
     }
 
+    /// <summary>
+    /// Builds an alter at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The alter prop builder event.</param>
+    /// <param name="prop">The built alter tile.</param>
     private Tile BuildAlter(Vector2 worldPosition, AlterBuilder buildCallback, out Altar prop)
     {
         prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
@@ -688,6 +846,11 @@ public class WorldBuilder
         return new Tile(prop);
     }
 
+    /// <summary>
+    /// Builds a mob at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The mob builder event.</param>
     private Mob BuildMob(Vector2 worldPosition, MobBuilder buildCallback)
     {
         var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
@@ -705,6 +868,13 @@ public class WorldBuilder
         return newMob;
     }
 
+    /// <summary>
+    /// Builds a chest at the coordinate given that contains a single item.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="item">The item the chest contains.</param>
+    /// <param name="buildCallback">The chest builder event.</param>
+    /// <param name="newChest">The built chest.</param>
     private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback, out Chest newChest)
     {
         newChest = buildCallback.Invoke(_gm, worldPosition, item, out var renderable);
@@ -712,14 +882,29 @@ public class WorldBuilder
         return new Tile(newChest);
     }
 
+    /// <summary>
+    /// The event to build a chest.
+    /// </summary>
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
 
+    /// <summary>
+    /// The event to build a prop.
+    /// </summary>
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
+    /// <summary>
+    /// The event to build an alter.
+    /// </summary>
     private delegate Altar AlterBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
+    /// <summary>
+    /// The event to build a spike tile.
+    /// </summary>
     private delegate Spikes InteractablePropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
+    /// <summary>
+    /// The event to build a mob.
+    /// </summary>
     private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPositiona, out RenderObject renderable);
 
     //=== ARCHIVE ===---------------------------------------------------------------------------------------------------
