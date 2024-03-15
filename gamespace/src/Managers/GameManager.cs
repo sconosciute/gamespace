@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using gamespace.Managers.BusinessPark;
 using gamespace.Managers.Database;
 using gamespace.Model;
 using gamespace.Util;
@@ -99,7 +100,7 @@ public class GameManager
         robj.Handle += _camera.HandleUnrenderEvent;
 
         Bullet.SendObjToWorldBuilder += _worldBuilder.HandleBulletDeregister;
-        _worldBuilder.livingBullets.Add(Bullet);
+        _worldBuilder.LivingBullets.Add(Bullet);
         _worldBuilder.NumberOfBulletsToIterate++;
         //Bullet.FixedUpdate();
     }
@@ -121,7 +122,7 @@ public class GameManager
         robj.Handle += _camera.HandleUnrenderEvent;
 
         Bullet.SendObjToWorldBuilder += _worldBuilder.HandleBulletDeregister;
-        _worldBuilder.livingBullets.Add(Bullet);
+        _worldBuilder.LivingBullets.Add(Bullet);
         _worldBuilder.NumberOfBulletsToIterate++;
         
     }
