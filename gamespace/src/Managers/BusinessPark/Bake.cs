@@ -24,8 +24,7 @@ public static class Bake
             Shown = true,
             IsActive = true
         };
-        menu.AddButton(new GuiButton("Save Game", ButtonCallbacks.SaveGame, menu, manager));
-        menu.AddButton(new GuiButton("Load Game", ButtonCallbacks.LoadGame, menu, manager));
+        menu.AddButton(new GuiButton("View Stats", ButtonCallbacks.OpenStatMenu, menu, manager));
         menu.AddButton(new GuiButton("Close Menu", ButtonCallbacks.CloseParentMenu, menu, manager));
         menu.AddButton(new GuiButton("Exit Game", ButtonCallbacks.ExitGame, menu, manager));
 
@@ -94,6 +93,17 @@ public static class Bake
     }
 
     /// <summary>
+    /// Opens the statistics info panel
+    /// </summary>
+    /// <param name="gfx">The graphics device that is running the game window</param>
+    /// <param name="manager">GUI Manager to attach this panel to</param>
+    /// <returns></returns>
+    public static DbPanel Info(GraphicsDevice gfx, GuiManager manager)
+    {
+        return new DbPanel(GetStandardMenuBox(gfx), manager);
+    }
+
+    /// <summary>
     /// Gives the right rectangle for displaying any menu in the center of the screen.
     /// </summary>
     /// <param name="gfx">Main game graphics device.</param>
@@ -136,7 +146,11 @@ public static class Bake
         /// </summary>
         public static void ToggleForceScale(in GuiPanel parent, in GuiManager manager) => manager.ForceScale();
 
-        public static void FirePlayerCommand(in EventHelper.PlayerCommand cmd, in EventHelper.PlayerPayload payload,
-            in GuiManager manager) => manager.OnPlayerCommandEvent(cmd, payload);
+        /// <summary>
+        /// Opens the the database info panel
+        /// </summary>
+        /// <param name="parent">Parent GuiPanel</param>
+        /// <param name="manager">GUI Manager to attach this panel to</param>
+        public static void OpenStatMenu(in GuiPanel parent, in GuiManager manager) => manager.OpenInfo();
     }
 }

@@ -62,7 +62,10 @@ public abstract class GuiPanel
     /// </summary>
     public virtual void HandleInputEvent(in EventHelper.NavigationEvents nav)
     {
-        _log.LogDebug("Tried to ask non-input panel to handle input event.");
+        if (nav == EventHelper.NavigationEvents.Escape)
+        {
+            Delete();
+        }
     }
 
     protected void DrawText(in Vector2 position, in string message, in SpriteBatch batch, in bool isTitle)

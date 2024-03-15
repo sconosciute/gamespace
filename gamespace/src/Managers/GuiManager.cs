@@ -152,6 +152,13 @@ public class GuiManager
         _panels.Add(inv);
     }
 
+    public void OpenInfo()
+    {
+        var stat = Bake.Info(_gfx, this);
+        RegisterInputHandler(stat);
+        _panels.Add(stat);
+    }
+
     #endregion
 
     public void ForceScale()

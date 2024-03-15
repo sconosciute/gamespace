@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using SQLite;
@@ -64,5 +65,13 @@ public static class DbHandler
         db.Close();
         return res.Value;
 
+    }
+
+    public static List<Statistic> GetAllStats()
+    {
+        if (!TryOpen(out var db)) return null;
+        var res = db.Table<Statistic>().ToList();
+        db.Close();
+        return res;
     }
 }
