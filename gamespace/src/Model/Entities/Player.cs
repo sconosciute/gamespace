@@ -9,6 +9,8 @@ namespace gamespace.Model;
 /// </summary>
 public class Player : Character
 {
+    public static int MobsKilled = 0;
+    
     /// <summary>
     /// A constant to provide the size of our players usable inventory.
     /// </summary>

@@ -173,6 +173,12 @@ public class Mob : Character
         MobShootEvent?.Invoke(this);
     }
 
+    protected override void OnDeath()
+    {
+        base.OnDeath();
+        Player.MobsKilled++;
+    }
+
     public override void FixedUpdate()
     {
         //This is a temp fix to make turrets stop sending out bullets and quit updating. Should look at a cleaner way to fully remove them.

@@ -83,7 +83,7 @@ namespace gamespace.Model
         public event EventHelper.SendEntityToUnrender SendObjToRenderObj;
         public event EventHelper.SendEntityToUnrender SendObjToWorldBuilder;
 
-        protected void OnDeath() 
+        protected virtual void OnDeath() 
         {
             SendObjToRenderObj?.Invoke(EntityId);
             SendObjToWorldBuilder?.Invoke(EntityId);
