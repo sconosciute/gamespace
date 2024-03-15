@@ -97,4 +97,23 @@ public class WorldTest
         var world = new World(9, 9);
         Assert.That(world.IsInBounds(0, 0), Is.EqualTo(true));
     }
+
+    [Test]
+    public void WorldTestGetIsFloorTrue()
+    {
+        var world = new World(9, 9);
+        Prop prop = new Prop(Vector2.Zero, 1, 1, false);
+        var tile = new Tile(prop);
+        world.ForcePlaceFloor(Vector2.Zero, tile);
+        Assert.That(world.GetIsFloor(Vector2.Zero), Is.EqualTo(true));
+    }
+    [Test]
+    public void WorldTestGetIsFloorFalse()
+    {
+        var world = new World(9, 9);
+        Prop prop = new Prop(Vector2.Zero, 1, 1, true);
+        var tile = new Tile(prop);
+        world.ForcePlaceFloor(Vector2.Zero, tile);
+        Assert.That(world.GetIsFloor(Vector2.Zero), Is.EqualTo(false));
+    }
 }
