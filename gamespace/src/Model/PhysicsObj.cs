@@ -5,7 +5,14 @@ namespace gamespace.Model;
 
 public abstract class PhysicsObj : IDisposable
 {
+    /// <summary>
+    /// Determines if the physics object has movement.
+    /// </summary>
     private bool _hasMovement;
+    
+    /// <summary>
+    /// Determines if the physics object has friction.
+    /// </summary>
     private bool _hasFriction;
 
     /// <summary>
@@ -32,7 +39,15 @@ public abstract class PhysicsObj : IDisposable
     /// </summary>
     public bool CanCollide { get; }
 
-
+    /// <summary>
+    /// Creates a physics object.
+    /// </summary>
+    /// <param name="worldCoordinate">The coordinate of the object.</param>
+    /// <param name="width">The width of the object.</param>
+    /// <param name="height">The height of the object.</param>
+    /// <param name="hasMovement">Determines if the object has movement.</param>
+    /// <param name="hasFriction">Determines if the object has friction.</param>
+    /// <param name="hasCollision">Determines if the object has collision.</param>
     protected PhysicsObj(Vector2 worldCoordinate, float width, float height, bool hasMovement, bool hasFriction, bool hasCollision)
     {
         WorldCoordinate = worldCoordinate;
@@ -43,8 +58,14 @@ public abstract class PhysicsObj : IDisposable
         _hasFriction = hasFriction;
     }
 
+    /// <summary>
+    /// Fixed update for the object.
+    /// </summary>
     public abstract void FixedUpdate();
 
+    /// <summary>
+    /// Disposes of the object.
+    /// </summary>
     public void Dispose()
     {
         // TODO release managed resources here

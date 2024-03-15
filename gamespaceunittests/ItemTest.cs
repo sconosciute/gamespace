@@ -1,5 +1,6 @@
 using gamespace.Managers;
 using gamespace.Model;
+using gamespace.Model.Entities;
 using Microsoft.Xna.Framework;
 using Assert = Loyc.MiniTest.Assert;
 

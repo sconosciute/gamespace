@@ -2,6 +2,8 @@
 using gamespace.Managers.BusinessPark;
 using gamespace.Managers.Database;
 using gamespace.Model;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -85,7 +87,7 @@ public class GameManager
         _player = new Player("dude", _world);
         _camera = new Camera(_player.EntityId, _gfxMan.GraphicsDevice);
         _worldBuilder = new WorldBuilder(this, _camera, _world);
-        _world.Entites.Add(_player);
+        _world.Entities.Add(_player);
         _playing = true;
     }
 

@@ -1,5 +1,6 @@
 using gamespace.Managers;
 using gamespace.Model;
+using gamespace.Model.Entities;
 using Assert = NUnit.Framework.Assert;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 

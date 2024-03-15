@@ -1,5 +1,7 @@
 ﻿using System;
 using gamespace.Model;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 

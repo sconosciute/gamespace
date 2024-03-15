@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using gamespace.Model;
+using gamespace.Model.Entities;
 using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework.Graphics;
@@ -133,7 +134,7 @@ public class GuiManager
         _input.MoveEvent += player.HandleMoveEvent;
         _input.ItemUseEvent += player.HandleItemUseEvent;
         _input.PlayerShootEvent += player.OnPlayerShootSender;
-        player.shotRecieved += _gm.PlayerShootHandler;
+        player.ShotReceived += _gm.PlayerShootHandler;
     }
 
     /// <summary>

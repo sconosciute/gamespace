@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using gamespace.Model;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework;
@@ -192,13 +194,13 @@ public class WorldBuilder
                 _currentRoomHeight += 1;
             }
 
-            var randX = Rand.Next(_world._minX + 1, _world._maxX - _currentRoomWidth - 2);
+            var randX = Rand.Next(_world.MinX + 1, _world.MaxX - _currentRoomWidth - 2);
             if (randX % 2 == 0)
             {
                 randX += 1;
             }
 
-            var randY = Rand.Next(_world._minY + 1, _world._maxY - _currentRoomHeight - 2);
+            var randY = Rand.Next(_world.MinY + 1, _world.MaxY - _currentRoomHeight - 2);
             if (randY % 2 == 0)
             {
                 randY += 1;
@@ -571,9 +573,9 @@ public class WorldBuilder
     /// </summary>
     private void FillMapWithWalls()
     {
-        for (var i = _world._minY; i <= _world._maxY; i++)
+        for (var i = _world.MinY; i <= _world.MaxY; i++)
         {
-            for (var j = _world._minX; j <= _world._maxX; j++)
+            for (var j = _world.MinX; j <= _world.MaxX; j++)
             {
                 if (_world.CheckTileIsNull(j, i))
                 {
@@ -861,7 +863,7 @@ public class WorldBuilder
         renderable.Handle += _camera.HandleUnrenderEvent;
 
         newMob.MobShootEvent += SendMobToGameManager;
-        _world.Entites.Add(newMob);
+        _world.Entities.Add(newMob);
         _world.Mobs.Add(newMob);
         NumberOfMobsToIterate++;
 

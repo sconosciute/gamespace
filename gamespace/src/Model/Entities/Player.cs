@@ -1,36 +1,43 @@
 ﻿using System;
-using gamespace.Managers;
 using gamespace.Util;
 using Microsoft.Xna.Framework;
 
-namespace gamespace.Model;
+namespace gamespace.Model.Entities;
 
 /// <summary>
 /// A class to generate and store our player.
 /// </summary>
 public class Player : Character
 {
-    public static int MobsKilledCounter = 0;
+    /// <summary>
+    /// Counter for mobs killed.
+    /// </summary>
+    public static int MobsKilledCounter;
 
-    public static int ItemsPickedUpCounter = 0;
+    /// <summary>
+    /// Counter for items picked up.
+    /// </summary>
+    public static int ItemsPickedUpCounter;
 
     /// <summary>
     /// A constant to provide the size of our players usable inventory.
     /// </summary>
-    public const int InventorySize = 5;
+    private const int InventorySize = 5;
 
     /// <summary>
     /// A constant to provide the size of our players key item inventory.
     /// </summary>
     private const int KeyInventorySize = 4;
 
-
-    public int KeyItemsHeld { get; set; }
+    /// <summary>
+    /// Shows how many key items the player holds.
+    /// </summary>
+    public int KeyItemsHeld { get; private set; }
 
     /// <summary>
     /// A string to store the name of our player.
     /// </summary>
-    private string _name;
+    private readonly string _name;
 
     /// <summary>
     /// A public property to access our players usable inventory.
@@ -55,6 +62,10 @@ public class Player : Character
         OnPlayerStateEvent();
     }
 
+    /// <summary>
+    /// Uses the correct item in the inventory slot specified.
+    /// </summary>
+    /// <param name="inventorySlot">The inventory slot to use.</param>
     public bool InventoryUse(int inventorySlot)
     {
         if (inventorySlot is < 0 or >= InventorySize)
@@ -87,7 +98,7 @@ public class Player : Character
             var firstEmptyIndex = Array.IndexOf(KeyItemInventory, null);
             if (firstEmptyIndex < 0)
             {
-                return false; //inventory is full
+                return false;
             }
 
             newItem.User = this;
@@ -107,8 +118,6 @@ public class Player : Character
             Inventory[firstEmptyIndex] = newItem;
             return true;
         }
-
-        OnPlayerStateEvent();
     }
 
     /// <summary>
@@ -121,6 +130,10 @@ public class Player : Character
         return result;
     }
 
+    /// <summary>
+    /// Handler for player move event.
+    /// </summary>
+    /// <param name="moveVec">The move vector.</param>
     public void HandleMoveEvent(in Vector2 moveVec)
     {
         MoveSpeed = new Vector2(BaseMoveSpeed * moveVec.X, BaseMoveSpeed * moveVec.Y);
@@ -130,14 +143,24 @@ public class Player : Character
         }
     }
 
+    /// <summary>
+    /// Handler for using an item.
+    /// </summary>
+    /// <param name="index">Index of the item being used.</param>
     public void HandleItemUseEvent(in int index)
     {
         Console.Out.WriteLine(index);
         InventoryUse(index);
     }
 
+    /// <summary>
+    /// Event for the player state.
+    /// </summary>
     public event EventHelper.PlayerStateEventHandler PlayerStateEvent;
 
+    /// <summary>
+    /// Invokes event for the player state.
+    /// </summary>
     private void OnPlayerStateEvent()
     {
         var args = new EventHelper.PlayerState(Health, Energy, Inventory, KeyItemsHeld);
@@ -148,22 +171,36 @@ public class Player : Character
         }
     }
 
+    /// <summary>
+    /// Event for when the player dies.
+    /// </summary>
     public event EventHelper.LoseGameHandler PlayerDeadHandler;
 
+    /// <summary>
+    /// Handler for the event when a player dies.
+    /// </summary>
     protected override void OnDeath()
     {
         base.OnDeath();
         PlayerDeadHandler?.Invoke();
     }
 
-    public event EventHelper.PlayerShootBullets shotRecieved;
+    /// <summary>
+    /// Event for when a shot collides with player.
+    /// </summary>
+    public event EventHelper.PlayerShootBullets ShotReceived;
 
+    /// <summary>
+    /// Invokes event when a shot is received.
+    /// </summary>
     public void OnPlayerShootSender()
     {
-        //Build.Projectiles.Bullet()
-        shotRecieved?.Invoke();
+        ShotReceived?.Invoke();
     }
 
+    /// <summary>
+    /// Fixed update for the player.
+    /// </summary>
     public override void FixedUpdate()
     {
         base.FixedUpdate();

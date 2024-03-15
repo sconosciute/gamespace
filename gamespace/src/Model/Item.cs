@@ -1,4 +1,4 @@
-using System;
+using gamespace.Model.Entities;
 
 namespace gamespace.Model;
 
@@ -21,12 +21,12 @@ public class Item
     /// <summary>
     /// A property to store the items name.
     /// </summary>
-    public string ItemName { get; init; }
+    private string ItemName { get; init; }
 
     /// <summary>
     /// A property to store the items description
     /// </summary>
-    public string ItemDescription { get; init; }
+    private string ItemDescription { get; init; }
 
     /// <summary>
     /// A boolean to store whether the Item is necessary for game completion.
