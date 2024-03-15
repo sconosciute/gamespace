@@ -1,4 +1,7 @@
-﻿using gamespace.Model;
+﻿using gamespace.Managers;
+using gamespace.Model;
+using Microsoft.Xna.Framework;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace gamespaceunittests;
 
@@ -54,5 +57,44 @@ public class WorldTest
     private void WorldConstructorNegativeHeightTestHelper()
     {
         var negativeHeightWorld = new World(1, -1);
+    }
+
+    [Test]
+    public void WorldCheckOverLapTrue()
+    {
+        var world = new World(31, 31);
+        var Room1Bounds = new Rectangle(1, 1, 8, 8);
+        var Room1 = new Room(Room1Bounds);
+        world.Rooms.Add(Room1);
+        var Room2Bounds = new Rectangle(0, 0, 8, 8);
+        var room2 = new Room(Room2Bounds);
+
+        Assert.That(world.CheckRoomOverlap(room2), Is.EqualTo(true));
+    }
+    
+    [Test]
+    public void WorldCheckOverLapFalse()
+    {
+        var world = new World(31, 31);
+        var Room1Bounds = new Rectangle(10, 10, 8, 8);
+        var Room1 = new Room(Room1Bounds);
+        world.Rooms.Add(Room1);
+        var Room2Bounds = new Rectangle(0, 0, 8, 8);
+        var room2 = new Room(Room2Bounds);
+
+        Assert.That(world.CheckRoomOverlap(room2), Is.EqualTo(false));
+    }
+
+    [Test]
+    public void WorldTestIsInBoundsFalse()
+    {
+        var world = new World(9, 9);
+        Assert.That(world.IsInBounds(10, 10), Is.EqualTo(false));
+    }
+    [Test]
+    public void WorldTestOutOfBoundsTrue()
+    {
+        var world = new World(9, 9);
+        Assert.That(world.IsInBounds(0, 0), Is.EqualTo(true));
     }
 }
