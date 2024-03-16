@@ -201,7 +201,7 @@ public class GameManager
         _camera.BeginFrame();
         _camera.DrawFrame(RenderMode.Deferred);
         
-        _camera.RenderFrame();
+        Camera.RenderFrame();
         _gui.RenderGui();
     }
     

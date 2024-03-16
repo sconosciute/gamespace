@@ -8,13 +8,39 @@ namespace gamespace;
 
 public class Game1 : Game
 {
+    /// <summary>
+    /// A frequency for a timer.
+    /// </summary>
     private const int UpdateTimeDelta = (1000 / 30);
+    
+    /// <summary>
+    /// The last up time of the update time.
+    /// </summary>
     private double _lastUpTime;
+    
+    /// <summary>
+    /// The main game manager.
+    /// </summary>
     private readonly GameManager _gm;
+    
+    /// <summary>
+    /// Debug logger.
+    /// </summary>
     private readonly ILogger _log;
-    private GuiManager _gui;
+    
+    /// <summary>
+    /// The main manager for GUI elements.
+    /// </summary>
+    private readonly GuiManager _gui;
+    
+    /// <summary>
+    /// Property for how much time spent in the dungeon.
+    /// </summary>
     public static int SecondsInDungeon { get; private set; }
 
+    /// <summary>
+    /// Initializes the game manager and GUI.
+    /// </summary>
     public Game1()
     {
         _log = Globals.LogFactory.CreateLogger<Game1>();
@@ -28,6 +54,9 @@ public class Game1 : Game
         _gui = _gm.InitGui();
     }
 
+    /// <summary>
+    /// Initializes the game/base.
+    /// </summary>
     protected override void Initialize()
     {
         _log.LogInformation("Initializing Game");
@@ -37,6 +66,9 @@ public class Game1 : Game
         base.Initialize();
     }
 
+    /// <summary>
+    /// Loads all textures used in the game.
+    /// </summary>
     protected override void LoadContent()
     {
         _log.LogInformation("Loading textures");
@@ -62,6 +94,9 @@ public class Game1 : Game
         _gm.TempInitPlayerWorld();
     }
 
+    /// <summary>
+    /// Fixed update check for the game.
+    /// </summary>
     protected override void Update(GameTime gameTime)
     {
         _gui.Update();
@@ -78,6 +113,9 @@ public class Game1 : Game
         base.Update(gameTime);
     }
 
+    /// <summary>
+    /// Draws game elements.
+    /// </summary>
     protected override void Draw(GameTime gameTime)
     {
         _gm.Draw();

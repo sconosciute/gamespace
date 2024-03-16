@@ -7,11 +7,22 @@ namespace gamespace.View;
 
 public class DbPanel : GuiPanel
 {
+    /// <summary>
+    /// Creates a DbPanel object.
+    /// </summary>
+    /// <param name="drawBox">The rectangle that will hold the panel.</param>
+    /// <param name="manager">The GUI manager.</param>
+    /// <param name="parent">The GUI parent.</param>
+    /// <param name="background">The background image.</param>
     public DbPanel(Rectangle drawBox, GuiManager manager, GuiPanel parent = null,
         Texture2D background = null) : base("Statistics", drawBox, manager, parent, background)
     {
     }
 
+    /// <summary>
+    /// Draws the database panel.
+    /// </summary>
+    /// <param name="batch">The sprite to draw.</param>
     public override void Draw(in SpriteBatch batch)
     {
         base.Draw(in batch);

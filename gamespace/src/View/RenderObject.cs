@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using gamespace.Managers;
 using gamespace.Util;
-using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,16 +9,34 @@ namespace gamespace.View;
 
 public class RenderObject
 {
+    /// <summary>
+    /// The texture of the render object.
+    /// </summary>
     private readonly Texture2D _texture;
 
+    /// <summary>
+    /// Property for getting the correct entity ID.
+    /// </summary>
     public Guid? EntityId { get; init; }
 
+    /// <summary>
+    /// The object's current position.
+    /// </summary>
     private Vector2 _position;
 
+    /// <summary>
+    /// The object's old position.
+    /// </summary>
     private Vector2 _oldPosition;
 
+    /// <summary>
+    /// List of animation actions and the animation they show.
+    /// </summary>
     private readonly Dictionary<AnimationAction, Animation> _animations = new();
 
+    /// <summary>
+    /// Property for the layer enums.
+    /// </summary>
     public Layer Layer { get; }
 
     /// <summary>
@@ -41,6 +58,10 @@ public class RenderObject
             new Animation(texture, 16, 16, 4, 100.0f, GetAnimationAction(worldPosition));
     }
 
+    /// <summary>
+    /// Returns the correct action based on the move vector from the player.
+    /// </summary>
+    /// <param name="direction">The direction the player is moving.</param>
     private static AnimationAction GetAnimationAction(Vector2 direction)
     {
         var angle = Math.Atan2(direction.Y, direction.X) * (180 / Math.PI);
@@ -63,6 +84,9 @@ public class RenderObject
         };
     }
 
+    /// <summary>
+    /// Sends an update to the animation.
+    /// </summary>
     public void Update(GameTime gameTime)
     {
         var direction = InputManager.Direction;
@@ -77,6 +101,9 @@ public class RenderObject
         }
     }
 
+    /// <summary>
+    /// Draws a texture.
+    /// </summary>
     public void Draw()
     {
         if (_texture.Name == Textures.Player)
@@ -92,23 +119,38 @@ public class RenderObject
         }
     }
 
+    /// <summary>
+    /// Entity event handler.
+    /// </summary>
+    /// <param name="sender">The entity ID.</param>
+    /// <param name="args">The event.</param>
     public void HandleEntityEvent(in Guid sender, in EventHelper.EntityEventArgs args)
     {
         if (sender != EntityId) return;
-        if (args.EventTopic == EventHelper.EntityEventType.Moved)
-        {
-            _position = args.NewPosition;
-            _position.X *= Globals.TileSize;
-            _position.Y *= Globals.TileSize;
-        }
+        if (args.EventTopic != EventHelper.EntityEventType.Moved) return;
+        _position = args.NewPosition;
+        _position.X *= Globals.TileSize;
+        _position.Y *= Globals.TileSize;
     }
+    
+    /// <summary>
+    /// Entity unregister handler.
+    /// </summary>
     public event EventHelper.EntityUnregisterHandler Handle;
+    
+    /// <summary>
+    /// Invoke event to unrender an object.
+    /// </summary>
+    /// <param name="sender">The sender to unrender.</param>
     public void SendUnrender(in Guid sender)
     {
         Handle?.Invoke(this);
     }
 }
 
+/// <summary>
+/// Enums for the layer an object should be drawn at.
+/// </summary>
 public enum Layer
 {
     Foreground,

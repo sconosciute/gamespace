@@ -7,7 +7,17 @@ namespace gamespace;
 
 public static class Globals
 {
+    /// <summary>
+    /// The debug flag that allows the player to see further.
+    /// </summary>
     public static bool DebugForceScale = false;
+    
+    /// <summary>
+    /// Initializes globals.
+    /// </summary>
+    /// <param name="content">The content manager containing the textures.</param>
+    /// <param name="spriteBatch">The spritebatch to draw.</param>
+    /// <param name="font">The font for menus.</param>
     public static void Init(ContentManager content, SpriteBatch spriteBatch, SpriteFont font)
     {
         Content ??= content;
@@ -36,8 +46,14 @@ public static class Globals
     /// </summary>
     public static SpriteFont Font { get; private set; }
     
+    /// <summary>
+    /// Changeable scale for textures.
+    /// </summary>
     public static float Scale { get; private set; } = 1f;
 
+    /// <summary>
+    /// Updates the scale accordingly.
+    /// </summary>
     public static void UpdateScale(GraphicsDevice gfx)
     {
         if (DebugForceScale)
