@@ -8,12 +8,25 @@ namespace gamespace.Managers.Database;
 
 public static class DbHandler
 {
+    /// <summary>
+    /// The file path for connection.
+    /// </summary>
     private static readonly string ConnPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Gamespace", FilePath);
 
+    /// <summary>
+    /// The file name that the database will be stored in.
+    /// </summary>
     private const string FilePath = "stats.db";
+    
+    /// <summary>
+    /// Debug logger.
+    /// </summary>
     private static readonly ILogger Log = Globals.LogFactory.CreateLogger<Game1>();
 
+    /// <summary>
+    /// Initializes database.
+    /// </summary>
     public static void InitDatabase()
     {
         if (TryOpen(out var db))
@@ -27,6 +40,10 @@ public static class DbHandler
         }
     }
     
+    /// <summary>
+    /// Tries to open the database and create a statistic table.
+    /// </summary>
+    /// <param name="db">The database to connect to.</param>
     private static bool TryOpen(out SQLiteConnection db)
     {
         try
@@ -43,6 +60,11 @@ public static class DbHandler
         }
     }
 
+    /// <summary>
+    /// Writes/updates the stats associated with the primary key.
+    /// </summary>
+    /// <param name="statName">The database primary key.</param>
+    /// <param name="value">The value to update.</param>
     public static void WriteStat(Statistic.Stats statName, int value)
     {
         if (!TryOpen(out var db)) return;
@@ -58,6 +80,10 @@ public static class DbHandler
         db.Close();
     }
 
+    /// <summary>
+    /// Retrieves the stat associated with the primary key.
+    /// </summary>
+    /// <param name="statName">The database primary key.</param>
     public static int GetStat(Statistic.Stats statName)
     {
         if (!TryOpen(out var db)) return 0;
@@ -67,6 +93,9 @@ public static class DbHandler
 
     }
 
+    /// <summary>
+    /// Gets all stats in the database.
+    /// </summary>
     public static List<Statistic> GetAllStats()
     {
         if (!TryOpen(out var db)) return null;
