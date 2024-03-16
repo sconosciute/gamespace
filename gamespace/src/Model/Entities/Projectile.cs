@@ -80,6 +80,12 @@ public class Projectile : Entity
         curPos.X += translation.X;
         curPos.Y += translation.Y;
     }
-    
-    
+
+    public override string ToString()
+    {
+        //float width, float height, World world, Vector2 worldCoordinate, Vector2 direction, Guid sender)
+        var result = "Width: " + Width + " Height: " + Height + " Position: " + WorldCoordinate +
+                     " MoveSpeed: " + MoveSpeed + " Sender: " + _sender;
+        return result;
+    }
 }
