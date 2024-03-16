@@ -1,5 +1,6 @@
-﻿using gamespace.Model;
-using gamespace.Util;
+﻿using gamespace.Managers;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using Microsoft.Xna.Framework;
 
 namespace gamespaceunittests;
@@ -34,7 +35,10 @@ public class AlterTest
     private void TestWinTrueHelper()
     {
         var tempPlayer = new Player("temp", null);
-        tempPlayer.KeyItemsHeld = 4;
+        for (int i = 0; i < 5; i++)
+        {
+            tempPlayer.AddToInventory(Build.Items.Cog());
+        }
         var alter = new Altar(Vector2.Zero, 1, 1, false);
         alter.Win += WinGameTester;
         alter.InteractWithPlayer(tempPlayer);
@@ -43,7 +47,6 @@ public class AlterTest
     private void TestWinFalseHelper()
     {
         var tempPlayer = new Player("temp", null);
-        tempPlayer.KeyItemsHeld = 0;
         var alter = new Altar(Vector2.Zero, 1, 1, false);
         alter.Win += WinGameTester;
         alter.InteractWithPlayer(tempPlayer);

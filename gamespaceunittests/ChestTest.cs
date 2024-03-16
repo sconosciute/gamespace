@@ -1,5 +1,6 @@
 ﻿using gamespace.Managers;
-using gamespace.Model;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using Microsoft.Xna.Framework;
 
 namespace gamespaceunittests;

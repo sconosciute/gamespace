@@ -17,7 +17,7 @@ public class World
     /// NOTE: The amount of rooms on the map may not always equal the number of rooms set.
     /// </summary>
     public const int NumberOfRooms = 100;
-    
+
     /// <summary>
     /// List of all tiles in x,y fashion.
     /// </summary>
@@ -37,12 +37,12 @@ public class World
     /// List of character entities in the world.
     /// </summary>
     public readonly List<Character> Entities = new();
-    
+
     /// <summary>
     /// List of mob entities in the world.
     /// </summary>
     public readonly List<Mob> Mobs = new();
-    
+
     /// <summary>
     /// The alter to end the game.
     /// </summary>
@@ -52,32 +52,32 @@ public class World
     /// List of rooms in the world.
     /// </summary>
     public List<Room> Rooms { get; } = new();
-    
+
     /// <summary>
     /// Min X value of the world.
     /// </summary>
     public readonly int MinX;
-    
+
     /// <summary>
     /// Max X value of the world.
     /// </summary>
     public readonly int MaxX;
-    
+
     /// <summary>
     /// Min Y value of the world.
     /// </summary>
     public readonly int MinY;
-    
+
     /// <summary>
     /// Max Y value of the world.
     /// </summary>
     public readonly int MaxY;
-    
+
     /// <summary>
     /// X offset.
     /// </summary>
     private readonly int _xOffset;
-    
+
     /// <summary>
     /// Y offset.
     /// </summary>
@@ -87,22 +87,22 @@ public class World
     /// Vector for moving right.
     /// </summary>
     private static readonly Vector2 MoveRight = new(1, 0);
-    
+
     /// <summary>
     /// Vector for moving left.
     /// </summary>
     private static readonly Vector2 MoveLeft = new(-1, 0);
-    
+
     /// <summary>
     /// Vector for moving up.
     /// </summary>
     private static readonly Vector2 MoveUp = new(0, -1);
-    
+
     /// <summary>
     /// Vector for moving down.
     /// </summary>
     private static readonly Vector2 MoveDown = new(0, 1);
-    
+
     /// <summary>
     /// Vector array that stores all directions.
     /// </summary>
@@ -120,6 +120,11 @@ public class World
     /// <param name="height"></param>
     public World(int width, int height)
     {
+        if (width <= 0 || height <= 0)
+        {
+            throw new ArithmeticException("Width and height must be a positive non-zero value");
+        }
+
         var mapWidth = width;
         var mapHeight = height;
 
@@ -250,6 +255,11 @@ public class World
         return !value.CanCollide;
     }
 
+    public override string ToString()
+    {
+        return "Min X: " + MinX + " Min Y: " + MinY + " Max X: " + MaxX + " Max Y: " + MaxY;
+    }
+
     //-=ARCHIVE/UNUSED METHODS=-----------------------------------------------------------------------------------------
     public bool CheckAdj(Point pos)
     {
@@ -274,6 +284,7 @@ public class World
         {
             return false;
         }
+
         return (!this[(int)pos.X + 1, (int)pos.Y].CanCollide || !this[(int)pos.X + 1, (int)pos.Y].CanCollide ||
                 !this[(int)pos.X, (int)pos.Y - 1].CanCollide || !this[(int)pos.X, (int)pos.Y + 1].CanCollide);
     }

@@ -1,5 +1,5 @@
-﻿using gamespace.Managers;
-using gamespace.Model;
+﻿using gamespace.Model;
+using gamespace.Model.Props;
 using Microsoft.Xna.Framework;
 using Rectangle = System.Drawing.Rectangle;
 
