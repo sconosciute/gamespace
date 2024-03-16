@@ -1,5 +1,7 @@
 ﻿using System;
 using gamespace.Model;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 
@@ -10,8 +12,14 @@ namespace gamespace.Managers;
 /// </summary>
 public static class Build
 {
+    /// <summary>
+    /// Structure for props that do not interact with the player.
+    /// </summary>
     public struct Props
     {
+        /// <summary>
+        /// Builds a tile that the player can walk on/through.
+        /// </summary>
         public static Prop Floor(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
             var prop = new Prop(worldPosition, 1, 1, false);
@@ -22,6 +30,9 @@ public static class Build
             return prop;
         }
 
+        /// <summary>
+        /// Builds a tile that the player cannot walk through.
+        /// </summary>
         public static Prop Wall(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
             var prop = new Prop(worldPosition, 0.9f, 0.9f, true);
@@ -31,7 +42,10 @@ public static class Build
                 layerDepth: Layer.Background);
             return prop;
         }
-        
+
+        /// <summary>
+        /// Builds the tiles that are used for hallways.
+        /// </summary>
         public static Prop Connector(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
             var prop = new Prop(worldPosition, 1, 1, false);
@@ -42,23 +56,31 @@ public static class Build
             return prop;
         }
     }
-    
+
+    /// <summary>
+    /// Structure for props that interact with the player.
+    /// </summary>
     public struct InteractableProps
     {
-        public static Chest Chest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
+        /// <summary>
+        /// Builds a chest that holds key items that the player can pick up.
+        /// </summary>
+        public static Chest Chest(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable)
         {
-            var prop = new Chest(worldPosition, 1, 1, false, _item); //Changed col to false
+            var prop = new Chest(worldPosition, 1, 1, false, item);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Chest),
                 worldPosition: worldPosition,
                 layerDepth: Layer.Midground);
             return prop;
         }
-        
-        //TODO: Temp
-        public static Chest NormalChest(GameManager gm, Vector2 worldPosition, Item _item, out RenderObject renderable)
+
+        /// <summary>
+        /// Builds a chest that the player can take an item from.
+        /// </summary>
+        public static Chest NormalChest(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable)
         {
-            var prop = new Chest(worldPosition, 1, 1, false, _item);
+            var prop = new Chest(worldPosition, 1, 1, false, item);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.NormalChest),
                 worldPosition: worldPosition,
@@ -66,6 +88,9 @@ public static class Build
             return prop;
         }
 
+        /// <summary>
+        /// Builds spikes on a tile that will damage the player.
+        /// </summary>
         public static Spikes Spikes(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
             var prop = new Spikes(worldPosition, 1, 1, false);
@@ -76,6 +101,9 @@ public static class Build
             return prop;
         }
 
+        /// <summary>
+        /// Builds the alter that the player needs to exit.
+        /// </summary>
         public static Altar Alter(GameManager gm, Vector2 worldPosition, out RenderObject renderable)
         {
             var prop = new Altar(worldPosition, 1, 1, false);
@@ -87,23 +115,33 @@ public static class Build
         }
     }
 
+    /// <summary>
+    /// Structure for mobs that the player can damage or be damaged by.
+    /// </summary>
     public struct Mobs
     {
+        /// <summary>
+        /// Builds a stationary turret that will actively shoot at the player.
+        /// </summary>
         public static Mob Turret(GameManager gm, World world, Vector2 worldPosition, out RenderObject renderable)
         {
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Turret",
                 10, false, false, Mob.MobTypes.Hostile);
             //TODO: Add a Turret Model
             renderable = new RenderObject(
-                texture: gm.GetTexture(Textures.Cat), //Temp image for turrets.
+                texture: gm.GetTexture(Textures.Cat),
                 worldPosition: worldPosition,
                 layerDepth: Layer.Midground,
                 entityId: mob.EntityId);
-            
+
             return mob;
         }
 
-        public static Mob RogueRanger(GameManager gm, World world, Vector2 worldPosition, Guid id, out RenderObject renderable)
+        /// <summary>
+        /// Builds a special mob.
+        /// </summary>
+        public static Mob RogueRanger(GameManager gm, World world, Vector2 worldPosition, Guid id,
+            out RenderObject renderable)
         {
             var mob = new Mob(worldPosition, 50, 10, 10, world, "Rogue Ranger",
                 10, true, true, Mob.MobTypes.Hostile);
@@ -117,11 +155,18 @@ public static class Build
         }
     }
 
+    /// <summary>
+    /// Structure for only projectiles.
+    /// </summary>
     public struct Projectiles
     {
-        public static Projectile Bullet(GameManager gm, World world, Vector2 worldPosition, Vector2 direction, Guid sender, out RenderObject renderable)
+        /// <summary>
+        /// Builds a bullet that the player and certain mobs will shoot.
+        /// </summary>
+        public static Projectile Bullet(GameManager gm, World world, Vector2 worldPosition, Vector2 direction,
+            Guid sender, out RenderObject renderable)
         {
-            var bullet = new Projectile(0.25f, 0.25f, world, worldPosition, direction, sender); //tryna change height and width to 0.25f to fix hit reg
+            var bullet = new Projectile(0.25f, 0.25f, world, worldPosition, direction, sender);
             renderable = new RenderObject(
                 texture: gm.GetTexture(Textures.Bullet),
                 worldPosition: worldPosition,
@@ -131,9 +176,14 @@ public static class Build
         }
     }
 
+    /// <summary>
+    /// Structure for items that the player can collect, whether it is a usable item or key item.
+    /// </summary>
     public struct Items
     {
-        //TODO: Remove user from here, we will not know the user until after it is set, we could have a get, set that runs on pickup?
+        /// <summary>
+        /// A small heal potion to heal the player for a small amount.
+        /// </summary>
         public static Item SmallHealthPotion()
         {
             var smallPotion = new Item("Small health potion",
@@ -142,6 +192,9 @@ public static class Build
             return smallPotion;
         }
 
+        /// <summary>
+        /// A medium heal potion that will heal the player for a good amount.
+        /// </summary>
         public static Item MediumHealthPotion()
         {
             var mediumPotion = new Item("Medium health potion",
@@ -150,6 +203,9 @@ public static class Build
             return mediumPotion;
         }
 
+        /// <summary>
+        /// A large heal potion that will heal the player tremendously.
+        /// </summary>
         public static Item LargeHealthPotion()
         {
             var largePotion = new Item("Large health potion",
@@ -157,33 +213,47 @@ public static class Build
             largePotion.UseLargePotion();
             return largePotion;
         }
-        //Key Items
 
+        /// <summary>
+        /// Special item that the player needs to collect.
+        /// </summary>
         public static Item Cog()
         {
             var cog = new Item("Cog", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
             return cog;
         }
 
+        /// <summary>
+        /// Special item that the player needs to collect.
+        /// </summary>
         public static Item Wires()
         {
             var wires = new Item("Wires", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
             return wires;
         }
 
+        /// <summary>
+        /// Special item that the player needs to collect.
+        /// </summary>
         public static Item Lever()
         {
             var lever = new Item("Lever", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
             return lever;
         }
 
+        /// <summary>
+        /// Special item that the player needs to collect.
+        /// </summary>
         public static Item ControlPanel()
         {
-            var controlPanel = new Item("Control panel", "This will help you fix the escape pod", true, Item.ItemType.KeyItem);
+            var controlPanel = new Item("Control panel", "This will help you fix the escape pod", true,
+                Item.ItemType.KeyItem);
             return controlPanel;
         }
-        
-        //Test item, this can be deleted upon final iteration.
+
+        /// <summary>
+        /// Item used only in unit tests.
+        /// </summary>
         public static Item TestItem()
         {
             var testItem = new Item("Test",

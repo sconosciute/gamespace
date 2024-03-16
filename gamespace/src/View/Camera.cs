@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using gamespace.Model;
 using gamespace.Util;
 using Loyc;
 using Microsoft.Extensions.Logging;
@@ -15,28 +13,55 @@ namespace gamespace.View;
 /// </summary>
 public class Camera
 {
+    /// <summary>
+    /// The game's graphics.
+    /// </summary>
     private readonly GraphicsDevice _gfx;
 
+    /// <summary>
+    /// The unique player ID.
+    /// </summary>
     private readonly Guid _playerId;
-
+    
+    /// <summary>
+    /// List of renderables within the foreground layer.
+    /// </summary>
     private readonly List<RenderObject> _foregroundRenderables = new();
     
+    /// <summary>
+    /// List of renderables within the midground layer.
+    /// </summary>
     private readonly List<RenderObject> _midgroundRenderables = new();
     
+    /// <summary>
+    /// List of renderables within the background layer.
+    /// </summary>
     private readonly List<RenderObject> _backgroundRenderables = new();
 
+    /// <summary>
+    /// Debug logger.
+    /// </summary>
     private readonly ILogger _log;
 
+    /// <summary>
+    /// Camera zoom.
+    /// </summary>
     private float _zoom = 1.2f;
 
+    /// <summary>
+    /// Camera zoom adjust.
+    /// </summary>
     private const float ZoomAdj = 0.01f;
 
+    /// <summary>
+    /// Tracked position of the camera.
+    /// </summary>
     private Vector2 _trackedPosition = Vector2.Zero;
 
     /// <summary>
     /// The 2D translation Matrix from world to screen coordinates to be used with SpriteBatch for rendering.
     /// </summary>
-    public Matrix Translation { get; private set; }
+    private Matrix Translation { get; set; }
 
     /// <summary>
     /// Initiates a new fixed resolution camera that tracks the Player.
@@ -56,19 +81,25 @@ public class Camera
 
     //=== EVENT DISPATCH ===--------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Camera event handler.
+    /// </summary>
     public event EventHelper.CameraEventHandler CameraEvent;
 
+    /// <summary>
+    /// Invokes scale event for the camera.
+    /// </summary>
     protected virtual void OnCameraEvent(Matrix scale)
     {
         CameraEvent?.Invoke(scale);
     }
-    
-    //public event EventHelper.EntityUnregisterHandler handle;
 
+    /// <summary>
+    /// Unrender event handle type.
+    /// </summary>
     public void HandleUnrenderEvent(RenderObject robj)
     {
         UnregisterRenderable(robj);
-        //handle.Invoke(robj);
     }
 
     //=== RENDERING ===-------------------------------------------------------------------------------------------------
@@ -111,11 +142,14 @@ public class Camera
     /// <summary>
     /// Renders the most recently drawn frame to the graphics device and releases the Graphics RenderTarget.
     /// </summary>
-    public void RenderFrame()
+    public static void RenderFrame()
     {
         Globals.SpriteBatch.End();
     }
 
+    /// <summary>
+    /// Updates the translation matrix for the camera.
+    /// </summary>
     private void UpdateTranslationMatrix()
     {
         var zm = (float)Math.Pow(2, _zoom) - 1;
@@ -152,9 +186,12 @@ public class Camera
                 throw new ArgumentOutOfRangeException();
         }
     }
-    
-    
-    public void UnregisterRenderable(RenderObject renderObject)
+
+    /// <summary>
+    /// Unregisters the render object.
+    /// </summary>
+    /// <param name="renderObject">The render object to unregister.</param>
+    private void UnregisterRenderable(RenderObject renderObject)
     {
         switch (renderObject.Layer)
         {
@@ -168,7 +205,6 @@ public class Camera
                 }
                 break;
             case Layer.Midground:
-                //_midgroundRenderables.Add(renderObject);
                 for (var i = 0; i < _midgroundRenderables.Count; i++)
                 {
                     if (_midgroundRenderables[i].EntityId.Equals(renderObject.EntityId))
@@ -178,7 +214,6 @@ public class Camera
                 }
                 break;
             case Layer.Foreground:
-                //_foregroundRenderables.Add(renderObject);
                 for (var i = 0; i < _midgroundRenderables.Count; i++)
                 {
                     if (_midgroundRenderables[i].EntityId.Equals(renderObject.EntityId))
@@ -201,7 +236,7 @@ public class Camera
     /// <param name="args">Necessary information for this event.</param>
     public void HandleEntityEvent(in Guid sender, in EventHelper.EntityEventArgs args)
     {
-        if (sender != _playerId) return;             //Uncommented now that other mobs besides player can move.
+        if (sender != _playerId) return;
         if (args.EventTopic != EventHelper.EntityEventType.Moved) return;
         _trackedPosition = args.NewPosition;
         UpdateTranslationMatrix();
@@ -233,12 +268,18 @@ public class Camera
     }
 }
 
+/// <summary>
+/// Enums of render modes.
+/// </summary>
 public enum RenderMode
 {
     Immediate,
     Deferred
 }
 
+/// <summary>
+/// Enums of zoom event types.
+/// </summary>
 public enum ZoomEventType
 {
     Up,

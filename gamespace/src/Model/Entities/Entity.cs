@@ -3,16 +3,38 @@ using gamespace.Util;
 using Microsoft.Extensions.Logging;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-namespace gamespace.Model
+namespace gamespace.Model.Entities
 {
     public abstract class Entity : PhysicsObj
     {
+        /// <summary>
+        /// Default speed for all entities.
+        /// </summary>
         private const float DefaultEntSpeed = 0.15f;
 
-        protected readonly World _world;
+        /// <summary>
+        /// The world that the entities will be rendered in.
+        /// </summary>
+        protected readonly World World;
+        
+        /// <summary>
+        /// Base move speed for entities.
+        /// </summary>
         private float _baseMoveSpeed = DefaultEntSpeed;
+        
+        /// <summary>
+        /// The move speed of the entity.
+        /// </summary>
         private Vector2 _moveSpeed;
+        
+        /// <summary>
+        /// Debug logger.
+        /// </summary>
         private ILogger _log;
+        
+        /// <summary>
+        /// Gets or sets the last moving direction of the entity.
+        /// </summary>
         public Vector2 LastMovingDirection { get; protected set; }
         
         /// <summary>
@@ -25,38 +47,57 @@ namespace gamespace.Model
             protected set => _baseMoveSpeed = Math.Clamp(value, 0f, 2f);
         }
 
+        /// <summary>
+        /// Gets of initializes the ID for the entity.
+        /// </summary>
         public Guid EntityId { get; init; }
 
-        public Vector2 MoveSpeed //prot to pub
+        /// <summary>
+        /// Gets and sets the move speed of the entity.
+        /// </summary>
+        protected Vector2 MoveSpeed
         {
             get => _moveSpeed;
             set => _moveSpeed = value;
         }
 
+        /// <summary>
+        /// Event handler for entity events.
+        /// </summary>
         public event EventHelper.EntityEventHandler EntityEvent;
 
-        protected virtual void OnEntityEvent(EventHelper.EntityEventArgs args)
+        /// <summary>
+        /// Invokes the entity event.
+        /// </summary>
+        /// <param name="args">The current entity event.</param>
+        private void OnEntityEvent(EventHelper.EntityEventArgs args)
         {
             EntityEvent?.Invoke(EntityId, args);
         }
         
 
+        /// <summary>
+        /// Creates an entity object to render onto the world.
+        /// </summary>
+        /// <param name="width">Width of the entity.</param>
+        /// <param name="height">Height of the entity.</param>
+        /// <param name="world">The world the entity resides in.</param>
+        /// <param name="worldCoordinate">The world coordinate where the entity will spawn.</param>
         protected Entity(float width, float height, World world, Vector2 worldCoordinate)
             : base(worldCoordinate, width, height, true, true, true)
         {
             _log = Globals.LogFactory.CreateLogger<Entity>();
-            _world = world;
+            World = world;
             MoveSpeed = Vector2.Zero;
             EntityId = Guid.NewGuid();
         }
 
+        /// <summary>
+        /// Updates the position of the entity.
+        /// </summary>
         public override void FixedUpdate()
         {
             var oldPos = WorldCoordinate;
-            /*if (oldPos != Vector2.Zero)
-            {
-                
-            }*/
             var newPos = WorldCoordinate;
 
             var xTranslation = new Vector2(_moveSpeed.X, 0f);
@@ -65,10 +106,6 @@ namespace gamespace.Model
             Translate(yTranslation, ref newPos);
 
             WorldCoordinate = newPos;
-            /*if (newPos != Vector2.Zero)
-            {
-                LastMovingDirection = newPos;
-            }*/
 
             if (oldPos == newPos) return;
             var args = new EventHelper.EntityEventArgs()
@@ -80,16 +117,31 @@ namespace gamespace.Model
             OnEntityEvent(args);
         }
         
+        /// <summary>
+        /// Sends entity object to render object so it can be rendered.
+        /// </summary>
         public event EventHelper.SendEntityToUnrender SendObjToRenderObj;
+        
+        /// <summary>
+        /// Sends the entity object to the world so the entity can reside there.
+        /// </summary>
         public event EventHelper.SendEntityToUnrender SendObjToWorldBuilder;
 
+        /// <summary>
+        /// Unregisters the entity if it dies.
+        /// </summary>
         protected virtual void OnDeath() 
         {
             SendObjToRenderObj?.Invoke(EntityId);
             SendObjToWorldBuilder?.Invoke(EntityId);
         }
 
-        protected virtual void Translate(Vector2 translation, ref Vector2 curPos)     //Making this protected and virtual wafor projectiles to work
+        /// <summary>
+        /// Translates the entity's direction.
+        /// </summary>
+        /// <param name="translation">The translation of the entity direction.</param>
+        /// <param name="curPos">The current position of the entity.</param>
+        protected virtual void Translate(Vector2 translation, ref Vector2 curPos)
         {
             var newPos = new Vector2(curPos.X + translation.X, curPos.Y + translation.Y);
             var bbx1 = (int)Math.Floor(Math.Min(newPos.X, curPos.X));
@@ -99,11 +151,11 @@ namespace gamespace.Model
         
             for (var worldX = bbx1; worldX <= bbx2; worldX++)
             {
-                if (!_world.IsInBounds(worldX, 0)) continue;
+                if (!World.IsInBounds(worldX, 0)) continue;
                 for (var worldY = bby1; worldY <= bby2; worldY++)
                 {
-                    if (!_world.IsInBounds(0, worldY)) continue;
-                    var checkTile = _world[worldX, worldY];
+                    if (!World.IsInBounds(0, worldY)) continue;
+                    var checkTile = World[worldX, worldY];
                     if (checkTile is { CanCollide: true })
                     {
                         CheckCollision(checkTile.Prop, ref translation, curPos);
@@ -115,7 +167,13 @@ namespace gamespace.Model
             curPos.Y += translation.Y;
         }
 
-        protected bool CheckCollision(in PhysicsObj other, ref Vector2 translation, in Vector2 curPos) //Changed it so it returns if theres a colision.
+        /// <summary>
+        /// Checks if the entity has collided with something.
+        /// </summary>
+        /// <param name="other">Other object that the collision occurred with.</param>
+        /// <param name="translation">The translation to adjust collision.</param>
+        /// <param name="curPos">The current position of the collision.</param>
+        protected bool CheckCollision(in PhysicsObj other, ref Vector2 translation, in Vector2 curPos)
         {
             var othCenter = other.WorldCoordinate;
             var colVector = new Vector2(othCenter.X - curPos.X, othCenter.Y - curPos.Y);
@@ -146,7 +204,13 @@ namespace gamespace.Model
             }
         }
 
-        private float AdjustCollision(float collisionMagnitude, float moveMagnitude, float boundAdjust)
+        /// <summary>
+        /// Adjusts the collision accordingly.
+        /// </summary>
+        /// <param name="collisionMagnitude">The collision magnitude.</param>
+        /// <param name="moveMagnitude">The movement magnitude.</param>
+        /// <param name="boundAdjust">The bounds to adjust to.</param>
+        private static float AdjustCollision(float collisionMagnitude, float moveMagnitude, float boundAdjust)
         {
             //If the collision is happening behind us then we aren't colliding
             if (!(collisionMagnitude > 0) == (moveMagnitude > 0)) return moveMagnitude;

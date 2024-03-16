@@ -2,6 +2,7 @@
 
 public class Stage
 {
+    //Unused class - Functionality will be implemented at a later date.
     private readonly Tile[,] _tiles;
 
     public Stage(int width, int height)

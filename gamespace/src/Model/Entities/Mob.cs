@@ -4,7 +4,7 @@ using System.Linq;
 using gamespace.Util;
 using Microsoft.Xna.Framework;
 
-namespace gamespace.Model;
+namespace gamespace.Model.Entities;
 
 /// <summary>
 /// A class to create Mobs, NPC's, in our game.
@@ -56,7 +56,10 @@ public class Mob : Character
     /// </summary>
     public Item[] Inventory => _inventory;
 
-    private int _counter = 0; //Changes how often it shoots, will change var name tomorrow
+    /// <summary>
+    /// Counter for a timer.
+    /// </summary>
+    private int _counter;
 
     /// <summary>
     /// An enum to store different types of mobs.
@@ -101,13 +104,13 @@ public class Mob : Character
     {
         if (_canUseItems == false)
         {
-            return false; //This type cannot use items
+            return false;
         }
 
         var index = Array.IndexOf(_inventory, FirstNonEmpty(_inventory));
         if (index < 0)
         {
-            return false; //returns false if inventory is empty
+            return false;
         }
 
         var wantedItem = _inventory[index];
@@ -123,7 +126,7 @@ public class Mob : Character
     }
 
     /// <summary>
-    /// Adds a new item to the mobs inventory, if it is a useble Item and not a key item.
+    /// Adds a new item to the mobs inventory, if it is a usable Item and not a key item.
     /// </summary>
     /// <param name="newItem"> The item to place into our mobs inventory. </param>
     /// <returns></returns>
@@ -131,7 +134,7 @@ public class Mob : Character
     {
         if (newItem.IsKeyItem)
         {
-            return false; //Mobs should not be able to hold key items.
+            return false;
         }
 
         var firstEmptyIndex = Array.IndexOf(_inventory, null);
@@ -166,31 +169,38 @@ public class Mob : Character
         return result;
     }
 
+    /// <summary>
+    /// Event for mobs shooting.
+    /// </summary>
     public event EventHelper.SendMobToWorldBuilder MobShootEvent;
 
+    /// <summary>
+    /// Invoke event when the mob shoots.
+    /// </summary>
     private void OnMobShootEvent()
     {
         MobShootEvent?.Invoke(this);
     }
 
+    /// <summary>
+    /// Kills the mob.
+    /// </summary>
     protected override void OnDeath()
     {
         base.OnDeath();
         Player.MobsKilledCounter++;
     }
 
+    /// <summary>
+    /// Fixed update for mobs shooting.
+    /// </summary>
     public override void FixedUpdate()
     {
-        //This is a temp fix to make turrets stop sending out bullets and quit updating. Should look at a cleaner way to fully remove them.
-        if (Health > 0)
-        {
-            base.FixedUpdate();
-            _counter++;
-            if (_counter == 25) //Changes how often it shoots. change to 25
-            {
-                _counter = 0;
-                OnMobShootEvent();
-            }
-        }
+        if (Health <= 0) return;
+        base.FixedUpdate();
+        _counter++;
+        if (_counter != 25) return;
+        _counter = 0;
+        OnMobShootEvent();
     }
 }

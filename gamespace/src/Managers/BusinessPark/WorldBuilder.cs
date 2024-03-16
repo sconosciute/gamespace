@@ -2,51 +2,125 @@
 using System.Collections.Generic;
 using System.Linq;
 using gamespace.Model;
+using gamespace.Model.Entities;
+using gamespace.Model.Props;
 using gamespace.Util;
 using gamespace.View;
-using Loyc;
-using Loyc.Collections;
-using Loyc.Collections.MutableListExtensionMethods;
-using Loyc.Geometry;
 using Microsoft.Xna.Framework;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 
-namespace gamespace.Managers;
+namespace gamespace.Managers.BusinessPark;
 
 public class WorldBuilder
 {
+    /// <summary>
+    /// The world object to build on.
+    /// </summary>
     private readonly World _world;
-    private readonly Camera _camera;
-    private readonly GameManager _gm;
-    private Projectile Bullet;
-    private RenderObject robj;
-    private const int AttemptsToPlaceRoom = 100;
-    private const int RoomLowerBound = 5;
-    private const int RoomUpperBound = 13;
-    private int _currentRoomWidth = 5;
-    private int _currentRoomHeight = 5;
-    private Vector2 _randomDirection;
-    private Vector2 _currentDirection;
-    private Point _lastTile;
-    private List<Room> _leftOverRooms;
-    private List<Room> _roomsConnectedToStart = new();
-    private int _numberOfKeyItemsLeft = 4;
-    private int _numberOfRoomsLeft;
-    public List<Projectile> livingBullets = new List<Projectile>();
-
-    public int NumberOfBulletsToIterate { get; set; } = 0;//= livingBullets.Count;
-    public int NumberOfMobsToIterate { get; set; }
     
-    private static readonly Vector2 MoveRight = new(1, 0);
-    private static readonly Vector2 MoveLeft = new(-1, 0);
-    private static readonly Vector2 MoveUp = new(0, -1);
-    private static readonly Vector2 MoveDown = new(0, 1);
-    private static readonly Vector2[] Directions = { MoveRight, MoveUp, MoveLeft, MoveDown };
+    /// <summary>
+    /// The camera object to render everything built.
+    /// </summary>
+    private readonly Camera _camera;
+    
+    /// <summary>
+    /// The game manager of the current game.
+    /// </summary>
+    private readonly GameManager _gm;
+    
+    /// <summary>
+    /// Attempts to place a room before moving onto the next room.
+    /// </summary>
+    private const int AttemptsToPlaceRoom = 100;
+    
+    /// <summary>
+    /// The lowest amount of rooms that could be generated.
+    /// </summary>
+    private const int RoomLowerBound = 5;
+    
+    /// <summary>
+    /// The highest amount of rooms that could be generated.
+    /// </summary>
+    private const int RoomUpperBound = 13;
+    
+    /// <summary>
+    /// Starting room width.
+    /// </summary>
+    private int _currentRoomWidth = 5;
+    
+    /// <summary>
+    /// Starting room height.
+    /// </summary>
+    private int _currentRoomHeight = 5;
+    
+    /// <summary>
+    /// List of remaining rooms to be connected.
+    /// </summary>
+    private List<Room> _leftOverRooms;
+    
+    /// <summary>
+    /// List of rooms that are connected to the starting room.
+    /// </summary>
+    private readonly List<Room> _roomsConnectedToStart = new();
+    
+    /// <summary>
+    /// The number of key item chests to generate.
+    /// </summary>
+    private int _numberOfKeyItemsLeft = 4;
+    
+    /// <summary>
+    /// The number of rooms left to be connected.
+    /// </summary>
+    private int _numberOfRoomsLeft;
+    
+    /// <summary>
+    /// List of all current bullets being displayed in the world.
+    /// </summary>
+    public readonly List<Projectile> LivingBullets = new();
 
-    private Prop trashProp;
+    /// <summary>
+    /// Property of how many bullets needed to iterate through.
+    /// </summary>
+    public int NumberOfBulletsToIterate { get; set; }
+    
+    /// <summary>
+    /// Property that gives the number of mobs to iterate through.
+    /// </summary>
+    private int NumberOfMobsToIterate { get; set; }
+
+    /// <summary>
+    /// The vector for moving right.
+    /// </summary>
+    private static readonly Vector2 MoveRight = new(1, 0);
+    
+    /// <summary>
+    /// The vector for moving left.
+    /// </summary>
+    private static readonly Vector2 MoveLeft = new(-1, 0);
+    
+    /// <summary>
+    /// The vector for moving up.
+    /// </summary>
+    private static readonly Vector2 MoveUp = new(0, -1);
+    
+    /// <summary>
+    /// The vector for moving down.
+    /// </summary>
+    private static readonly Vector2 MoveDown = new(0, 1);
+
+    
+    /// <summary>
+    /// Random variable.
+    /// </summary>
     private static readonly Random Rand = new();
 
+    /// <summary>
+    /// The main menu that will contain save, load, close, and exit buttons.
+    /// </summary>
+    /// <param name="gm">The current game.</param>
+    /// <param name="camera">The camera to render what is build on the world.</param>
+    /// <param name="world">The world to build on.</param>
     public WorldBuilder(GameManager gm, Camera camera, World world)
     {
         _gm = gm;
@@ -54,17 +128,19 @@ public class WorldBuilder
         _world = world;
     }
 
+    /// <summary>
+    /// Creates a single room.
+    /// </summary>
     private Room MakeRoom()
     {
         var currentAttempts = 0;
         Room room;
         while (true)
         {
-            var width = _currentRoomWidth; //TODO: Verify this height and width is working as expected, could be why world gen broke.
+            var width = _currentRoomWidth;
             var height = _currentRoomHeight;
-            Rectangle roomBound = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
+            var roomBound = new Rectangle((int)_world.CurrentPos.X, (int)_world.CurrentPos.Y, width, height);
             room = new Room(roomBound);
-            //_world.Rooms.Add(room);
             if (_world.CheckRoomOverlap(room))
             {
                 currentAttempts++;
@@ -75,8 +151,7 @@ public class WorldBuilder
 
                 continue;
             }
-            //_world.Rooms.Add(room);
-            
+
 
             for (var i = 0; i < height; i++)
             {
@@ -88,7 +163,6 @@ public class WorldBuilder
                 }
 
                 _world.CurrentPos += new Vector2(-width, 1);
-                //Place one wall on right
             }
 
             _world.CurrentPos += new Vector2(0, -height);
@@ -98,10 +172,12 @@ public class WorldBuilder
         return room;
     }
 
+    /// <summary>
+    /// Generates the world.
+    /// </summary>
     public void BuildWorld()
     {
         //TODO Make this not hardcoded for min and max X, Y
-        //_world.Rooms.Add(MakeRoom());
         MakeRoom();
 
         for (var i = 0; i < World.NumberOfRooms; i++)
@@ -118,22 +194,22 @@ public class WorldBuilder
                 _currentRoomHeight += 1;
             }
 
-            var randX = Rand.Next(_world._minX + 1, _world._maxX - _currentRoomWidth - 2);
+            var randX = Rand.Next(_world.MinX + 1, _world.MaxX - _currentRoomWidth - 2);
             if (randX % 2 == 0)
             {
                 randX += 1;
             }
 
-            var randY = Rand.Next(_world._minY + 1, _world._maxY - _currentRoomHeight - 2);
+            var randY = Rand.Next(_world.MinY + 1, _world.MaxY - _currentRoomHeight - 2);
             if (randY % 2 == 0)
             {
                 randY += 1;
             }
 
             _world.CurrentPos = new Vector2(randX, randY);
-            //_world.Rooms.Add(MakeRoom());
             MakeRoom();
         }
+
         _leftOverRooms = _world.Rooms;
         StartDebugPrint();
         LeftOverRoomsDebug();
@@ -141,119 +217,78 @@ public class WorldBuilder
         ConnectRooms();
         StartDebugPrint();
         LootAndHazardGenerator();
-        
-        //debugFirstTile();
     }
 
-    
-
+    /// <summary>
+    /// Starts the process of connecting all rooms.
+    /// </summary>
     private void ConnectRooms()
     {
-        //Connect simple rooms first, where there's a room on both sides of a wall.
-        //  Add any rooms that do not have a simple connection into left over rooms list,
-
-        //Starting room;
-        Room startingRoom = _world.Rooms[0];
+        var startingRoom = _world.Rooms[0];
         startingRoom.IsConnectedToStart = true;
 
         ConnectSingleRoom(startingRoom);
 
-        // After all simple rooms are connected, iterate through left over room list connecting all these rooms through
-        //  a brute force tunnel, picking the shortest tunnel found between rooms.
-        //Console.Out.WriteLine();
-        // Console.Out.WriteLine();
-
-
-        //Debug print
-        //LeftOverRoomsDebug();
-
         ConnectIslandRoom(startingRoom);
-        
+
         var uhOhCounter = 0;
-        var index = 0;
-        foreach (var room in _roomsConnectedToStart)
-        {
-            //_leftOverRooms.Remove(room); //TROUBLE LINE WHY DOES THIS REMOVE FROM _WORLD.ROOMS RARRRRR
-        }
 
         foreach (var room in _leftOverRooms)
         {
             ConnectSingleRoom(room);
         }
-        //ConnectIslandRoom(startingRoom);
+
         var terminateCounter = 0;
-        //var uhOhCounter = 0;
         while (true)
         {
-
             foreach (var room in _world.Rooms)
             {
                 if (!room.IsConnectedToStart)
-                //if (!room.ConnectedRooms.Contains(startingRoom))
                 {
                     ConnectIslandRoom(room);
                     terminateCounter = 0;
                 }
                 else
                 {
-                    //ConnectIslandRoom(room);
                     terminateCounter++;
                 }
 
                 if (terminateCounter == _world.Rooms.Count)
                 {
-                    //Could iterate through and make sure all rooms are connected instead of just dying.
                     return;
                 }
             }
 
             if (terminateCounter == _world.Rooms.Count)
             {
-                //Could iterate through and make sure all rooms are connected instead of just dying.
                 return;
             }
+
             uhOhCounter++;
             if (uhOhCounter >= 10000)
             {
                 break;
             }
 
-        uhOhCounter++;
-        if (uhOhCounter >= 100)
-        {
-            break;
+            uhOhCounter++;
+            if (uhOhCounter >= 100)
+            {
+                break;
+            }
         }
-        /*foreach (var room in _roomsConnectedToStart)
-        {
-            //_leftOverRooms.Remove(room);
-
-        }*/
-
-        /*foreach (var room in _leftOverRooms)
-        {
-            ConnectSingleRoom(room); 
-        }*/
-
-        //ConnectIslandRoom(_leftOverRooms[index]);
-        //_leftOverRooms.RemoveAt(index);
-        }
-
-        /*foreach (var room in _world.Rooms)
-        {
-            ConnectIslandRoom(room); //Temp fix, add better logic but this makes sure there is no island rooms.
-        }*/
     }
-    
 
+
+    /// <summary>
+    /// Connects a single room to the nearest room.
+    /// </summary>
+    /// <param name="currentRoom">The room to be connected.</param>
     private void ConnectSingleRoom(Room currentRoom)
     {
         Console.Out.WriteLine();
-        //Console.Out.WriteLine("New room: --------" + currentRoom);
         int xPointer;
         int yPointer;
-        int counter = 0;
         var sameRoom = false;
-        // check along the top
         for (xPointer = currentRoom.RoomBounds.Left; xPointer <= currentRoom.RoomBounds.Right; xPointer++)
         {
             yPointer = currentRoom.RoomBounds.Top - 1;
@@ -261,43 +296,15 @@ public class WorldBuilder
             var nextRoomTile = new Point(xPointer, yPointer - 2);
 
             if (_world.GetIsFloor(new Vector2(xPointer,
-                    yPointer + 1)) && //If a connection is found here, set has connection bool to true,
+                    yPointer + 1)) &&
                 _world.GetIsFloor(new Vector2(xPointer,
-                    yPointer - 1))) // If no connections are found, at the end of the loop,
+                    yPointer - 1)))
             {
-                //    Add the room into a list to be handled after all easy rooms are connected.
-                //counter++;
-                if (!sameRoom)
-                {
-                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
-                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
-                    sameRoom = true;
-                }
-            }
-            else
-            {
-                sameRoom = false;
-            }
-        }
-        
-        sameRoom = false;
-        //check along the bottom
-        for (xPointer = currentRoom.RoomBounds.Left; xPointer <= currentRoom.RoomBounds.Right; xPointer++)
-        {
-            yPointer = currentRoom.RoomBounds.Bottom; //+ 1;
-            var lastRoomTile = new Point(xPointer, yPointer - 2);
-            var nextRoomTile = new Point(xPointer, yPointer + 2);
-            if (_world.GetIsFloor(new Vector2(xPointer, yPointer + 1)) &&
-                _world.GetIsFloor(new Vector2(xPointer, yPointer - 1)))
-            {
-                if (!sameRoom)
-                {
-                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
-                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
-                    sameRoom = true;
-                }
+                if (sameRoom) continue;
+                _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                    BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                sameRoom = true;
             }
             else
             {
@@ -306,10 +313,30 @@ public class WorldBuilder
         }
 
         sameRoom = false;
-        //Check to the left
+        for (xPointer = currentRoom.RoomBounds.Left; xPointer <= currentRoom.RoomBounds.Right; xPointer++)
+        {
+            yPointer = currentRoom.RoomBounds.Bottom;
+            var lastRoomTile = new Point(xPointer, yPointer - 2);
+            var nextRoomTile = new Point(xPointer, yPointer + 2);
+            if (_world.GetIsFloor(new Vector2(xPointer, yPointer + 1)) &&
+                _world.GetIsFloor(new Vector2(xPointer, yPointer - 1)))
+            {
+                if (sameRoom) continue;
+                _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                    BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                sameRoom = true;
+            }
+            else
+            {
+                sameRoom = false;
+            }
+        }
+
+        sameRoom = false;
         for (yPointer = currentRoom.RoomBounds.Top; yPointer <= currentRoom.RoomBounds.Bottom; yPointer++)
         {
-            xPointer = currentRoom.RoomBounds.Left; //- 1;
+            xPointer = currentRoom.RoomBounds.Left;
 
             var lastRoomTile = new Point(xPointer + 2, yPointer);
             var nextRoomTile = new Point(xPointer - 2, yPointer);
@@ -317,13 +344,11 @@ public class WorldBuilder
             if (_world.GetIsFloor(new Vector2(xPointer + 1, yPointer)) &&
                 _world.GetIsFloor(new Vector2(xPointer - 1, yPointer)))
             {
-                if (!sameRoom)
-                {
-                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
-                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
-                    sameRoom = true;
-                }
+                if (sameRoom) continue;
+                _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                    BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                sameRoom = true;
             }
             else
             {
@@ -332,7 +357,6 @@ public class WorldBuilder
         }
 
         sameRoom = false;
-        //Check along the right
         for (yPointer = currentRoom.RoomBounds.Top; yPointer <= currentRoom.RoomBounds.Bottom; yPointer++)
         {
             xPointer = currentRoom.RoomBounds.Right + 1; //+ 1;
@@ -343,13 +367,11 @@ public class WorldBuilder
             if (_world.GetIsFloor(new Vector2(xPointer + 1, yPointer)) &&
                 _world.GetIsFloor(new Vector2(xPointer - 1, yPointer)))
             {
-                if (!sameRoom)
-                {
-                    _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
-                        BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
-                    FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
-                    sameRoom = true;
-                }
+                if (sameRoom) continue;
+                _world.ForcePlaceFloor(new Vector2(xPointer, yPointer),
+                    BuildTile(new Vector2(xPointer, yPointer), Build.Props.Connector));
+                FindRoomsSurroundingTile(lastRoomTile, nextRoomTile);
+                sameRoom = true;
             }
             else
             {
@@ -358,22 +380,23 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Branches out from a room and connects them if it runs into a tile that is in another room.
+    /// </summary>
+    /// <param name="lastRoomPoint">The tile that is within the last room.</param>
+    /// <param name="currentRoomPoint">The tile that is within the current room.</param>
     private void FindRoomsSurroundingTile(Point lastRoomPoint, Point currentRoomPoint)
     {
         var roomCounter = 0;
-        Room newRoom = new Room(new Rectangle());
-        Room lastRoom = new Room(new Rectangle());
-        bool lastRoomDebugFind = false;
-        var nextRoomDebugFind = false;
-        foreach (Room room in _world.Rooms)
+        var newRoom = new Room(new Rectangle());
+        var lastRoom = new Room(new Rectangle());
+        foreach (var room in _world.Rooms)
         {
-            //room.RoomBounds.Contains(new Point(xPointer + 1, yPointer)) || 
             if (room.RoomBounds.Contains(currentRoomPoint) ||
                 room.RoomBounds.Contains(currentRoomPoint with { X = currentRoomPoint.X - 1 }))
             {
                 newRoom = room;
                 roomCounter++;
-                nextRoomDebugFind = true;
             }
 
             if (room.RoomBounds.Contains(lastRoomPoint) ||
@@ -381,82 +404,59 @@ public class WorldBuilder
             {
                 lastRoom = room;
                 roomCounter++;
-                lastRoomDebugFind = true;
             }
 
-            if (roomCounter == 2)
+            if (roomCounter != 2) continue;
+            if (newRoom.IsConnectedToStart || lastRoom.IsConnectedToStart)
             {
-                //_roomsConnectedToStart.Add(newRoom);
-                //newRoom.IsConnectedToStart = currentRoom.IsConnectedToStart;
-                if (newRoom.IsConnectedToStart || lastRoom.IsConnectedToStart) //Changed || to ^ (XOR)
+                newRoom.IsConnectedToStart = true;
+                lastRoom.IsConnectedToStart = true;
+                newRoom.BeenVisited = true;
+                lastRoom.BeenVisited = true;
+                if (!_roomsConnectedToStart.Contains(newRoom))
                 {
-                    newRoom.IsConnectedToStart = true;
-                    lastRoom.IsConnectedToStart = true;
-                    newRoom.BeenVisited = true;
-                    lastRoom.BeenVisited = true;
-                    //ConnectSingleRoom(newRoom);
-                    if (!_roomsConnectedToStart.Contains(newRoom))
-                    {
-                        _roomsConnectedToStart.Add(newRoom);
-                        //_leftOverRooms.Remove(newRoom);
-                        /*if (_leftOverRooms.Contains(newRoom))
-                        {
-                            _leftOverRooms.Remove(newRoom);
-                        }*/
-                        ConnectSingleRoom(newRoom);
-                    }
-
-                    if (!_roomsConnectedToStart.Contains(lastRoom))
-                    {
-                        _roomsConnectedToStart.Add(lastRoom);
-                        ConnectSingleRoom(lastRoom);
-                    }
-                    //ConnectSingleRoom(newRoom);
-                }
-                else
-                {
-                    //ConnectSingleRoom(lastRoom);
-                    if (!lastRoom.BeenVisited)
-                    {
-                        lastRoom.BeenVisited = true;
-                        ConnectSingleRoom(lastRoom);
-                    }
-
-                    if (!newRoom.BeenVisited)
-                    {
-                        newRoom.BeenVisited = true;
-                        ConnectSingleRoom(newRoom);
-                    }
+                    _roomsConnectedToStart.Add(newRoom);
+                    ConnectSingleRoom(newRoom);
                 }
 
-                lastRoom.ConnectedRooms.UnionWith(newRoom.ConnectedRooms);
-                newRoom.ConnectedRooms.UnionWith(lastRoom.ConnectedRooms);
+                if (!_roomsConnectedToStart.Contains(lastRoom))
+                {
+                    _roomsConnectedToStart.Add(lastRoom);
+                    ConnectSingleRoom(lastRoom);
+                }
             }
+            else
+            {
+                if (!lastRoom.BeenVisited)
+                {
+                    lastRoom.BeenVisited = true;
+                    ConnectSingleRoom(lastRoom);
+                }
+
+                if (!newRoom.BeenVisited)
+                {
+                    newRoom.BeenVisited = true;
+                    ConnectSingleRoom(newRoom);
+                }
+            }
+
+            lastRoom.ConnectedRooms.UnionWith(newRoom.ConnectedRooms);
+            newRoom.ConnectedRooms.UnionWith(lastRoom.ConnectedRooms);
         }
     }
 
-    private void debugFirstTile()
-    {
-        foreach (var room in _world.Rooms)
-        {
-            //ConnectIslandRoom(room);
-        }
-    }
-
+    /// <summary>
+    /// Connects any rooms that did not connect in the main algorithm.
+    /// </summary>
+    /// <param name="island">The targeted island room.</param>
     private void ConnectIslandRoom(Room island)
-    {   try
+    {
+        try
         {
             var rightStartingPoint = island.GetMiddleRight();
             var leftStartingPoint = island.GetMiddleLeft();
             var topStartingPoint = island.GetMiddleTop();
             var bottomStartingPoint = island.GetMiddleBottom();
-            
-            
-            //Code for testing these starting points
-            /*_world.ForcePlaceFloor(rightStartingPoint, BuildTile(rightStartingPoint, Build.Props.Chest)); //should be connectors, chests for test
-            _world.ForcePlaceFloor(leftStartingPoint, BuildTile(leftStartingPoint, Build.Props.Chest));
-            _world.ForcePlaceFloor(topStartingPoint, BuildTile(topStartingPoint, Build.Props.Chest));
-            _world.ForcePlaceFloor(bottomStartingPoint, BuildTile(bottomStartingPoint, Build.Props.Chest));*/
 
             var rightDist = FindDistanceInDirection(island, MoveRight, rightStartingPoint);
             var leftDist = FindDistanceInDirection(island, MoveLeft, leftStartingPoint);
@@ -468,7 +468,6 @@ public class WorldBuilder
             if (result == 1000)
             {
                 throw new Exception("No Rooms found");
-                return;
             }
 
             if (result.Equals(rightDist))
@@ -489,60 +488,54 @@ public class WorldBuilder
                 return;
             }
 
-            if (result.Equals(bottomDist))
-            {
-                BuildPathInDirection(MoveDown, bottomStartingPoint, result);
-                return;
-            }
-
-            throw new Exception("Why are u no work");
+            if (!result.Equals(bottomDist)) throw new Exception("Why are u no work");
+            BuildPathInDirection(MoveDown, bottomStartingPoint, result);
         }
         catch (Exception)
         {
-    
+            // ignored
         }
     }
 
-    private int FindDistanceInDirection(Room currentRoom, Vector2 Direction, Vector2 StartingPoint) //out bool alreadyConnected)
+    /// <summary>
+    /// Finds the distance between rooms in each direction.
+    /// </summary>
+    /// <param name="currentRoom">The current room.</param>
+    /// <param name="direction">The direction to check in.</param>
+    /// <param name="startingPoint">The starting point of the current room.</param>
+    private int FindDistanceInDirection(Room currentRoom, Vector2 direction, Vector2 startingPoint)
     {
         var counter = 0;
-        var currentPos = Vector2.Add(StartingPoint, Direction);
+        var currentPos = Vector2.Add(startingPoint, direction);
         while (true)
         {
-            currentPos = Vector2.Add(currentPos, Direction);
+            currentPos = Vector2.Add(currentPos, direction);
             counter++;
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
-                if (_world.GetIsFloor(currentPos))
-                //if (!_world.CheckAdjWithoutDiagonal(currentPos + Direction)) //Need to add plus one to counter because this would stop one early.
+                if (!_world.GetIsFloor(currentPos)) continue;
+                if (counter <= 2)
                 {
-                    if (counter <= 2)
+                    return 1000;
+                }
+
+                foreach (var room in _world.Rooms.Where(room => room.RoomBounds.Contains(new Point(
+                             (int)currentPos.X + (int)direction.X,
+                             (int)currentPos.Y + (int)direction.Y))))
+                {
+                    currentRoom.IsConnectedToStart = room.IsConnectedToStart;
+                    if (currentRoom.ConnectedRooms.Contains(room) || room.ConnectedRooms.Contains(currentRoom))
                     {
-                        //alreadyConnected = true;
                         return 1000;
                     }
 
-                    foreach (var room in _world.Rooms)
-                    {
-                        //room.RoomBounds.Contains(new Point(xPointer + 1, yPointer)) ||
-                        if (room.RoomBounds.Contains(new Point((int)currentPos.X + (int)Direction.X, (int)currentPos.Y + (int)Direction.Y)))
-                        {
-                            currentRoom.IsConnectedToStart = room.IsConnectedToStart;
-                            if (currentRoom.ConnectedRooms.Contains(room) || room.ConnectedRooms.Contains(currentRoom))
-                            {
-                                //alreadyConnected = true;
-                                return 1000;
-                            }
-
-                            currentRoom.ConnectedRooms.UnionWith(room.ConnectedRooms);
-                            room.ConnectedRooms.UnionWith(currentRoom.ConnectedRooms);
-                            //alreadyConnected = false;
-                            return counter; //+ 1;
-                        }
-                    }
-                    currentRoom.IsConnectedToStart = true;
-                    return counter; //+ 1;
+                    currentRoom.ConnectedRooms.UnionWith(room.ConnectedRooms);
+                    room.ConnectedRooms.UnionWith(currentRoom.ConnectedRooms);
+                    return counter;
                 }
+
+                currentRoom.IsConnectedToStart = true;
+                return counter;
             }
             else
             {
@@ -551,29 +544,38 @@ public class WorldBuilder
         }
     }
 
-    private void BuildPathInDirection(Vector2 Direction, Vector2 StartingPoint, int numberToPlace)
+    /// <summary>
+    /// Builds a path given the direction.
+    /// </summary>
+    /// <param name="direction">The direction to build.</param>
+    /// <param name="startingPoint">The starting point of a room.</param>
+    /// <param name="numberToPlace">The number of connector tiles to place.</param>
+    private void BuildPathInDirection(Vector2 direction, Vector2 startingPoint, int numberToPlace)
     {
-        var currentPos = Vector2.Add(StartingPoint, Direction);
+        var currentPos = Vector2.Add(startingPoint, direction);
         for (var i = 0; i < numberToPlace; i++)
         {
-            //currentPos = Vector2.Add(currentPos, Direction);
             if (_world.IsInBounds((int)currentPos.X, (int)currentPos.Y))
             {
-                _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Connector)); //Changed from connector to chest to clearly see
+                _world.ForcePlaceFloor(currentPos, BuildTile(currentPos, Build.Props.Connector));
             }
             else
             {
                 throw new Exception("Waka waka");
             }
-            currentPos = Vector2.Add(currentPos, Direction);
+
+            currentPos = Vector2.Add(currentPos, direction);
         }
     }
 
-    private void FillMapWithWalls() //Name of method subject to change.
+    /// <summary>
+    /// Fills up the map with walls that act as the background.
+    /// </summary>
+    private void FillMapWithWalls()
     {
-        for (var i = _world._minY; i <= _world._maxY; i++)
+        for (var i = _world.MinY; i <= _world.MaxY; i++)
         {
-            for (var j = _world._minX; j <= _world._maxX; j++)
+            for (var j = _world.MinX; j <= _world.MaxX; j++)
             {
                 if (_world.CheckTileIsNull(j, i))
                 {
@@ -583,54 +585,19 @@ public class WorldBuilder
         }
     }
 
-    /*public void BuildBasicWorld()
-    {
-        //Room firstRoom = null;
-        _world.CurrentPos = new Vector2(_world.CurrentPos.X, _world.CurrentPos.Y);
-        _currentRoomWidth = 5; 
-        _currentRoomHeight = 5;
-        
-        var firstRoom = MakeRoom();
-        _world.Rooms.Add(firstRoom);
-        
-        for (var i = 0; i < World.NumberOfRooms - 1; i++)
-        {
-            _currentRoomWidth = 5; 
-
-
-            _currentRoomHeight = 5; 
-            
-            _world.CurrentPos = new Vector2(_world.CurrentPos.X + 6, _world.CurrentPos.Y);
-            if (!_world.IsInBounds((int)_world.CurrentPos.X + 6, (int)_world.CurrentPos.Y + 6))
-            {
-                _world.CurrentPos = new Vector2(-24, _world.CurrentPos.Y + 6);
-            }
-            _world.Rooms.Add(MakeRoom());
-            
-        }
-
-        _leftOverRooms = _world.Rooms;
-        firstRoom.IsConnectedToStart = true;
-        FillMapWithWalls();
-        ConnectSingleRoom(firstRoom); //In our test this will simply connect everything.
-        StartDebugPrint();
-        LootAndHazardGenerator();
-    }*/
-
+    /// <summary>
+    /// Generates all items or hazards that can generate in rooms.
+    /// </summary>
     private void LootAndHazardGenerator()
     {
-        _numberOfRoomsLeft = _world.Rooms.Count - 2; //Subtracting 2 to remove starting room and final room.
+        _numberOfRoomsLeft = _world.Rooms.Count - 2;
 
         int randX;
         int randY;
-        Vector2 PlacePoint;
+        Vector2 placePoint;
         for (var currentRoomIndex = 1; currentRoomIndex < _world.Rooms.Count - 1; currentRoomIndex++)
         {
             Console.Out.WriteLine("Loot gen rooms left: " + _numberOfRoomsLeft);
-            //Vector2 PlacePoint = new Vector2(_world.Rooms[currentRoomIndex].RoomBounds.X + 2,
-            // _world.Rooms[currentRoomIndex].RoomBounds.Y + 1);
-            //Random point in room;
-
 
             randX = Rand.Next(_world.Rooms[currentRoomIndex].RoomBounds.X + 2,
                 _world.Rooms[currentRoomIndex].RoomBounds.Right);
@@ -638,119 +605,111 @@ public class WorldBuilder
             randY = Rand.Next(_world.Rooms[currentRoomIndex].RoomBounds.Y + 1,
                 _world.Rooms[currentRoomIndex].RoomBounds.Bottom - 1);
 
-            PlacePoint = new(randX, randY);
+            placePoint = new Vector2(randX, randY);
             Chest currentChest;
-            Spikes currentSpike;
             if (DecideToPlaceKeyItem())
             {
-                _world.ForcePlaceFloor(PlacePoint,
-                    BuildChest(PlacePoint, Build.Items.Cog(),
-                        Build.InteractableProps.Chest, out currentChest)); //Let walls be temp key items, connectors be temp mobs/other items
-                _world.Chests.Add(PlacePoint, currentChest); //Change out to being just handled in 
+                _world.ForcePlaceFloor(placePoint,
+                    BuildChest(placePoint, Build.Items.Cog(),
+                        Build.InteractableProps.Chest, out currentChest));
+                _world.Chests.Add(placePoint, currentChest);
             }
             else
             {
                 var hazardOrChest = Rand.Next(0, 3);
-                if (hazardOrChest == 0) //Making it a 2 in 3 chance for a chest
+                switch (hazardOrChest)
                 {
-                    _world.ForcePlaceFloor(PlacePoint, BuildChest(PlacePoint, Build.Items.SmallHealthPotion(),
-                        Build.InteractableProps.NormalChest, out currentChest));
-                    _world.Chests.Add(PlacePoint, currentChest);
-                }
-                else if (hazardOrChest == 1)
-                {
-                    _world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
-                    _world.Spikes.Add(PlacePoint, currentSpike);
-                }
-                else
-                {
-                    //_world.ForcePlaceFloor(PlacePoint, Build(PlacePoint, Build.Items.SmallHealthPotion(),
-                        //Build.Props.NormalChest, out currentChest));
-                    //_world.Chests.Add(PlacePoint, currentChest);
-                    BuildMob(PlacePoint, Build.Mobs.Turret);
-                    //_world.Entites.Add(mob); //Moved to build
-                    //_world.ForcePlaceFloor(PlacePoint, BuildSpikeTile(PlacePoint, Build.InteractableProps.Spikes, out currentSpike));
-                    //_world.Spikes.Add(PlacePoint, currentSpike);
+                    case 0:
+                        _world.ForcePlaceFloor(placePoint, BuildChest(placePoint, Build.Items.SmallHealthPotion(),
+                            Build.InteractableProps.NormalChest, out currentChest));
+                        _world.Chests.Add(placePoint, currentChest);
+                        break;
+                    case 1:
+                        _world.ForcePlaceFloor(placePoint,
+                            BuildSpikeTile(placePoint, Build.InteractableProps.Spikes, out var currentSpike));
+                        _world.Spikes.Add(placePoint, currentSpike);
+                        break;
+                    default:
+                        BuildMob(placePoint, Build.Mobs.Turret);
+                        break;
                 }
             }
+
             ChestDictDebug();
             _numberOfRoomsLeft--;
         }
-        randX = Rand.Next(_world.Rooms[_world.Rooms.Count - 1].RoomBounds.X + 2,
-            _world.Rooms[_world.Rooms.Count - 1].RoomBounds.Right);
 
-        randY = Rand.Next(_world.Rooms[_world.Rooms.Count - 1].RoomBounds.Y + 1,
-            _world.Rooms[_world.Rooms.Count - 1].RoomBounds.Bottom - 1);
-        PlacePoint = new(randX, randY);
-        _world.ForcePlaceFloor(PlacePoint, BuildAlter(PlacePoint, Build.InteractableProps.Alter, out Altar alter));
+        randX = Rand.Next(_world.Rooms[^1].RoomBounds.X + 2,
+            _world.Rooms[^1].RoomBounds.Right);
+
+        randY = Rand.Next(_world.Rooms[^1].RoomBounds.Y + 1,
+            _world.Rooms[^1].RoomBounds.Bottom - 1);
+        placePoint = new Vector2(randX, randY);
+        _world.ForcePlaceFloor(placePoint, BuildAlter(placePoint, Build.InteractableProps.Alter, out var alter));
         _world.FinalTileAltar = alter;
-
-        /*Bullet = BuildBullet(new Vector2(-2, -2), out robj);
-        _camera.RegisterRenderable(robj);
-        Bullet.EntityEvent += robj.HandleEntityEvent;*/
-        
-        //Bullet.SendObjToUnregister += robj.SendUnrender;
-        //robj.Handle += _camera.HandleUnrenderEvent;
-        //Bullet.sendObjToUnregister += robj.SendUnrender;
-        
     }
 
+    /// <summary>
+    /// Generates the correct amount of key items on the map.
+    /// </summary>
     private bool DecideToPlaceKeyItem()
     {
         var percentToPlace = Rand.Next(100);
 
-        var percentForKey = _numberOfKeyItemsLeft / (double)_numberOfRoomsLeft * 100; //TODO: Review this math.
+        var percentForKey = _numberOfKeyItemsLeft / (double)_numberOfRoomsLeft * 100;
 
-        if (percentForKey >= percentToPlace)
-        {
-            _numberOfKeyItemsLeft--;
-            return true;
-        }
-
-        return false;
+        if (!(percentForKey >= percentToPlace)) return false;
+        _numberOfKeyItemsLeft--;
+        return true;
     }
-    
+
+    /// <summary>
+    /// Unregisters bullets.
+    /// </summary>
     public void HandleBulletDeregister(in Guid id)
     {
-        for(var i = 0; i < livingBullets.Count; i++)
+        for (var i = 0; i < LivingBullets.Count; i++)
         {
-            if (livingBullets[i].EntityId.Equals(id))
-            {
-                livingBullets.RemoveAt(i);
-                NumberOfBulletsToIterate--;
-            }
+            if (!LivingBullets[i].EntityId.Equals(id)) continue;
+            LivingBullets.RemoveAt(i);
+            NumberOfBulletsToIterate--;
         }
     }
+
+    /// <summary>
+    /// Updates the world when the player hit box collides with an interactive item.
+    /// </summary>
+    /// <param name="player">The main player that interacts with props.</param>
     public void UpdateWorld(Player player)
     {
-        //TODO: Can probably clean this up with an event system, but oh god time crunch.
         for (var i = 0; i < NumberOfBulletsToIterate; i++)
         {
-            //VARIABLE.FixedUpdate();
-            livingBullets[i].FixedUpdate();
+            LivingBullets[i].FixedUpdate();
         }
 
         for (var i = 0; i < NumberOfMobsToIterate; i++)
         {
             _world.Mobs[i].FixedUpdate();
         }
-        
-        //livingBullets[0].FixedUpdate();
-        var roundedDownPos = new Vector2((float)Math.Floor(player.WorldCoordinate.X), (float)Math.Floor(player.WorldCoordinate.Y));
-        var roundedUpPos = new Vector2((float)Math.Ceiling(player.WorldCoordinate.X), (float)Math.Ceiling(player.WorldCoordinate.Y));
-        if (_world.Chests.ContainsKey(roundedDownPos)) //|| _world.Chests.ContainsKey(roundedUpPos))
+
+        var roundedDownPos = new Vector2((float)Math.Floor(player.WorldCoordinate.X),
+            (float)Math.Floor(player.WorldCoordinate.Y));
+        var roundedUpPos = new Vector2((float)Math.Ceiling(player.WorldCoordinate.X),
+            (float)Math.Ceiling(player.WorldCoordinate.Y));
+        if (_world.Chests.ContainsKey(roundedDownPos))
         {
-            //Console.Out.WriteLine(player.Inventory);
             foreach (var item in player.Inventory)
             {
                 Console.Write(item + " + ");
             }
+
             Console.Out.WriteLine();
             _world.Chests[roundedDownPos].InteractWithPlayer(player);
             foreach (var item in player.Inventory)
             {
                 Console.Write(item + " + ");
             }
+
             _world.ForcePlaceFloor(roundedDownPos, BuildTile(roundedDownPos, Build.Props.Connector));
             _world.Chests.Remove(roundedDownPos);
             Console.Out.WriteLine();
@@ -761,42 +720,54 @@ public class WorldBuilder
             {
                 Console.Write(item + " + ");
             }
+
             Console.Out.WriteLine();
             _world.Chests[roundedUpPos].InteractWithPlayer(player);
             foreach (var item in player.Inventory)
             {
                 Console.Write(item + " + ");
             }
+
             _world.ForcePlaceFloor(roundedUpPos, BuildTile(roundedUpPos, Build.Props.Connector));
             _world.Chests.Remove(roundedUpPos);
             Console.Out.WriteLine();
         }
         else if (_world.Spikes.TryGetValue(roundedDownPos, out var spike))
         {
-           //_world.Spikes[roundedDownPos].InteractWithPlayer(player);
-           spike.InteractWithPlayer(player);
+            spike.InteractWithPlayer(player);
         }
         else if (_world.Spikes.TryGetValue(roundedUpPos, out spike))
         {
             spike.InteractWithPlayer(player);
         }
-        
-        else if (_world.FinalTileAltar.WorldCoordinate == roundedDownPos || _world.FinalTileAltar.WorldCoordinate == roundedUpPos)
+
+        else if (_world.FinalTileAltar.WorldCoordinate == roundedDownPos ||
+                 _world.FinalTileAltar.WorldCoordinate == roundedUpPos)
         {
             _world.FinalTileAltar.InteractWithPlayer(player);
         }
     }
 
+    /// <summary>
+    /// Sends an event when the mob is shooting.
+    /// </summary>
     public event EventHelper.SendMobToWorldBuilder MobShooting;
 
-    public void SendMobToGameManager(in Mob newmob)
+    /// <summary>
+    /// Invokes the event and sends it to game manager.
+    /// </summary>
+    /// <param name="newMob">The targeted mob.</param>
+    private void SendMobToGameManager(in Mob newMob)
     {
-        MobShooting?.Invoke(newmob);
+        MobShooting?.Invoke(newMob);
     }
-    
-    
-    
+
+
     // DEBUGS =========================================================================================================
+    
+    /// <summary>
+    /// Debug method to print out the total amount of rooms.
+    /// </summary>
     private void StartDebugPrint()
     {
         var debugCount = 0;
@@ -809,7 +780,10 @@ public class WorldBuilder
 
         Console.Out.WriteLine();
     }
-    
+
+    /// <summary>
+    /// Debug method that prints out the leftover rooms.
+    /// </summary>
     private void LeftOverRoomsDebug()
     {
         var debugCount = 0;
@@ -821,6 +795,9 @@ public class WorldBuilder
         }
     }
 
+    /// <summary>
+    /// Debug method for checking chests.
+    /// </summary>
     private void ChestDictDebug()
     {
         foreach (var chest in _world.Chests)
@@ -832,20 +809,37 @@ public class WorldBuilder
 
     //=== BUILDER ALIASES ===-------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Builds a tile at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The prop builder event.</param>
     private Tile BuildTile(Vector2 worldPosition, PropBuilder buildCallback)
     {
         var prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
         _camera.RegisterRenderable(renderable);
         return new Tile(prop);
     }
-    
+
+    /// <summary>
+    /// Builds a spike at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The interactive prop builder event.</param>
+    /// <param name="prop">The built spike tile.</param>
     private Tile BuildSpikeTile(Vector2 worldPosition, InteractablePropBuilder buildCallback, out Spikes prop)
     {
         prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
         _camera.RegisterRenderable(renderable);
         return new Tile(prop);
     }
-    
+
+    /// <summary>
+    /// Builds an alter at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The alter prop builder event.</param>
+    /// <param name="prop">The built alter tile.</param>
     private Tile BuildAlter(Vector2 worldPosition, AlterBuilder buildCallback, out Altar prop)
     {
         prop = buildCallback.Invoke(_gm, worldPosition, out var renderable);
@@ -853,7 +847,12 @@ public class WorldBuilder
         prop.Win += _gm.WinGame;
         return new Tile(prop);
     }
-    
+
+    /// <summary>
+    /// Builds a mob at the coordinate given.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="buildCallback">The mob builder event.</param>
     private Mob BuildMob(Vector2 worldPosition, MobBuilder buildCallback)
     {
         var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
@@ -864,22 +863,20 @@ public class WorldBuilder
         renderable.Handle += _camera.HandleUnrenderEvent;
 
         newMob.MobShootEvent += SendMobToGameManager;
-        _world.Entites.Add(newMob);
+        _world.Entities.Add(newMob);
         _world.Mobs.Add(newMob);
         NumberOfMobsToIterate++;
-        
+
         return newMob;
     }
-    
-    /*private Projectile BuildBullet(Vector2 worldPosition, out RenderObject renderable)
-    {
-        //var newMob = buildCallback.Invoke(_gm, _world, worldPosition, out var renderable);
-        var newMob = Build.Projectiles.Bullet(_gm, _world, worldPosition, Vector2.Zero,  out renderable);
-        //_camera.RegisterRenderable(renderable);
-        //newMob.EntityEvent += renderable.HandleEntityEvent;
-        return newMob;
-    }*/
-    
+
+    /// <summary>
+    /// Builds a chest at the coordinate given that contains a single item.
+    /// </summary>
+    /// <param name="worldPosition">The position for the tile to be built.</param>
+    /// <param name="item">The item the chest contains.</param>
+    /// <param name="buildCallback">The chest builder event.</param>
+    /// <param name="newChest">The built chest.</param>
     private Tile BuildChest(Vector2 worldPosition, Item item, ChestBuilder buildCallback, out Chest newChest)
     {
         newChest = buildCallback.Invoke(_gm, worldPosition, item, out var renderable);
@@ -887,12 +884,29 @@ public class WorldBuilder
         return new Tile(newChest);
     }
 
+    /// <summary>
+    /// The event to build a chest.
+    /// </summary>
     private delegate Chest ChestBuilder(GameManager gm, Vector2 worldPosition, Item item, out RenderObject renderable);
+
+    /// <summary>
+    /// The event to build a prop.
+    /// </summary>
     private delegate Prop PropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
+
+    /// <summary>
+    /// The event to build an alter.
+    /// </summary>
     private delegate Altar AlterBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
-    
+
+    /// <summary>
+    /// The event to build a spike tile.
+    /// </summary>
     private delegate Spikes InteractablePropBuilder(GameManager gm, Vector2 worldPosition, out RenderObject renderable);
 
+    /// <summary>
+    /// The event to build a mob.
+    /// </summary>
     private delegate Mob MobBuilder(GameManager gm, World world, Vector2 worldPositiona, out RenderObject renderable);
 
     //=== ARCHIVE ===---------------------------------------------------------------------------------------------------
