@@ -1,5 +1,4 @@
 ﻿using gamespace.Model;
-using gamespace.Util;
 using gamespace.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -78,7 +77,7 @@ public static class Bake
     /// <param name="inventory">An array of Items that represents the player's inventory.</param>
     public static InventoryPanel Inventory(GraphicsDevice gfx, GuiManager manager, Item[] inventory = null)
     {
-        var playerInvSlots = 5;
+        const int playerInvSlots = 5;
         var sHeight = gfx.PresentationParameters.Bounds.Height;
         var height = sHeight / 10;
         var width = height * playerInvSlots;
@@ -116,9 +115,6 @@ public static class Bake
         return new Rectangle(width, topBotBuff, width, height);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     private struct ButtonCallbacks
     {
         /// <summary>
